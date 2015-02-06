@@ -5,7 +5,14 @@ import java.util.ArrayList;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_nGram_hashcode implements Parse{
-
+	private ArrayList<Integer> stopwordHashList;
+	
+	public Parse_nGram_hashcode(){
+		for (String stopword : stopWordList){
+			stopwordHashList.add(stopword.hashCode());
+		}
+	}
+	
 	@Override
 	public DocumentInfo parseDoc(String content) {
 		DocumentInfo docInfo = new DocumentInfo();
@@ -33,6 +40,12 @@ public class Parse_nGram_hashcode implements Parse{
 			//한 글자짜리는 n-gram으로 안치고 그 다음 포문 탐.
 			if (wholeChar[i-2] == ' '){
 				nGramMaker.clear();
+				hashCharSum = 0;
+				continue;
+			}
+			
+			//아무 전처리 없는 상태에서 주어진 단어가 stopword list에 포함된 단어라면 그 다음 포문 탐.
+			if (stopwordHashList.contains(hashCharSum)){
 				hashCharSum = 0;
 				continue;
 			}
