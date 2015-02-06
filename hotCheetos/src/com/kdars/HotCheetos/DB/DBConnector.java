@@ -10,24 +10,25 @@ import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import com.kdars.HotCheetos.Config.Configuration;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
 public class DBConnector {
 	private Connection sqlConnection;
 	
-	private String textTable = DBConfig.getInstance().DB_TABLE_NAME_TEXT;
+	private String textTable = Configuration.getInstance().DB_TABLE_NAME_TEXT;
 	private String docID = "DocID";
 	private String docTitle = "Title";
 	private String docContent = "Text";
 	
-	private String invertedIndexTable = DBConfig.getInstance().DB_TABLE_NAME_INDEX;
+	private String invertedIndexTable = Configuration.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
 	private String hashingDocID = "DocID";
 	private String hashcode = "Hashcode";
 	private String termFreq = "TermFrequency";
 	
-	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE;
+	private String scoreTable = Configuration.getInstance().DB_TABLE_NAME_SCORE;
 //	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NGRAM;
 //	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NOUN;
 	private String identifierForScoreTable = "Index";
@@ -105,10 +106,10 @@ public class DBConnector {
 		System.out.println("testing");
 		java.sql.Connection sqlConnection = null;
 		
-		String jdbcUrl = DBConfig.getInstance().DB_JDBC_URL;
-		String DBName = DBConfig.getInstance().DB_NAME;
-		String userID = DBConfig.getInstance().DB_USER_ID;
-		String userPass = DBConfig.getInstance().DB_USER_PASS;
+		String jdbcUrl = Configuration.getInstance().DB_JDBC_URL;
+		String DBName = Configuration.getInstance().DB_NAME;
+		String userID = Configuration.getInstance().DB_USER_ID;
+		String userPass = Configuration.getInstance().DB_USER_PASS;
 		
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
