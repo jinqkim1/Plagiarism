@@ -7,6 +7,18 @@ public class Configuration {
 		return	settings;
 	}
 	
+	/* special character pattern setting */
+	private String postFix1 = "은|는|이|가|을|를|에|의|도|만|로|와|과";
+	public String getPostFix1(){
+		return this.postFix1;
+	}
+	
+	private String postFix2 = "에서|에게|한테|로서|로써|께서|까지|조차|부터|마저";
+	public String getPostFix2(){
+		return this.postFix2;
+	}
+	/* special character pattern setting */
+	
 	/* N-gram setting */
 	private int windowSize = 3;
 	public int getNgramSetting(){  //N-gram의 size를 windowSize로 setting.
@@ -33,6 +45,7 @@ public class Configuration {
 	public final String DB_USER_PASS = "jinqkim69";
 	public final String DB_TABLE_NAME_TEXT = "texttable";
 	public final String DB_TABLE_NAME_INDEX = "invertedindextable";
+	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
 	public final String DB_TABLE_NAME_SCORE = "simscoretable";
 	public final String DB_TABLE_NAME_SCORE_NGRAM = "simscoretable_ngram";
 	public final String DB_TABLE_NAME_SCORE_NOUN = "simscoretable_nouns";

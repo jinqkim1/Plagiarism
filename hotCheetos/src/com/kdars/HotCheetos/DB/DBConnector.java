@@ -22,6 +22,10 @@ public class DBConnector {
 	private String docTitle = "Title";
 	private String docContent = "Text";
 	
+	private String deletelist = Configuration.getInstance().DB_TABLE_NAME_STOPWORD;
+	private String identifierForStopwordTable = "Index";
+	private String stopWords = "stopwords";
+	
 	private String invertedIndexTable = Configuration.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
 	private String hashingDocID = "DocID";
@@ -58,6 +62,26 @@ public class DBConnector {
 			return false;
 		}
 		return true;
+	}
+	
+	public ArrayList<String> queryStopwords(){
+		ArrayList<String> stopwordList = new ArrayList<String>();
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select * from "+ deletelist + ";");
+			
+			while(!resultSet.next()){
+				stopwordList.add(resultSet.getString(2));
+			}
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return stopwordList;
 	}
 	
 	public boolean bulkInsertScore(String csvContent){

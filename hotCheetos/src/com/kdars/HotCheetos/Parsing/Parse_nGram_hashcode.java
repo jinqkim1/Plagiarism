@@ -14,12 +14,14 @@ public class Parse_nGram_hashcode implements Parse{
 		
 		ArrayList<Integer> nGramMaker = new ArrayList<Integer>();
 		
+		int lastIndexOfnonBlankCharacter = 0;
 		int hashCharSum = 0;
 		for (int i = 0; i < wholeChar.length; i++){
 			
 			//whitespace가 아닌 캐릭터는 해쉬코드 더함.
 			if (wholeChar[i] != ' '){
 				hashCharSum += wholeChar[i];
+				lastIndexOfnonBlankCharacter = i;
 				continue;
 			}
 			
@@ -29,7 +31,9 @@ public class Parse_nGram_hashcode implements Parse{
 			}
 			
 			//한 글자짜리는 n-gram으로 안치고 그 다음 포문 탐.
-			if (wholeChar[i-1] == ' ' && wholeChar[i+1] == ' '){
+			if (wholeChar[i-2] == ' '){
+				nGramMaker.clear();
+				hashCharSum = 0;
 				continue;
 			}
 			
@@ -42,6 +46,11 @@ public class Parse_nGram_hashcode implements Parse{
 				}
 				docInfo = addHash(docInfo, nGramHash);
 				nGramMaker.remove(0);
+			}
+			
+			//마지막으로 더한 ngramComponent의 마지막 캐릭터가 마침표일 경우에는 nGramMaker를 비우고 처음부터 다시 ngram 만듬.
+			if (wholeChar[lastIndexOfnonBlankCharacter] == '.'){
+				nGramMaker.clear();
 			}
 			
 			//whitespace가 detect되고 한글자 짜리 단어가 아니라면, 새로운 ngramComponent를 만들기 위해 hashCharSum 리셋함. 

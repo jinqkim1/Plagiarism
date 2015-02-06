@@ -1,5 +1,7 @@
 package com.kdars.HotCheetos.DB;
 
+import java.util.ArrayList;
+
 public class DBManager {
 	private static DBManager thisClass = new DBManager();
 	private DBConnector DB;
@@ -20,8 +22,12 @@ public class DBManager {
 		return DB.bulkInsertScore(csvContent);
 	}
 
-	public boolean insertBulkToHashTable() {
+	public boolean insertBulkToHashTable(){
 		return DB.bulkInsertHash();
+	}
+	
+	public ArrayList<String> getStopwords(){
+		return DB.queryStopwords();
 	}
 	
 }

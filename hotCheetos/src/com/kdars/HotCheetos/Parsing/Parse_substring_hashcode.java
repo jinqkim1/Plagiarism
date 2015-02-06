@@ -16,6 +16,7 @@ public class Parse_substring_hashcode implements Parse{
 			
 			hashCharSum += wholeChar[i];
 			
+			//white space가 없는 상태의 text에 대해서 이런 방식을 사용하는게 보통. 하지만 white space가 있는 text여도 어느 정도 맞출 수 있을 것으로 예상.
 			if ( i < substringSetting - 1){
 				continue;
 			}else if(i == substringSetting -1){
