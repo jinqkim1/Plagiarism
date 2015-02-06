@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_noun_hashcode implements Parse{
@@ -18,8 +19,12 @@ public class Parse_noun_hashcode implements Parse{
 	
 	
 	@Override
-	public DocumentInfo parseDoc(String content) {
+	public DocumentInfo parseDoc(int documentID) {
+		String content = DBManager.getInstance().getText(documentID);
+		
 		DocumentInfo docInfo = new DocumentInfo();
+		docInfo.docID = documentID;
+		
 		String wordList[] = content.trim().split("\\s+");
 		
 		for (int i = 0; i < wordList.length; i++){
@@ -68,13 +73,13 @@ private String deletePostFix(String processedString){
 	}
 	
 	@Override
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<String> contentSet) {
+	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet) {
+		
 		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
 		
-		for (String content : contentSet){
-			docInfoSet.add(parseDoc(content));
+		for (int docID : docIDSet){
+			docInfoSet.add(parseDoc(docID));
 		}
-		
 		
 		return docInfoSet;
 	}

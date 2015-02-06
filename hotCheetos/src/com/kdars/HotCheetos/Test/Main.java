@@ -9,6 +9,6 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		Workflow.getInstance().findSimilaryPairInFolder("C:\\Users\\shin\\Desktop\\txt\\");
+		Workflow.getInstance().findSimilaryPairInFolder("D:\\REAL_WORKSPACE\\TestDocuments\\");
 	}
 }

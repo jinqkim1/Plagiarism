@@ -2,6 +2,7 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
 
+import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
@@ -23,8 +24,11 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	@Override
-	public DocumentInfo parseDoc(String content) {
+	public DocumentInfo parseDoc(int documentID) {
+		String content = DBManager.getInstance().getText(documentID);
+		
 		DocumentInfo docInfo = new DocumentInfo();
+		docInfo.docID = documentID;
 		
 		char wholeChar[] = content.toCharArray();
 		
@@ -98,14 +102,13 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	@Override
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<String> contentSet) {
+	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet) {
 		
 		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
 		
-		for (String content : contentSet){
-			docInfoSet.add(parseDoc(content));
+		for (int docID : docIDSet){
+			docInfoSet.add(parseDoc(docID));
 		}
-		
 		
 		return docInfoSet;
 	}

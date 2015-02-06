@@ -46,6 +46,7 @@ public class Configuration {
 	public final String DB_TABLE_NAME_TEXT = "texttable";
 	public final String DB_TABLE_NAME_INDEX = "invertedindextable";
 	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
+	public final String DB_TABLE_NAME_LOCATION = "charlocationtable";
 	public final String DB_TABLE_NAME_SCORE = "simscoretable";
 	public final String DB_TABLE_NAME_SCORE_NGRAM = "simscoretable_ngram";
 	public final String DB_TABLE_NAME_SCORE_NOUN = "simscoretable_nouns";

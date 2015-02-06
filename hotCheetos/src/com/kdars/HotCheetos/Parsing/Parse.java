@@ -12,6 +12,6 @@ public interface Parse {
 	public int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
 	public ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
 	
-	public DocumentInfo parseDoc(String content);
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<String> contentSet);
+	public DocumentInfo parseDoc(int documentID);
+	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet);
 }

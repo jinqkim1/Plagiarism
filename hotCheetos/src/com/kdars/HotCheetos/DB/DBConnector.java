@@ -32,6 +32,12 @@ public class DBConnector {
 	private String hashcode = "Hashcode";
 	private String termFreq = "TermFrequency";
 	
+	private String locationTable = Configuration.getInstance().DB_TABLE_NAME_LOCATION;
+	private String identifierForLocationTable = "Index";
+	private String locationDocID = "DocID";
+	private String hashcodeForLocation = "Hashcode";
+	private String locationWithinDoc = "LocationWithinDoc";
+	
 	private String scoreTable = Configuration.getInstance().DB_TABLE_NAME_SCORE;
 //	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NGRAM;
 //	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NOUN;
@@ -64,6 +70,48 @@ public class DBConnector {
 		return true;
 	}
 	
+	public ArrayList<Integer> queryAlldocIDs() {
+		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select " + docID + " from " + textTable + ";");
+
+			while (resultSet.next()) {
+				docIDList.add(resultSet.getInt(1));
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return docIDList;
+	}
+	
+	public String queryText(int documentID){
+		String text = null;
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select " + docContent + " from "+ textTable + " where " + docID + " = '" + String.valueOf(documentID) +"';");
+			
+			while(resultSet.next()){
+				text = resultSet.getString(1);
+			}
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return text;
+	}
+	
 	public ArrayList<String> queryStopwords(){
 		ArrayList<String> stopwordList = new ArrayList<String>();
 		ResultSet resultSet = null;
@@ -71,7 +119,7 @@ public class DBConnector {
 			java.sql.Statement stmt = sqlConnection.createStatement();
 			resultSet = stmt.executeQuery("select * from "+ deletelist + ";");
 			
-			while(!resultSet.next()){
+			while(resultSet.next()){
 				stopwordList.add(resultSet.getString(2));
 			}
 			
@@ -111,8 +159,58 @@ public class DBConnector {
 		return true;
 	}
 	
-	public boolean bulkInsertHash() {
-		return false;
+	public boolean bulkInsertHash(String csvContent) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE " + invertedIndexTable + " DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE " + invertedIndexTable + " (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE " + invertedIndexTable + " ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean bulkInsertLocation(String csvContent) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE " + locationTable + " DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE " + locationTable + " (" + locationDocID + ", " + hashcodeForLocation + ", " + locationWithinDoc + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE " + locationTable + " ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 	private String escape(String text) {
