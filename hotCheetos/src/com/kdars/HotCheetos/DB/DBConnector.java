@@ -126,8 +126,6 @@ public class DBConnector {
 	}
 	
 	private Connection connect(){
-//		sqlConnection;
-		System.out.println("testing");
 		java.sql.Connection sqlConnection = null;
 		
 		String jdbcUrl = Configuration.getInstance().DB_JDBC_URL;
@@ -138,7 +136,6 @@ public class DBConnector {
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 		}catch(ClassNotFoundException e){
-//			e.printStackTrace();
 			System.err.println("JDBC is not found.");
 			return null;
 		}
