@@ -42,7 +42,7 @@ public class Workflow {
 //		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		ArrayList<Integer> textMap = DBManager.getInstance().getAlldocIDs();
+		HashMap<Integer,String> textMap = DBManager.getInstance().getAllText();
 		finall = System.currentTimeMillis();
 		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		

@@ -1,6 +1,9 @@
 package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
@@ -15,7 +18,7 @@ public class Parse_nGram_hashcode implements Parse{
 	
 	
 	
-	private ArrayList<Integer> stopwordHashList;
+	private ArrayList<Integer> stopwordHashList = new ArrayList<Integer>();
 	
 	public Parse_nGram_hashcode(){
 		for (String stopword : stopWordList){
@@ -24,9 +27,7 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	@Override
-	public DocumentInfo parseDoc(int documentID) {
-		String content = DBManager.getInstance().getText(documentID);
-		
+	public DocumentInfo parseDoc(String content, int documentID) {
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 		
@@ -51,7 +52,7 @@ public class Parse_nGram_hashcode implements Parse{
 			}
 			
 			//한 글자짜리는 n-gram으로 안치고 그 다음 포문 탐.
-			if (wholeChar[i-2] == ' '){
+			if (i >= 2 && wholeChar[i-2] == ' '){
 				nGramMaker.clear();
 				hashCharSum = 0;
 				continue;
@@ -102,12 +103,16 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	@Override
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet) {
+	public ArrayList<DocumentInfo> parseDocSet(HashMap<Integer,String> textMap) {
 		
 		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
 		
-		for (int docID : docIDSet){
-			docInfoSet.add(parseDoc(docID));
+		Set<Integer> set = textMap.keySet();
+		Iterator<Integer> iter = set.iterator();
+		
+		while(iter.hasNext()){
+			int docID = iter.next();
+			docInfoSet.add(parseDoc(textMap.get(docID), docID));
 		}
 		
 		return docInfoSet;

@@ -23,8 +23,8 @@ public class DBManager {
 		return DB.queryText(documentID);
 	}
 	
-	public ArrayList<Integer> getAlldocIDs(){
-		return DB.queryAlldocIDs();
+	public HashMap<Integer,String> getAllText(){
+		return DB.queryAllText();
 	}
 	
 	public boolean insertBulkToScoreTable(String csvContent){

@@ -1,6 +1,9 @@
 package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.kdars.HotCheetos.Config.Configuration;
@@ -19,9 +22,7 @@ public class Parse_noun_hashcode implements Parse{
 	
 	
 	@Override
-	public DocumentInfo parseDoc(int documentID) {
-		String content = DBManager.getInstance().getText(documentID);
-		
+	public DocumentInfo parseDoc(String content, int documentID) {
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 		
@@ -73,12 +74,16 @@ private String deletePostFix(String processedString){
 	}
 	
 	@Override
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet) {
+	public ArrayList<DocumentInfo> parseDocSet(HashMap<Integer,String> textMap) {
 		
 		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
 		
-		for (int docID : docIDSet){
-			docInfoSet.add(parseDoc(docID));
+		Set<Integer> set = textMap.keySet();
+		Iterator<Integer> iter = set.iterator();
+		
+		while(iter.hasNext()){
+			int docID = iter.next();
+			docInfoSet.add(parseDoc(textMap.get(docID), docID));
 		}
 		
 		return docInfoSet;

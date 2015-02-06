@@ -1,6 +1,7 @@
 package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
@@ -12,6 +13,6 @@ public interface Parse {
 	public int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
 	public ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
 	
-	public DocumentInfo parseDoc(int documentID);
-	public ArrayList<DocumentInfo> parseDocSet(ArrayList<Integer> docIDSet);
+	public DocumentInfo parseDoc(String content, int documentID);
+	public ArrayList<DocumentInfo> parseDocSet(HashMap<Integer,String> textMap);
 }

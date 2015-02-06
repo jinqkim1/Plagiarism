@@ -70,15 +70,15 @@ public class DBConnector {
 		return true;
 	}
 	
-	public ArrayList<Integer> queryAlldocIDs() {
-		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+	public HashMap<Integer,String> queryAllText() {
+		HashMap<Integer,String> textMap = new HashMap<Integer,String>();
 		ResultSet resultSet = null;
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			resultSet = stmt.executeQuery("select " + docID + " from " + textTable + ";");
+			resultSet = stmt.executeQuery("select " + docID + "," + docContent + " from " + textTable + ";");
 
 			while (resultSet.next()) {
-				docIDList.add(resultSet.getInt(1));
+				textMap.put(resultSet.getInt(1), resultSet.getString(2));
 			}
 
 			stmt.close();
@@ -88,7 +88,7 @@ public class DBConnector {
 			return null;
 		}
 
-		return docIDList;
+		return textMap;
 	}
 	
 	public String queryText(int documentID){
