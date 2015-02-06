@@ -1,4 +1,4 @@
-package testing_DB;
+package com.kdars.HotCheetos.DB;
 
 public class DBConfig {
 	

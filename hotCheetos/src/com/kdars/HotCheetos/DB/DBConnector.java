@@ -1,4 +1,4 @@
-package testing_DB;
+package com.kdars.HotCheetos.DB;
 
 import java.io.InputStream;
 import java.sql.DriverManager;
