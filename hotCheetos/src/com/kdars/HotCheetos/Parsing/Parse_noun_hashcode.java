@@ -7,6 +7,12 @@ import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_noun_hashcode implements Parse{
+	
+	private static  Parse_noun_hashcode parse_noun_hashcode = new Parse_noun_hashcode();
+	public static Parse_noun_hashcode getInstance(){
+		return	parse_noun_hashcode;
+	}
+	
 	private String postFix1 = Configuration.getInstance().getPostFix1();
 	private String postFix2 = Configuration.getInstance().getPostFix2();
 	
@@ -63,8 +69,14 @@ private String deletePostFix(String processedString){
 	
 	@Override
 	public ArrayList<DocumentInfo> parseDocSet(ArrayList<String> contentSet) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
+		
+		for (String content : contentSet){
+			docInfoSet.add(parseDoc(content));
+		}
+		
+		
+		return docInfoSet;
 	}
 
 }

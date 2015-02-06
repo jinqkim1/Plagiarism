@@ -2,9 +2,18 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
 
+import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_nGram_hashcode implements Parse{
+	
+	private static  Parse_nGram_hashcode parse_nGram_hashcode = new Parse_nGram_hashcode();
+	public static Parse_nGram_hashcode getInstance(){
+		return	parse_nGram_hashcode;
+	}
+	
+	
+	
 	private ArrayList<Integer> stopwordHashList;
 	
 	public Parse_nGram_hashcode(){

@@ -6,6 +6,11 @@ import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_substring_hashcode implements Parse{
 
+	private static  Parse_substring_hashcode parse_substring_hashcode = new Parse_substring_hashcode();
+	public static Parse_substring_hashcode getInstance(){
+		return	parse_substring_hashcode;
+	}
+	
 	@Override
 	public DocumentInfo parseDoc(String content) {
 		DocumentInfo docInfo = new DocumentInfo();
