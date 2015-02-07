@@ -24,56 +24,63 @@ public class Workflow {
 		double finall = System.currentTimeMillis();	
 		
 		
-//		ArrayList<String> fileNames = FileDataImport.getInstance().getFileNamesFromDir(path);
-//
-//		initial = System.currentTimeMillis();
-//		ArrayList<String> contentsList = FileDataImport.getInstance().getFilesFromFileNames(fileNames);
-//		finall = System.currentTimeMillis();
-//		System.out.println("디렉토리에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-		
-//		initial = System.currentTimeMillis();
-//		HashMap<Integer, DocumentInfo> corpus = new HashMap<Integer, DocumentInfo>();
-//		for(int i=0; i<contentsList.size(); ++i){
-//			DocumentInfo di = new DocumentInfo();
-//			di = Parse_nGram_hashcode.getInstance().parseDoc(contentsList.get(i));
-//			corpus.put(i, di);
-//		}
-//		finall = System.currentTimeMillis();
-//		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		ArrayList<String> fileNames = FileDataImport.getInstance().getFileNamesFromDir(path);
+
+		initial = System.currentTimeMillis();
+		ArrayList<String> contentsList = FileDataImport.getInstance().getFilesFromFileNames(fileNames);
+		finall = System.currentTimeMillis();
+		System.out.println("디렉토리에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		HashMap<Integer,String> textMap = DBManager.getInstance().getAllText();
+		HashMap<Integer, DocumentInfo> corpus = new HashMap<Integer, DocumentInfo>();
+		for(int i=0; i<contentsList.size(); ++i){
+			DocumentInfo di = new DocumentInfo();
+			di = Parse_nGram_hashcode.getInstance().parseDoc(contentsList.get(i), i);
+			corpus.put(i, di);
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+
+		
+	}
+	
+	public void findSimilaryPairInDB(){
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocumentInfo> textMap = DBManager.getInstance().getAllTextAsDocumentInforList();
 		finall = System.currentTimeMillis();
 		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		HashMap<Integer, DocumentInfo> corpus = new HashMap<Integer, DocumentInfo>();
-		Parse_nGram_hashcode.getInstance().parseDocSet(textMap);
+		textMap = Parse_nGram_hashcode.getInstance().parseDocSetWithDocumentInfoArray(textMap);
 		finall = System.currentTimeMillis();
 		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 				
-		ArrayList<DocPair> docPairs = getDocPairs(corpus);
 		
-		
+		initial = System.currentTimeMillis();
+		ArrayList<DocPair> docPairs = getDocPairs(textMap);
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 	}
+	
+	
+	
+	
 
-	private ArrayList<DocPair> getDocPairs(HashMap<Integer, DocumentInfo> corpus) {
-		ArrayList<DocPair> docPairs = new ArrayList<DocPair>();
-		Set<Integer> set = corpus.keySet();
-		Iterator<Integer> iter = set.iterator();
-		ArrayList<Integer> ids = new ArrayList<Integer>();
-		while(iter.hasNext()){
-			ids.add(iter.next());
-		}
+	private ArrayList<DocPair> getDocPairs(ArrayList<DocumentInfo> textMap) {
 		
+		ArrayList<DocPair> result = new ArrayList<DocPair>();
 		
-		for(int i=0; i<ids.size(); i++){
-			for(int j=i; j<ids.size(); ++j){
+		for(int i=0; i<textMap.size(); i++){
+			for(int j=i; j<textMap.size(); ++j){
 				DocPair dp = new DocPair();
-				dp.docID1=i;
-				dp.docID2=j;
-				dp.similarity = CosinSim.getInstance().calcSim(corpus.get(i).termFreq, corpus.get(j).termFreq);				
+				dp.docID1=textMap.get(i).docID;
+				dp.docID2=textMap.get(j).docID;
+				dp.similarity = CosinSim.getInstance().calcSim(textMap.get(i).termFreq, textMap.get(j).termFreq);	
+				result.add(dp);
 			}
 		}
 		return null;

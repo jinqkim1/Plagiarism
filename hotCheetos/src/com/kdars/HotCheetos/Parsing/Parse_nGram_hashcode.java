@@ -118,4 +118,15 @@ public class Parse_nGram_hashcode implements Parse{
 		return docInfoSet;
 	}
 
+	public ArrayList<DocumentInfo> parseDocSetWithDocumentInfoArray(ArrayList<DocumentInfo> textMap) {
+		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
+		
+		
+		for(int i=0; i<textMap.size(); ++i){
+			docInfoSet.add(parseDoc(textMap.get(i).contents, textMap.get(i).docID));
+		}
+		
+		return docInfoSet;
+	}
+
 }

@@ -3,6 +3,8 @@ package com.kdars.HotCheetos.DB;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+
 public class DBManager {
 	private static DBManager thisClass = new DBManager();
 	private DBConnector DB;
@@ -41,6 +43,10 @@ public class DBManager {
 	
 	public ArrayList<String> getStopwords(){
 		return DB.queryStopwords();
+	}
+
+	public ArrayList<DocumentInfo> getAllTextAsDocumentInforList() {
+		return DB.queryAllTextAsDocumentInfoList();
 	}
 	
 }

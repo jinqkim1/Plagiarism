@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
@@ -270,6 +271,30 @@ public class DBConnector {
 		}
 		
 		return true;
+	}
+
+	public ArrayList<DocumentInfo> queryAllTextAsDocumentInfoList() {
+		ArrayList<DocumentInfo> textMap = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select " + docID + "," + docContent + " from " + textTable + ";");
+
+			while (resultSet.next()) {
+				DocumentInfo temp = new DocumentInfo();
+				temp.docID=resultSet.getInt(1);
+				temp.contents=resultSet.getString(2);
+				textMap.add(temp);
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return textMap;
 	}
 	
 }
