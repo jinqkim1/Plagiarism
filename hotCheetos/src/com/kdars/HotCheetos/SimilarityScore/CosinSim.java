@@ -11,20 +11,23 @@ public class CosinSim implements CalcSimScore {
 	}
 	@Override
 	public double calcSim(HashMap<String, Integer> doc1, HashMap<String, Integer> doc2) {
-		Iterator<String> iter1 = doc1.keySet().iterator();
-		Iterator<String> iter2 = doc2.keySet().iterator();
 		
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		
+		Iterator<String> iter1 = doc1.keySet().iterator();
+		
 		while(iter1.hasNext()){
 			String key = iter1.next();
 			if(doc2.containsKey(key)){
 				multiply += ((double)doc1.get(key)) * ((double)doc2.get(key));
+				doc2.remove(key);
 			}
 			norm1 += (((double)doc1.get(key)) * ((double)doc1.get(key)));
 		}
+		
+		Iterator<String> iter2 = doc2.keySet().iterator();
 		
 		while(iter2.hasNext()){
 			String key = iter2.next();

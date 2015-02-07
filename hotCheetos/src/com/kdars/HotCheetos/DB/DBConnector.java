@@ -185,7 +185,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE " + scoreTable + " DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + scoreTable + " (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE " + scoreTable + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
