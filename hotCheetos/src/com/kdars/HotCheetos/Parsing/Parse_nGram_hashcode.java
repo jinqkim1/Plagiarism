@@ -129,16 +129,16 @@ public class Parse_nGram_hashcode implements Parse{
 		return docInfoSet;
 	}
 	
-	public HashMap<Integer,DocumentInfo> parseDocSetWithDocIDArray(ArrayList<Integer> docIDs) {
+	public ArrayList<DocumentInfo> parseDocSetWithDocIDArray(ArrayList<Integer> docIDs) {
 		
-		HashMap<Integer,DocumentInfo> textMap = new HashMap<Integer,DocumentInfo>();
+		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
 		
 		for (int docid : docIDs){
 			String content = DBManager.getInstance().getText(docid);
-			textMap.put(docid, parseDoc(content, docid));
+			docInfoSet.add(parseDoc(content, docid));
 		}
 		
-		return textMap;
+		return docInfoSet;
 	}
 	
 }

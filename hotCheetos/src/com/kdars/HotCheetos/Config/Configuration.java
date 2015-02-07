@@ -7,6 +7,13 @@ public class Configuration {
 		return	settings;
 	}
 	
+	/* bulk insert limit setting */
+	private int bulkLimit = 500000;
+	public int getbulkLimit(){
+		return this.bulkLimit;
+	}
+	/* bulk insert limit setting */
+	
 	/* special character pattern setting */
 	private String postFix1 = "은|는|이|가|을|를|에|의|도|만|로|와|과";
 	public String getPostFix1(){

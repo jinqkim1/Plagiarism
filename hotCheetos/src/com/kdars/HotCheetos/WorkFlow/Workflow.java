@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
@@ -85,19 +86,52 @@ public class Workflow {
 		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		HashMap<Integer,DocumentInfo> textMap = new HashMap<Integer,DocumentInfo>();
-		textMap = Parse_nGram_hashcode.getInstance().parseDocSetWithDocIDArray(docIDList);
+		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+		docInfoList = Parse_nGram_hashcode.getInstance().parseDocSetWithDocIDArray(docIDList);
 		finall = System.currentTimeMillis();
 		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 				
 		
 		initial = System.currentTimeMillis();
-		//ArrayList<DocPair> docPairs = getDocPairs(textMap);
+		getDocPairsJin(docInfoList);
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 	}
 	
+	
+	private void getDocPairsJin(ArrayList<DocumentInfo> docInfoList){
+		StringBuilder csvContent = new StringBuilder();
+		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		
+		int bulkInsertLimitChecker = 0;
+		for(int i=0; i<docInfoList.size(); i++){
+			for(int j=i+1; j<docInfoList.size(); ++j){
+				
+				int docid1 = docInfoList.get(i).docID;
+				int docid2 = docInfoList.get(j).docID;
+				double simscore = CosinSim.getInstance().calcSim(docInfoList.get(i).termFreq, docInfoList.get(j).termFreq);
+				
+				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
+				
+				bulkInsertLimitChecker++;
+				if (bulkInsertLimitChecker == bulkInsertLimit){
+					if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString())){
+						System.out.println("Similarity score bulk insert failed.");
+					}
+					bulkInsertLimitChecker = 0;
+					csvContent.delete(0,csvContent.length());
+					
+				}
+				
+			}
+		}
+		
+		if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString())){
+			System.out.println("Similarity score bulk insert failed.");
+		}
+		
+	}
 	
 
 	private ArrayList<DocPair> getDocPairs(ArrayList<DocumentInfo> textMap) {
