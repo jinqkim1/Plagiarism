@@ -99,6 +99,13 @@ public class Workflow {
 		
 	}
 	
+	private void clusterData(){
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();
+		
+		
+		
+	}
 	
 	private void getDocPairsJin(ArrayList<DocumentInfo> docInfoList){
 		StringBuilder csvContent = new StringBuilder();

@@ -45,6 +45,13 @@ public class Configuration {
 	}
 	/* Finger-printing setting */
 	
+	/* Similarity score threshold setting for clustering */
+	private double scoreThreshold = 0.9;
+	public double getSimScoreThreshold(){
+		return this.scoreThreshold;
+	}
+	/* Similarity score threshold setting for clustering */
+	
 	/* DB Connect Info */
 	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.4:3306/GraphDB";
 	public final String DB_NAME = "plagiarismdb"; 

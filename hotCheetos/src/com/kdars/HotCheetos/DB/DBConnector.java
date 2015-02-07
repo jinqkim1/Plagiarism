@@ -203,6 +203,36 @@ public class DBConnector {
 		return true;
 	}
 	
+	public ArrayList<ArrayList<Integer>> queryHighScoresForCluster(){
+		double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
+		ArrayList<ArrayList<Integer>> docIDLists = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+		ArrayList<Integer> comparedDocIDList = new ArrayList<Integer>();
+		
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select " + compare + " , " + beComparedWith + " from "+ scoreTable + " where " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "';");
+			
+			while (resultSet.next()){
+				docIDList.add(resultSet.getInt(1));
+				comparedDocIDList.add(resultSet.getInt(2));
+			}
+			
+			docIDLists.add(docIDList);
+			docIDLists.add(comparedDocIDList);
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return docIDLists;
+	}
+	
 	public boolean bulkInsertHash(String csvContent) {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
