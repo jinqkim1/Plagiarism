@@ -203,6 +203,33 @@ public class DBConnector {
 		return true;
 	}
 	
+	public boolean bulkInsertScoreWithTableName(String csvContent, String tableName){
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public ArrayList<ArrayList<Integer>> queryHighScoresForCluster(){
 		double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
 		ArrayList<ArrayList<Integer>> docIDLists = new ArrayList<ArrayList<Integer>>();

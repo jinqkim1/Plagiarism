@@ -34,7 +34,7 @@ public class Configuration {
 	/* N-gram setting */
 	
 	/* Finger-printing setting */
-	private int mod = 4;
+	public int mod = 4;
 	public int getFingerprintSetting(){  //mod의 배수로 hashcode 선택하는 동작을 위한 setting.
 		return this.mod;
 	}

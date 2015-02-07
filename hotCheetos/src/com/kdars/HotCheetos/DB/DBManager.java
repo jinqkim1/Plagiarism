@@ -41,6 +41,10 @@ public class DBManager {
 		return DB.bulkInsertScore(csvContent);
 	}
 	
+	public boolean insertBulkToScoreTableWithTableName(String csvContent, String tableName){
+		return DB.bulkInsertScoreWithTableName(csvContent, tableName);
+	}
+	
 	public ArrayList<ArrayList<Integer>> getInitialdocIDsForCluster(){
 		return DB.queryHighScoresForCluster();
 	}
