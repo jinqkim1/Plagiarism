@@ -212,7 +212,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE " + invertedIndexTable + " DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + invertedIndexTable + " (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE " + invertedIndexTable + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -239,7 +239,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE " + locationTable + " DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + locationTable + " (" + locationDocID + ", " + hashcodeForLocation + ", " + locationWithinDoc + ");";
+                    "INTO TABLE " + locationTable + " FIELDS TERMINATED BY ',' (" + locationDocID + ", " + hashcodeForLocation + ", " + locationWithinDoc + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
