@@ -25,7 +25,7 @@ public class DBConnector {
 	
 	private String deletelist = Configuration.getInstance().DB_TABLE_NAME_STOPWORD;
 	private String identifierForStopwordTable = "Index";
-	private String stopWords = "stopwords";
+	private String stopWords = "Stopword";
 	
 	private String invertedIndexTable = Configuration.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
@@ -40,8 +40,6 @@ public class DBConnector {
 	private String locationWithinDoc = "LocationWithinDoc";
 	
 	private String scoreTable = Configuration.getInstance().DB_TABLE_NAME_SCORE;
-//	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NGRAM;
-//	private String scoreTable = DBConfig.getInstance().DB_TABLE_NAME_SCORE_NOUN;
 	private String identifierForScoreTable = "Index";
 	private String compare = "DocID";
 	private String beComparedWith = "ComparedDocID";
