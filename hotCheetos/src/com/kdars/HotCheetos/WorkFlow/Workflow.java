@@ -139,7 +139,7 @@ public class Workflow {
 		ArrayList<DocPair> result = new ArrayList<DocPair>();
 		
 		for(int i=0; i<textMap.size(); i++){
-			for(int j=i; j<textMap.size(); ++j){
+			for(int j=i+1; j<textMap.size(); ++j){
 				DocPair dp = new DocPair();
 				int docid1 = textMap.get(i).docID;
 				int docid2 = textMap.get(j).docID;
