@@ -22,6 +22,7 @@ public class CosinSim implements CalcSimScore {
 			String key = iter1.next();
 			if(doc2.containsKey(key)){
 				multiply += ((double)doc1.get(key)) * ((double)doc2.get(key));
+				norm2 += (((double)doc2.get(key)) * ((double)doc2.get(key)));
 				doc2.remove(key);
 			}
 			norm1 += (((double)doc1.get(key)) * ((double)doc1.get(key)));
