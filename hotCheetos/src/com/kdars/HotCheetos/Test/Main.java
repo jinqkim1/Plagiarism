@@ -9,6 +9,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		Workflow.getInstance().findSimilaryPairInDB();
+		//Workflow.getInstance().findSimilaryPairInDB();
+		
+		Workflow.getInstance().findSimilaryPairJin();
+		
 	}
 }

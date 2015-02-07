@@ -29,6 +29,14 @@ public class DBManager {
 		return DB.queryAllText();
 	}
 	
+	public ArrayList<DocumentInfo> getAllTextAsDocumentInforList() {
+		return DB.queryAllTextAsDocumentInfoList();
+	}
+	
+	public ArrayList<Integer> getAllTextAsDocIDArray(){
+		return DB.queryAllTextAsDocIDList();
+	}
+	
 	public boolean insertBulkToScoreTable(String csvContent){
 		return DB.bulkInsertScore(csvContent);
 	}
@@ -43,10 +51,6 @@ public class DBManager {
 	
 	public ArrayList<String> getStopwords(){
 		return DB.queryStopwords();
-	}
-
-	public ArrayList<DocumentInfo> getAllTextAsDocumentInforList() {
-		return DB.queryAllTextAsDocumentInfoList();
 	}
 	
 }

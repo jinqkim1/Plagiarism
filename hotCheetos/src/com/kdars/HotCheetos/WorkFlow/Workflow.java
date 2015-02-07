@@ -64,25 +64,63 @@ public class Workflow {
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
+		
+		initial = System.currentTimeMillis();
+		String csvContent = "";
+		for(int i=0; i<docPairs.size(); i++){
+			csvContent += String.valueOf(docPairs.get(i).docID1)+","+String.valueOf(docPairs.get(i).docID2)+","+String.valueOf(docPairs.get(i).similarity)+"\n";
+		}
+		DBManager.getInstance().insertBulkToScoreTable(csvContent);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 pair의 similarity를 DB에 넣는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 	}
 	
-	
+	public void findSimilaryPairJin(){
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		HashMap<Integer,DocumentInfo> textMap = new HashMap<Integer,DocumentInfo>();
+		textMap = Parse_nGram_hashcode.getInstance().parseDocSetWithDocIDArray(docIDList);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+		
+		initial = System.currentTimeMillis();
+		//ArrayList<DocPair> docPairs = getDocPairs(textMap);
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+	}
 	
 	
 
 	private ArrayList<DocPair> getDocPairs(ArrayList<DocumentInfo> textMap) {
-		
+		StringBuilder csvContent = new StringBuilder();
 		ArrayList<DocPair> result = new ArrayList<DocPair>();
 		
 		for(int i=0; i<textMap.size(); i++){
 			for(int j=i; j<textMap.size(); ++j){
 				DocPair dp = new DocPair();
-				dp.docID1=textMap.get(i).docID;
-				dp.docID2=textMap.get(j).docID;
-				dp.similarity = CosinSim.getInstance().calcSim(textMap.get(i).termFreq, textMap.get(j).termFreq);	
+				int docid1 = textMap.get(i).docID;
+				int docid2 = textMap.get(j).docID;
+				double simscore = CosinSim.getInstance().calcSim(textMap.get(i).termFreq, textMap.get(j).termFreq);
+				dp.docID1=docid1;
+				dp.docID2=docid2;
+				dp.similarity = simscore;
 				result.add(dp);
+				
+				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 			}
 		}
-		return null;
+		
+		DBManager.getInstance().insertBulkToScoreTable(csvContent.toString());
+		
+		return result;
 	}
 }
