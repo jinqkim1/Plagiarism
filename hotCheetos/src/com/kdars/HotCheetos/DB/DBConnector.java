@@ -240,7 +240,7 @@ public class DBConnector {
 		
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			resultSet = stmt.executeQuery("select " + compare + " , " + beComparedWith + " from "+ scoreTable + " where " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + compare + " desc;");
+			resultSet = stmt.executeQuery("select " + compare + " , " + beComparedWith + " from "+ scoreTable + " where " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + compare + " asc;");
 			
 			while (resultSet.next()){
 				docIDList.add(resultSet.getInt(1));

@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class FileDataImport implements ImprtContent {
+public class FileDataImport implements ImportContent {
 
 	private static  FileDataImport fileDataImport = new FileDataImport();
 	public static FileDataImport getInstance(){
@@ -42,6 +44,22 @@ public class FileDataImport implements ImprtContent {
 		
 
 		return content;
+	}
+	
+	public void receiveFile(){
+		
+	}
+	
+	public String extractOnlyText(String text){
+		StringBuilder result = new StringBuilder();
+		Pattern p = Pattern.compile(extractTextPattern);
+		Matcher m = p.matcher(text);
+		
+		while(m.find()){
+			result.append(String.valueOf(text.charAt(m.start())));
+		}
+		
+		return result.toString();
 	}
 	
 	public ArrayList<String> getFileNamesFromDir(String path) {
