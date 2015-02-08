@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 
-public class FileDataImport implements ImprtContent {
+public class FileDataImport implements ImportContent {
 
 	private static  FileDataImport fileDataImport = new FileDataImport();
 	public static FileDataImport getInstance(){
