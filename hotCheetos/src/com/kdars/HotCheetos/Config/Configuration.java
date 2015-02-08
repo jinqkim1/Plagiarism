@@ -52,6 +52,14 @@ public class Configuration {
 	}
 	/* Similarity score threshold setting for clustering */
 	
+	/* Characters to be extracted */
+	//영어, 한글, whitespace, 마침표만 남기고 나머지는 다 버림.
+	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
+	public String getTextPattern(){
+		return this.extractTextPattern;
+	}
+	/* Characters to be extracted */
+	
 	/* DB Connect Info */
 	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.4:3306/GraphDB";
 	public final String DB_NAME = "plagiarismdb"; 
