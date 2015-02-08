@@ -12,6 +12,14 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
+
+import com.kdars.HotCheetos.DB.DBManager;
+import com.kdars.HotCheetos.PDFParser.PDFFileParser;
+
 
 public class FileDataImport implements ImportContent {
 
@@ -76,12 +84,26 @@ public class FileDataImport implements ImportContent {
 				FileOutputStream fos = new FileOutputStream(newFile);
 
 				int len;
+				
+				len = 0;
 				while ((len = zis.read(buffer)) > 0) {
 					fos.write(buffer, 0, len);
 				}
 
 				fos.close();
 				ze = zis.getNextEntry();
+				
+				
+				double initial = System.currentTimeMillis();
+				double finall = System.currentTimeMillis();	
+				
+				initial = System.currentTimeMillis();
+				String content = PDFFileParser.getInstance().PdfFileParser(outputFolder + File.separator + fileName);
+				finall = System.currentTimeMillis();
+				System.out.println("pdf parsing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				System.out.println(content);
+				
+				
 			}
 
 			zis.closeEntry();
