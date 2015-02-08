@@ -89,7 +89,6 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	public DocumentInfo addHash(DocumentInfo docInfo, int hash) {
-		System.out.println(fingerprintSetting);
 		if (hash % fingerprintSetting != 0) {
 			return docInfo;
 		}

@@ -8,7 +8,6 @@ import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse_noun_hashcode;
 import com.kdars.HotCheetos.SimilarityScore.CosinSim;
-import com.kdars.HotCheetos.Config.*;
 
 public class Experiment {
 	private static  Experiment experiment = new Experiment();
@@ -19,7 +18,7 @@ public class Experiment {
 	
 	
 	public void experiment1(){
-		Configuration.getInstance().mod=0;
+		Configuration.getInstance().mod=1;
 		
 		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
@@ -71,7 +70,7 @@ public class Experiment {
 	}
 	
 	public void experiment3(){
-		Configuration.getInstance().mod=0;
+		Configuration.getInstance().mod=1;
 		
 		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
@@ -96,7 +95,7 @@ public class Experiment {
 		
 	}
 	
-	public void experiment5(){
+	public void experiment4(){
 		Configuration.getInstance().mod=4;
 		
 		System.out.println(Configuration.getInstance().mod);

@@ -10,9 +10,13 @@ public class Main {
 
 	public static void main(String[] args) {
 		
+		System.out.println("\nexperiment1");
 		Experiment.getInstance().experiment1();
-		
-		
-		
+		System.out.println("\nexperiment2");
+		Experiment.getInstance().experiment2();
+		System.out.println("\nexperiment3");
+		Experiment.getInstance().experiment3();
+		System.out.println("\nexperiment4");
+		Experiment.getInstance().experiment4();
 	}
 }
