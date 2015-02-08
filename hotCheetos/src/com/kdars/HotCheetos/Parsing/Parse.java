@@ -15,4 +15,6 @@ public interface Parse {
 	
 	public DocumentInfo parseDoc(String content, int documentID);
 	public ArrayList<DocumentInfo> parseDocSet(HashMap<Integer,String> textMap);
+	ArrayList<DocumentInfo> parseDocSetWithDocIDArray(ArrayList<Integer> docIDs);
+	ArrayList<DocumentInfo> parseDocSetWithDocumentInfoArray(ArrayList<DocumentInfo> textMap);
 }

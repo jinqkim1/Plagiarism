@@ -73,4 +73,17 @@ public class Parse_substring_hashcode implements Parse{
 		return docInfoSet;
 	}
 
+	@Override
+	public ArrayList<DocumentInfo> parseDocSetWithDocIDArray(ArrayList<Integer> docIDs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<DocumentInfo> parseDocSetWithDocumentInfoArray(
+			ArrayList<DocumentInfo> textMap) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

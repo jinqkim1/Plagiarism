@@ -6,7 +6,9 @@ import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;
+import com.kdars.HotCheetos.Parsing.Parse_nGram_string;
 import com.kdars.HotCheetos.Parsing.Parse_noun_hashcode;
+import com.kdars.HotCheetos.Parsing.Parse_noun_string;
 import com.kdars.HotCheetos.SimilarityScore.CosinSim;
 
 public class Experiment {
@@ -19,8 +21,6 @@ public class Experiment {
 	
 	public void experiment1(){
 		Configuration.getInstance().mod=1;
-		
-		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();	
 		
@@ -45,8 +45,6 @@ public class Experiment {
 	
 	public void experiment2(){
 		Configuration.getInstance().mod=4;
-		
-		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();	
 		
@@ -71,8 +69,6 @@ public class Experiment {
 	
 	public void experiment3(){
 		Configuration.getInstance().mod=1;
-		
-		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();	
 		
@@ -98,7 +94,6 @@ public class Experiment {
 	public void experiment4(){
 		Configuration.getInstance().mod=4;
 		
-		System.out.println(Configuration.getInstance().mod);
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();	
 		
@@ -110,6 +105,106 @@ public class Experiment {
 		initial = System.currentTimeMillis();
 		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
 		docInfoList = Parse_noun_hashcode.getInstance().parseDocSetWithDocIDArray(docIDList);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+		
+		initial = System.currentTimeMillis();
+		getDocPairsJin(docInfoList, "ex4");
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+	}
+	
+	public void experiment5(){
+		Configuration.getInstance().mod=1;
+		
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+		docInfoList = Parse_nGram_string.getInstance().parseDocSetWithDocIDArray(docIDList);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+		
+		initial = System.currentTimeMillis();
+		getDocPairsJin(docInfoList, "ex4");
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+	}
+	
+	public void experiment6(){
+		Configuration.getInstance().mod=4;
+		
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+		docInfoList = Parse_nGram_string.getInstance().parseDocSetWithDocIDArray(docIDList);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+		
+		initial = System.currentTimeMillis();
+		getDocPairsJin(docInfoList, "ex4");
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+	}
+	
+	public void experiment7(){
+		Configuration.getInstance().mod=0;
+		
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+		docInfoList = Parse_noun_string.getInstance().parseDocSetWithDocIDArray(docIDList);
+		finall = System.currentTimeMillis();
+		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+		
+		initial = System.currentTimeMillis();
+		getDocPairsJin(docInfoList, "ex4");
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+	}
+	
+	public void experiment8(){
+		Configuration.getInstance().mod=4;
+		
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();	
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+		docInfoList = Parse_noun_string.getInstance().parseDocSetWithDocIDArray(docIDList);
 		finall = System.currentTimeMillis();
 		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 				

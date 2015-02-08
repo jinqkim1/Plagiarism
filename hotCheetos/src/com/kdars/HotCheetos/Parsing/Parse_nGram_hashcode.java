@@ -129,6 +129,7 @@ public class Parse_nGram_hashcode implements Parse{
 		return docInfoSet;
 	}
 	
+	@Override
 	public ArrayList<DocumentInfo> parseDocSetWithDocIDArray(ArrayList<Integer> docIDs) {
 		
 		ArrayList<DocumentInfo> docInfoSet = new ArrayList<DocumentInfo>();
