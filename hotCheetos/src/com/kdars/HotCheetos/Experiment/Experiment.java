@@ -135,7 +135,7 @@ public class Experiment {
 				
 		
 		initial = System.currentTimeMillis();
-		getDocPairsJin(docInfoList, "ex4");
+		//getDocPairsJin(docInfoList, "ex4");
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
@@ -160,14 +160,14 @@ public class Experiment {
 				
 		
 		initial = System.currentTimeMillis();
-		getDocPairsJin(docInfoList, "ex4");
+		//getDocPairsJin(docInfoList, "ex4");
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 	}
 	
 	public void experiment7(){
-		Configuration.getInstance().mod=0;
+		Configuration.getInstance().mod=1;
 		
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();	
@@ -185,7 +185,7 @@ public class Experiment {
 				
 		
 		initial = System.currentTimeMillis();
-		getDocPairsJin(docInfoList, "ex4");
+		//getDocPairsJin(docInfoList, "ex4");
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
@@ -210,7 +210,7 @@ public class Experiment {
 				
 		
 		initial = System.currentTimeMillis();
-		getDocPairsJin(docInfoList, "ex4");
+		//getDocPairsJin(docInfoList, "ex4");
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
