@@ -74,9 +74,9 @@ public class Parse_nGram_string implements Parse {
 			if(key.hashCode()%Configuration.getInstance().mod==0){
 				if(docInfo.termFreq.containsKey(key)){
 					int value = docInfo.termFreq.get(key);
-					//docInfo.termFreq.put(key, value+1);
+					docInfo.termFreq.put(key, value+1);
 				}else{
-					//docInfo.termFreq.put(key, 1);	
+					docInfo.termFreq.put(key, 1);	
 				}
 			}
 		}

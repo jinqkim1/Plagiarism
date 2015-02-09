@@ -377,7 +377,7 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				String sql = "select " + hashcode + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';";
+				String sql = "select " + hashcode + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';";
 				resultSet = stmt.executeQuery(sql);
 				while(resultSet.next()){
 					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
@@ -404,7 +404,7 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				resultSet = stmt.executeQuery("select " + "Term" + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';");
+				resultSet = stmt.executeQuery("select " + "Term" + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 				while(resultSet.next()){
 					docInfo.termFreq.put(resultSet.getString(1), resultSet.getInt(2));
 				}
