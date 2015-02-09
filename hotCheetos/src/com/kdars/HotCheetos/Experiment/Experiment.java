@@ -459,7 +459,7 @@ public class Experiment {
 	
 	private void getDocPairsJin(ArrayList<DocumentInfo> docInfoList, String tableName){
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		
 		int bulkInsertLimitChecker = 0;
 		for(int i=0; i<docInfoList.size(); i++){

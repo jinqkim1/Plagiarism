@@ -24,7 +24,8 @@ public class Workflow {
 		return	workflow;
 	}
 
-	public void batchDocsWorkFlow(){ //invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
+	public void batchDocsWorkFlow(){
+		//invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
@@ -63,7 +64,9 @@ public class Workflow {
 		
 	}
 	
-	public void inputDocWorkFlow(ArrayList<File> zipFileList){ ////invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
+	public ArrayList<DocPair> inputDocWorkFlow(ArrayList<File> zipFileList){
+		//invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
+		//zipFileList가 일정 사이즈를 넘으면 메모리 문제가 생길 수 있으므로 윗단에서 limit(Configuration의 fileListLimit)을 이용하여 잘라서 처리할 수 있도록 하는 것이 필요.
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
@@ -82,7 +85,7 @@ public class Workflow {
 		finall = System.currentTimeMillis();
 		System.out.println("Input 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
-		initial = System.currentTimeMillis(); //document info list가 너무 클 경우에는 메모리 문제 있음. 추가 logic 필요. 
+		initial = System.currentTimeMillis();
 		ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
 		finall = System.currentTimeMillis();
 		System.out.println("Input 텍스트 파일의 hashmap과 docID를 DB에서 Document Info 자료구조에 담아서 가져오는데 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
@@ -90,24 +93,25 @@ public class Workflow {
 		initial = System.currentTimeMillis();
 		CosineSim cosineSimilarity = new CosineSim();
 		int scoreTableID = 1;
-		if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
-			System.out.println("Intra score 저장 실패.");
-		}
-		finall = System.currentTimeMillis();
-		System.out.println("Input 텍스트 파일들 간의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-		
-		initial = System.currentTimeMillis();
 		if (!cosineSimilarity.interCalcSimSet(docInfoList, scoreTableID, invertedIndexTableID)){
 			System.out.println("Inter score 저장 실패.");
 		}
 		finall = System.currentTimeMillis();
 		System.out.println("Input 텍스트 파일들과 Corpus 간의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
-		initial = System.currentTimeMillis(); //doc ID list가 너무 클 경우에는 메모리 문제 있음. 추가 logic 필요.
+		initial = System.currentTimeMillis();
+		if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
+			System.out.println("Intra score 저장 실패.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일들 간의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis(); //doc ID list가 너무 클 경우에는 query가 너무 길어짐. 추가 logic 필요.
 		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(docIDList, scoreTableID);
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
+		return highestPairList;
 	}
 	
 }

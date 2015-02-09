@@ -122,7 +122,7 @@ public class DBManager {
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
 		
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 		for (String termHash : docInfo.termFreq.keySet()){
 			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
@@ -143,7 +143,7 @@ public class DBManager {
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
 		
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 		for (String termHash : docInfo.termFreq.keySet()){
 			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
@@ -164,7 +164,7 @@ public class DBManager {
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
 		
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 		for (String termHash : docInfo.termFreq.keySet()){
 			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");

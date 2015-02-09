@@ -7,13 +7,6 @@ public class Configuration {
 		return	settings;
 	}
 	
-	/* bulk insert limit setting */
-	private int bulkLimit = 500000;
-	public int getbulkLimit(){
-		return this.bulkLimit;
-	}
-	/* bulk insert limit setting */
-	
 	/* special character pattern setting */
 	private String postFix1 = "은|는|이|가|을|를|에|의|도|만|로|와|과";
 	public String getPostFix1(){
@@ -52,12 +45,27 @@ public class Configuration {
 	}
 	/* Similarity score threshold setting for clustering */
 	
-	/* docID list size limit to prevent long queries in similarity score retrieval */
-	private int docIDlistLimit = 500;
-	public int getDocIDlistLimit(){
-		return this.docIDlistLimit;
+	/* limit settings to prevent excessive memory usage */
+	private int fileListLimit = 500; //input으로 받는 file list가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
+	public int getFileListLimit(){
+		return this.fileListLimit;
 	}
-	/* docID list size limit to prevent long queries in similarity score retrieval */
+	
+	private int docIDListLimit = 500; //docID list size limit to prevent long queries in similarity score retrieval.
+	public int getDocIDListLimit(){
+		return this.docIDListLimit;
+	}
+	
+	private int docInfoListLimit = 500; //Document Info의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 없앰.
+	public int getDocInfoListLimit(){
+		return this.docInfoListLimit;
+	}
+	
+	private int bulkScoreLimit = 500000; //DB에 저장할 score의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 없앰.
+	public int getbulkScoreLimit(){
+		return this.bulkScoreLimit;
+	}
+	/* limit settings to prevent excessive memory usage */
 	
 	/* Characters to be extracted */
 	//영어, 한글, whitespace, 마침표만 남기고 나머지는 다 버림.

@@ -14,7 +14,7 @@ public abstract class CalcSimScore {
 	
 	public boolean intraCalcSimSet(ArrayList<DocumentInfo> docInfoList, int scoreTableID){
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		
 		int bulkInsertLimitChecker = 0;
 		for(int i=0; i<docInfoList.size(); i++){
@@ -45,7 +45,7 @@ public abstract class CalcSimScore {
 	
 	public boolean interCalcSimSet(ArrayList<DocumentInfo> docInfoList, int scoreTableID, int invertedIndexTableID){
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		
 		int bulkInsertLimitChecker = 0;
 		
