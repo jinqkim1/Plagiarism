@@ -1,5 +1,6 @@
 package com.kdars.HotCheetos.WorkFlow;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,10 +9,13 @@ import java.util.Set;
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
+import com.kdars.HotCheetos.DataImport.ImportContent1;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.PairStructure.DocPair;
+import com.kdars.HotCheetos.Parsing.Parse1_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;
-import com.kdars.HotCheetos.SimilarityScore.CosinSim;
+import com.kdars.HotCheetos.Parsing.Parse_noun_hashcode;
+import com.kdars.HotCheetos.SimilarityScore.CosineSim;
 
 public class Workflow {
 	
@@ -20,65 +24,9 @@ public class Workflow {
 		return	workflow;
 	}
 
-	public void findSimilaryPairInFolder(String path){
+	public void batchDocsWorkFlow(){ //invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
 		double initial = System.currentTimeMillis();
-		double finall = System.currentTimeMillis();	
-		
-		
-		ArrayList<String> fileNames = FileDataImport.getInstance().getFileNamesFromDir(path);
-
-		initial = System.currentTimeMillis();
-		ArrayList<String> contentsList = FileDataImport.getInstance().getFilesFromFileNames(fileNames);
-		finall = System.currentTimeMillis();
-		System.out.println("디렉토리에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-		
-		initial = System.currentTimeMillis();
-		HashMap<Integer, DocumentInfo> corpus = new HashMap<Integer, DocumentInfo>();
-		for(int i=0; i<contentsList.size(); ++i){
-			DocumentInfo di = new DocumentInfo();
-			di = Parse_nGram_hashcode.getInstance().parseDoc(contentsList.get(i), i);
-			corpus.put(i, di);
-		}
-		finall = System.currentTimeMillis();
-		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-
-		
-	}
-	
-	public void findSimilaryPairInDB(){
-		double initial = System.currentTimeMillis();
-		double finall = System.currentTimeMillis();	
-		
-		initial = System.currentTimeMillis();
-		ArrayList<DocumentInfo> textMap = DBManager.getInstance().getAllTextAsDocumentInforList();
-		finall = System.currentTimeMillis();
-		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-		
-		initial = System.currentTimeMillis();
-		textMap = Parse_nGram_hashcode.getInstance().parseDocSetWithDocumentInfoArray(textMap);
-		finall = System.currentTimeMillis();
-		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-				
-		
-		initial = System.currentTimeMillis();
-		ArrayList<DocPair> docPairs = getDocPairs(textMap);
-		finall = System.currentTimeMillis();
-		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-		
-		
-		initial = System.currentTimeMillis();
-		String csvContent = "";
-		for(int i=0; i<docPairs.size(); i++){
-			csvContent += String.valueOf(docPairs.get(i).docID1)+","+String.valueOf(docPairs.get(i).docID2)+","+String.valueOf(docPairs.get(i).similarity)+"\n";
-		}
-		DBManager.getInstance().insertBulkToScoreTable(csvContent);
-		finall = System.currentTimeMillis();
-		System.out.println("모든 pair의 similarity를 DB에 넣는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-	}
-	
-	public void findSimilaryPairJin(){
-		double initial = System.currentTimeMillis();
-		double finall = System.currentTimeMillis();	
+		double finall = System.currentTimeMillis();
 		
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
@@ -86,82 +34,80 @@ public class Workflow {
 		System.out.println("DB에서 모든 텍스트 파일을 읽어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
-		docInfoList = Parse_nGram_hashcode.getInstance().parseDocSetWithDocIDArray(docIDList);
+		Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
+		int invertedIndexTableID = 1;
+		if (!test.parseDocSet(docIDList, invertedIndexTableID)){
+			System.out.println("Inverted index 저장 실패.");
+		}
 		finall = System.currentTimeMillis();
-		System.out.println("모든 텍스트 파일을 hashing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-				
+		System.out.println("모든 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 		initial = System.currentTimeMillis();
-		getDocPairsJin(docInfoList);
+		ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
 		finall = System.currentTimeMillis();
-		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		System.out.println("hashing set의 모든 pair를 DB에서 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		CosineSim cosineSimilarity = new CosineSim();
+		int scoreTableID = 1;
+		if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
+			System.out.println("Score 저장 실패.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(docIDList, scoreTableID);
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 	}
 	
-	private void clusterData(){
+	public void inputDocWorkFlow(ArrayList<File> zipFileList){ ////invertedIndexTableID, locationTableID, scoreTableID에 따른 table이 없음. 생성 필요.
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
+		initial = System.currentTimeMillis();
+		ImportContent1 importData = new ImportContent1();
+		ArrayList<Integer> docIDList = importData.importProcessor(zipFileList);
+		finall = System.currentTimeMillis();
+		System.out.println("들어온 압축파일을 unzip하고 string을 뽑은 다음, string에서 필요한 text만 추출한 후에 docIDList를 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
+		initial = System.currentTimeMillis();
+		Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
+		int invertedIndexTableID = 1;
+		if (!test.parseDocSet(docIDList, invertedIndexTableID)){
+			System.out.println("Inverted index 저장 실패.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis(); //document info list가 너무 클 경우에는 메모리 문제 있음. 추가 logic 필요. 
+		ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일의 hashmap과 docID를 DB에서 Document Info 자료구조에 담아서 가져오는데 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		CosineSim cosineSimilarity = new CosineSim();
+		int scoreTableID = 1;
+		if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
+			System.out.println("Intra score 저장 실패.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일들 간의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		if (!cosineSimilarity.interCalcSimSet(docInfoList, scoreTableID, invertedIndexTableID)){
+			System.out.println("Inter score 저장 실패.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일들과 Corpus 간의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis(); //doc ID list가 너무 클 경우에는 메모리 문제 있음. 추가 logic 필요.
+		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(docIDList, scoreTableID);
+		finall = System.currentTimeMillis();
+		System.out.println("hashing set의 모든 pair의 similarity 계산하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
 	}
 	
-	private void getDocPairsJin(ArrayList<DocumentInfo> docInfoList){
-		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
-		
-		int bulkInsertLimitChecker = 0;
-		for(int i=0; i<docInfoList.size(); i++){
-			for(int j=i+1; j<docInfoList.size(); ++j){
-				
-				int docid1 = docInfoList.get(i).docID;
-				int docid2 = docInfoList.get(j).docID;
-				double simscore = CosinSim.getInstance().calcSim(docInfoList.get(i).termFreq, docInfoList.get(j).termFreq);
-				
-				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-				
-				bulkInsertLimitChecker++;
-				if (bulkInsertLimitChecker == bulkInsertLimit){
-					if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString())){
-						System.out.println("Similarity score bulk insert failed.");
-					}
-					bulkInsertLimitChecker = 0;
-					csvContent.delete(0,csvContent.length());
-					
-				}
-				
-			}
-		}
-		
-		if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString())){
-			System.out.println("Similarity score bulk insert failed.");
-		}
-		
-	}
-	
-
-	private ArrayList<DocPair> getDocPairs(ArrayList<DocumentInfo> textMap) {
-		StringBuilder csvContent = new StringBuilder();
-		ArrayList<DocPair> result = new ArrayList<DocPair>();
-		
-		for(int i=0; i<textMap.size(); i++){
-			for(int j=i+1; j<textMap.size(); ++j){
-				DocPair dp = new DocPair();
-				int docid1 = textMap.get(i).docID;
-				int docid2 = textMap.get(j).docID;
-				double simscore = CosinSim.getInstance().calcSim(textMap.get(i).termFreq, textMap.get(j).termFreq);
-				dp.docID1=docid1;
-				dp.docID2=docid2;
-				dp.similarity = simscore;
-				result.add(dp);
-				
-				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-			}
-		}
-		
-		DBManager.getInstance().insertBulkToScoreTable(csvContent.toString());
-		
-		return result;
-	}
 }

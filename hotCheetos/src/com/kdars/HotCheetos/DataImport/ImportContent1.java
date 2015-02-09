@@ -1,11 +1,9 @@
 package com.kdars.HotCheetos.DataImport;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -13,51 +11,22 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-
+import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.PDFParser.PDFFileParser;
 
-
-public class FileDataImport implements ImportContent {
-
-	private static  FileDataImport fileDataImport = new FileDataImport();
-	public static FileDataImport getInstance(){
-		return	fileDataImport;
-	}
+public class ImportContent1 {
+	private String extractTextPattern = Configuration.getInstance().getTextPattern();
 	
-	@Override
-	public String importContent(int src) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String importDocument(String fileName) {
-		File file = new File(fileName); 
-		
-		char[] c = new char[(int) file.length()]; 
-		
-		try{
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "UTF8"));
-			br.read(c);
-			br.close();
-			
-		}catch(Exception e){
-			e.printStackTrace();
+	public ArrayList<Integer> importProcessor(ArrayList<File> zipFileList){
+		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+		for(File zipFile : zipFileList){
+			ArrayList<String> titleAndContent = unZipAndExtractContent(zipFile);
+			String title = titleAndContent.get(0);
+			String processedContent = extractOnlyText(titleAndContent.get(1));
+			docIDList.add(saveAndGetDocInfo(title, processedContent));
 		}
-		
-		String content =  new String(c);
-		
-		
-		//content = removeStopWord(content);
-		
-
-		return content;
+		return docIDList;
 	}
 	
 	private ArrayList<String> unZipAndExtractContent(File zipFile) {
@@ -132,16 +101,4 @@ public class FileDataImport implements ImportContent {
 	private int saveAndGetDocInfo(String title, String processedContent){
 		return DBManager.getInstance().insertRowAndGetDocIDArray(title, processedContent);
 	}
-	
-	public ArrayList<Integer> importProcessor(ArrayList<File> zipFileList){
-		ArrayList<Integer> docIDList = new ArrayList<Integer>();
-		for(File zipFile : zipFileList){
-			ArrayList<String> titleAndContent = unZipAndExtractContent(zipFile);
-			String title = titleAndContent.get(0);
-			String processedContent = extractOnlyText(titleAndContent.get(1));
-			docIDList.add(saveAndGetDocInfo(title, processedContent));
-		}
-		return docIDList;
-	}
-	
 }

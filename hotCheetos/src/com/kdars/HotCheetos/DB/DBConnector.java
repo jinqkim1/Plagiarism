@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.PairStructure.DocPair;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
@@ -135,6 +136,28 @@ public class DBConnector {
 		return docIDList;
 	}
 	
+	public Integer queryTextAsDocID(String title) {
+		int docID = 0;
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			String escapedTitle = escape(title);
+			resultSet = stmt.executeQuery("select " + docID + " from " + textTable + " where " + docTitle + " = \"" + escapedTitle + "\";");
+
+			while (resultSet.next()) {
+				docID = resultSet.getInt(1);
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return docID;
+	}
+	
 	public String queryText(int documentID){
 		String text = null;
 		ResultSet resultSet = null;
@@ -176,14 +199,14 @@ public class DBConnector {
 		return stopwordList;
 	}
 	
-	public boolean bulkInsertScore(String csvContent){
+	public boolean bulkInsertScore(String csvContent, String scoreTableName){
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + scoreTable + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE " + scoreTableName + " DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + scoreTable + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE " + scoreTableName + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -191,7 +214,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + scoreTable + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE " + scoreTableName + " ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -230,6 +253,41 @@ public class DBConnector {
 		return true;
 	}
 	
+	public ArrayList<DocPair> queryHighestPairs(ArrayList<Integer> docIDList, String scoreTableName){
+		ArrayList<DocPair> pairList = new ArrayList<DocPair>();
+		
+		ResultSet resultSet = null;
+		
+		try {
+			double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			StringBuilder queryMaker = new StringBuilder();
+			queryMaker.append("select * from " + scoreTableName + " where (");
+			for (int docid : docIDList){
+				queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
+			}
+			queryMaker.replace(queryMaker.length()-4, queryMaker.length(), ") and " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + simScore + " desc;");
+			
+			resultSet = stmt.executeQuery(queryMaker.toString());
+			
+			while (resultSet.next()){
+				DocPair pair = new DocPair();
+				pair.docID1 = resultSet.getInt(2);
+				pair.docID2 = resultSet.getInt(3);
+				pair.similarity = resultSet.getInt(4);
+				pairList.add(pair);
+			}
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return pairList;
+	}
+	
 	public ArrayList<ArrayList<Integer>> queryHighScoresForCluster(){
 		double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
 		ArrayList<ArrayList<Integer>> docIDLists = new ArrayList<ArrayList<Integer>>();
@@ -260,14 +318,14 @@ public class DBConnector {
 		return docIDLists;
 	}
 	
-	public boolean bulkInsertHash(String csvContent) {
+	public boolean bulkInsertHash(String csvContent, String invertedIndexTableName) {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + invertedIndexTable + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE " + invertedIndexTableName + " DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + invertedIndexTable + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE " + invertedIndexTableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -275,7 +333,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + invertedIndexTable + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE " + invertedIndexTableName + " ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -341,7 +399,7 @@ public class DBConnector {
 		return true;
 	}
 	
-	public ArrayList<DocumentInfo> queryDocInfoArray(ArrayList<Integer> docIDs) {
+	public ArrayList<DocumentInfo> queryMultipleDocInfoArray(ArrayList<Integer> docIDs, String invertedIndexTableName) {
 		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
 		ResultSet resultSet = null;
 		
@@ -351,20 +409,42 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTable + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';");
+				resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 				while(resultSet.next()){
 					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
 				}
 				docInfoArray.add(docInfo);
 				resultSet = null;
 			}
-			
+			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
 		return docInfoArray;
+	}
+	
+	public DocumentInfo queryDocInfoArray(int docid, String invertedIndexTableName) {
+		DocumentInfo docInfo = new DocumentInfo();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			docInfo.docID = docid;
+			resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+			while(resultSet.next()){
+				docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
+			}
+		
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		return docInfo;
 	}
 	
 	public ArrayList<DocumentInfo> queryDocInfoArrayWithTableName(ArrayList<Integer> docIDs, String tableName) {
@@ -385,7 +465,7 @@ public class DBConnector {
 				docInfoArray.add(docInfo);
 				resultSet = null;
 			}
-			
+			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -411,7 +491,7 @@ public class DBConnector {
 				docInfoArray.add(docInfo);
 				resultSet = null;
 			}
-			
+			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

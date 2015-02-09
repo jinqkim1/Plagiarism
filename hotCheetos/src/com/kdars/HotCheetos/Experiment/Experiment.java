@@ -9,7 +9,7 @@ import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_string;
 import com.kdars.HotCheetos.Parsing.Parse_noun_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse_noun_string;
-import com.kdars.HotCheetos.SimilarityScore.CosinSim;
+import com.kdars.HotCheetos.SimilarityScore.CosineSim;
 
 public class Experiment {
 	private static  Experiment experiment = new Experiment();
@@ -243,6 +243,7 @@ public class Experiment {
 		finall = System.currentTimeMillis();
 		System.out.println("hashing set의 모든 pair의 similarity 계산 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 		
+		
 	}
 	
 	public void experiment22(){
@@ -466,7 +467,8 @@ public class Experiment {
 				
 				int docid1 = docInfoList.get(i).docID;
 				int docid2 = docInfoList.get(j).docID;
-				double simscore = CosinSim.getInstance().calcSim(docInfoList.get(i).termFreq, docInfoList.get(j).termFreq);
+				CosineSim cosineSimilarity = new CosineSim();
+				double simscore = cosineSimilarity.calcSim(docInfoList.get(i).termFreq, docInfoList.get(j).termFreq);
 				
 				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 				

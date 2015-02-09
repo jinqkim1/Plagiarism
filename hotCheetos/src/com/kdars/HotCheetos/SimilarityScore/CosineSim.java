@@ -3,12 +3,8 @@ package com.kdars.HotCheetos.SimilarityScore;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class CosinSim implements CalcSimScore {
+public class CosineSim extends CalcSimScore {
 
-	private static  CosinSim cosinSim = new CosinSim();
-	public static CosinSim getInstance(){
-		return	cosinSim;
-	}
 	@Override
 	public double calcSim(HashMap<String, Integer> doc1, HashMap<String, Integer> doc2) {
 		

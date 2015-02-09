@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.PairStructure.DocPair;
 
 public class DBManager {
 	private static DBManager thisClass = new DBManager();
@@ -18,8 +19,51 @@ public class DBManager {
 		return	thisClass;
 	}
 	
+	private String convertIDtoName_Score(int scoreTableID){
+		if (scoreTableID == 1){
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE;
+		}else if( scoreTableID == 2){
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE1;
+		}else if(scoreTableID == 3){
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE2;
+		}
+		
+		return null;
+	}
+	
+	private String convertIDtoName_Location(int locationTableID){
+		if (locationTableID == 1){
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION;
+		}else if( locationTableID == 2){
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION1;
+		}else if(locationTableID == 3){
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION2;
+		}
+		
+		return null;
+	}
+	
+	private String convertIDtoName_InvertedIndex(int invertedIndexTableID){
+		if (invertedIndexTableID == 1){
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX;
+		}else if( invertedIndexTableID == 2){
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX1;
+		}else if(invertedIndexTableID == 3){
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX2;
+		}
+		
+		return null;
+	}
+	
 	public boolean insertRowToTextTable(String title, String text){
 		return DB.insertText(title, text);
+	}
+	
+	public Integer insertRowAndGetDocIDArray(String title, String processedContent){
+		if (DB.insertText(title, processedContent)){
+			return DB.queryTextAsDocID(title);
+		}
+		return null;
 	}
 	
 	public String getText(int documentID){
@@ -38,8 +82,30 @@ public class DBManager {
 		return DB.queryAllTextAsDocIDList();
 	}
 	
-	public boolean insertBulkToScoreTable(String csvContent){
-		return DB.bulkInsertScore(csvContent);
+	public boolean insertBulkToScoreTable(String csvContent, int scoreTableID){
+		String scoreTableName = convertIDtoName_Score(scoreTableID);
+		return DB.bulkInsertScore(csvContent, scoreTableName);
+	}
+	
+	public ArrayList<DocPair> getHighestPairs(ArrayList<Integer> docIDList, int scoreTableID){
+		String scoreTableName = convertIDtoName_Score(scoreTableID);
+//		int docListSizeLimit = Configuration.getInstance().getDocIDlistLimit();
+//		ArrayList<ArrayList<DocPair>> pairLists = new ArrayList<ArrayList<DocPair>>();
+//		
+//		while(!docIDList.isEmpty()){  //docIDList size가 너무 크면 query가 너무 길어질 가능성이 있기 때문에 잘라서 query 실행하도록 함.
+//			
+//			if (docIDList.size() <= docListSizeLimit){
+//				pairLists.add(DB.queryHighestPairs(docIDList, scoreTableName));
+//				docIDList.clear();
+//			}
+//			
+//			ArrayList<Integer> subList = (ArrayList<Integer>) docIDList.subList(0, docListSizeLimit - 1);
+//			pairLists.add(DB.queryHighestPairs(subList, scoreTableName));
+//			
+//			docIDList = (ArrayList<Integer>) docIDList.subList(docListSizeLimit, docIDList.size() - 1);
+//		}
+		
+		return DB.queryHighestPairs(docIDList, scoreTableName);
 	}
 	
 	public boolean insertBulkToScoreTableWithTableName(String csvContent, String tableName){
@@ -50,7 +116,9 @@ public class DBManager {
 		return DB.queryHighScoresForCluster();
 	}
 	
-	public boolean insertBulkToHashTable(DocumentInfo docInfo){
+	public boolean insertBulkToHashTable(DocumentInfo docInfo, int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
 		
@@ -60,7 +128,7 @@ public class DBManager {
 			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
 			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
-				if(!DB.bulkInsertHash(csvContent.toString())){
+				if(!DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName)){
 					System.out.println("Similarity score bulk insert failed.");
 				}
 				bulkInsertLimitChecker = 0;
@@ -68,7 +136,7 @@ public class DBManager {
 			}
 		}
 		
-		return DB.bulkInsertHash(csvContent.toString());
+		return DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName);
 	}
 	
 	public boolean insertBulkToHashTableWithTableName(DocumentInfo docInfo, String tableName){
@@ -120,8 +188,14 @@ public class DBManager {
 		return DB.queryStopwords();
 	}
 
-	public ArrayList<DocumentInfo> getDocInfoArray(ArrayList<Integer> docIDs) {
-		return DB.queryDocInfoArray(docIDs);
+	public ArrayList<DocumentInfo> getMultipleDocInfoArray(ArrayList<Integer> docIDs, int invertedIndexTableID) {
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		return DB.queryMultipleDocInfoArray(docIDs, invertedIndexTableName);
+	}
+
+	public DocumentInfo getDocInfoArray(int docid, int invertedIndexTableID) {
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		return DB.queryDocInfoArray(docid, invertedIndexTableName);
 	}
 	
 	public ArrayList<DocumentInfo> getDocInfoArrayWithTableName(ArrayList<Integer> docIDs, String tableName) {

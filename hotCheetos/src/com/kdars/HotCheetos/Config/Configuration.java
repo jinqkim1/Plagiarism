@@ -52,6 +52,13 @@ public class Configuration {
 	}
 	/* Similarity score threshold setting for clustering */
 	
+	/* docID list size limit to prevent long queries in similarity score retrieval */
+	private int docIDlistLimit = 500;
+	public int getDocIDlistLimit(){
+		return this.docIDlistLimit;
+	}
+	/* docID list size limit to prevent long queries in similarity score retrieval */
+	
 	/* Characters to be extracted */
 	//영어, 한글, whitespace, 마침표만 남기고 나머지는 다 버림.
 	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
@@ -66,10 +73,19 @@ public class Configuration {
 	public final String DB_USER_ID = "root";
 	public final String DB_USER_PASS = "jinqkim69";
 	public final String DB_TABLE_NAME_TEXT = "texttable";
-	public final String DB_TABLE_NAME_INDEX = "invertedindextable";
 	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
+	
+	public final String DB_TABLE_NAME_INDEX = "invertedindextable";
 	public final String DB_TABLE_NAME_LOCATION = "charlocationtable";
 	public final String DB_TABLE_NAME_SCORE = "simscoretable";
+	
+	public final String DB_TABLE_NAME_INDEX1 = "invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION1 = "charlocationtable";
+	public final String DB_TABLE_NAME_SCORE1 = "simscoretable";
+	
+	public final String DB_TABLE_NAME_INDEX2 = "invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION2 = "charlocationtable";
+	public final String DB_TABLE_NAME_SCORE2 = "simscoretable";
 	/* DB Connect Info */
 	
 }

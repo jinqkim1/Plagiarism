@@ -11,7 +11,6 @@ import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_noun_hashcode implements Parse {
-	
 	private static Parse_noun_hashcode parse_noun_hashcode = new Parse_noun_hashcode();
 
 	public static Parse_noun_hashcode getInstance() {
