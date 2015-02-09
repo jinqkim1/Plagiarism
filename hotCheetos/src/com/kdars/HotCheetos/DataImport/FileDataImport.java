@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +72,7 @@ public class FileDataImport implements ImportContent {
 			}
 
 			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile), Charset.forName("UTF8"));
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
 
@@ -93,16 +94,12 @@ public class FileDataImport implements ImportContent {
 				fos.close();
 				ze = zis.getNextEntry();
 				
-				
-				double initial = System.currentTimeMillis();
-				double finall = System.currentTimeMillis();	
-				
-				initial = System.currentTimeMillis();
 				String content = PDFFileParser.getInstance().PdfFileParser(outputFolder + File.separator + fileName);
-				finall = System.currentTimeMillis();
-				System.out.println("pdf parsing 하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
-				System.out.println(content);
 				
+				File forDelete = new File(outputFolder + File.separator + fileName);
+				if(forDelete.exists()){
+					forDelete.delete();
+				}
 				
 			}
 

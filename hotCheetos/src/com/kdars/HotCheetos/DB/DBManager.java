@@ -3,6 +3,7 @@ package com.kdars.HotCheetos.DB;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class DBManager {
@@ -49,8 +50,66 @@ public class DBManager {
 		return DB.queryHighScoresForCluster();
 	}
 	
-	public boolean insertBulkToHashTable(String csvContent){
-		return DB.bulkInsertHash(csvContent);
+	public boolean insertBulkToHashTable(DocumentInfo docInfo){
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docInfo.docID);
+		
+		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimitChecker = 0;
+		for (String termHash : docInfo.termFreq.keySet()){
+			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+			bulkInsertLimitChecker++;
+			if(bulkInsertLimitChecker == bulkInsertLimit){
+				if(!DB.bulkInsertHash(csvContent.toString())){
+					System.out.println("Similarity score bulk insert failed.");
+				}
+				bulkInsertLimitChecker = 0;
+				csvContent.delete(0,csvContent.length());
+			}
+		}
+		
+		return DB.bulkInsertHash(csvContent.toString());
+	}
+	
+	public boolean insertBulkToHashTableWithTableName(DocumentInfo docInfo, String tableName){
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docInfo.docID);
+		
+		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimitChecker = 0;
+		for (String termHash : docInfo.termFreq.keySet()){
+			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+			bulkInsertLimitChecker++;
+			if(bulkInsertLimitChecker == bulkInsertLimit){
+				if(!DB.bulkInsertHashWithTableName(csvContent.toString(), tableName)){
+					System.out.println("Similarity score bulk insert failed.");
+				}
+				bulkInsertLimitChecker = 0;
+				csvContent.delete(0,csvContent.length());
+			}
+		}
+		
+		return DB.bulkInsertHashWithTableName(csvContent.toString(), tableName);
+	}
+	
+	public boolean insertBulkToHashTableWithStringTableName(DocumentInfo docInfo, String tableName){
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docInfo.docID);
+		
+		int bulkInsertLimit = Configuration.getInstance().getbulkLimit();
+		int bulkInsertLimitChecker = 0;
+		for (String termHash : docInfo.termFreq.keySet()){
+			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+			if(bulkInsertLimitChecker == bulkInsertLimit){
+				if(!DB.bulkInsertHashWithStringTableName(csvContent.toString(), tableName)){
+					System.out.println("Similarity score bulk insert failed.");
+				}
+				bulkInsertLimitChecker = 0;
+				csvContent.delete(0,csvContent.length());
+			}
+		}
+		
+		return DB.bulkInsertHashWithStringTableName(csvContent.toString(), tableName);
 	}
 	
 	public boolean insertBulkToLocationTable(String csvContent){
@@ -59,6 +118,18 @@ public class DBManager {
 	
 	public ArrayList<String> getStopwords(){
 		return DB.queryStopwords();
+	}
+
+	public ArrayList<DocumentInfo> getDocInfoArray(ArrayList<Integer> docIDs) {
+		return DB.queryDocInfoArray(docIDs);
+	}
+	
+	public ArrayList<DocumentInfo> getDocInfoArrayWithTableName(ArrayList<Integer> docIDs, String tableName) {
+		return DB.queryDocInfoArrayWithTableName(docIDs, tableName);
+	}
+	
+	public ArrayList<DocumentInfo> getDocInfoArrayWithStringTableName(ArrayList<Integer> docIDs, String tableName) {
+		return DB.queryDocInfoArrayWithStringTableName(docIDs, tableName);
 	}
 	
 }

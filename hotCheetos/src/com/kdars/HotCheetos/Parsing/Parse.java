@@ -10,7 +10,7 @@ import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 public interface Parse {
 	public int nGramSetting = Configuration.getInstance().getNgramSetting();
 	public int substringSetting = Configuration.getInstance().getSubstringSetting();
-	public int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+//	public int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
 	public ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
 	
 	public DocumentInfo parseDoc(String content, int documentID);

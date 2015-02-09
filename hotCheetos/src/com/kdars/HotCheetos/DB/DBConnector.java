@@ -287,6 +287,139 @@ public class DBConnector {
 		return true;
 	}
 	
+	public boolean bulkInsertHashWithTableName(String csvContent, String tableName) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean bulkInsertHashWithStringTableName(String csvContent, String tableName) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + "," + "Term" + "," + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public ArrayList<DocumentInfo> queryDocInfoArray(ArrayList<Integer> docIDs) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTable + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';");
+				while(resultSet.next()){
+					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
+	public ArrayList<DocumentInfo> queryDocInfoArrayWithTableName(ArrayList<Integer> docIDs, String tableName) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				String sql = "select " + hashcode + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';";
+				resultSet = stmt.executeQuery(sql);
+				while(resultSet.next()){
+					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
+	public ArrayList<DocumentInfo> queryDocInfoArrayWithStringTableName(ArrayList<Integer> docIDs, String tableName) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				resultSet = stmt.executeQuery("select " + "Term" + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docID) + "';");
+				while(resultSet.next()){
+					docInfo.termFreq.put(resultSet.getString(1), resultSet.getInt(2));
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
 	public boolean bulkInsertLocation(String csvContent) {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();

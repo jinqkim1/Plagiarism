@@ -11,7 +11,7 @@ import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_noun_hashcode implements Parse {
-
+	
 	private static Parse_noun_hashcode parse_noun_hashcode = new Parse_noun_hashcode();
 
 	public static Parse_noun_hashcode getInstance() {
@@ -39,7 +39,7 @@ public class Parse_noun_hashcode implements Parse {
 	}
 
 	public DocumentInfo addHash(DocumentInfo docInfo, int hash) {
-		if (hash % fingerprintSetting != 0) {
+		if (hash % Configuration.getInstance().getFingerprintSetting() != 0) {
 			return docInfo;
 		}
 		String hashToString = String.valueOf(hash);
@@ -110,5 +110,39 @@ public class Parse_noun_hashcode implements Parse {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public boolean parseDocJINKYUWithTableName(String content, int documentID, String tableName) {
+		DocumentInfo docInfo = new DocumentInfo();
+		docInfo.docID = documentID;
+
+		String wordList[] = content.trim().split("\\s+");
+
+		for (int i = 0; i < wordList.length; i++) {
+			int postFixChecker = wordList[i].length();
+			String word = deletePostFix(wordList[i]);
+			if (word.length() != postFixChecker) {
+				docInfo = addHash(docInfo, word.hashCode());
+			}
+		}
+		return DBManager.getInstance().insertBulkToHashTableWithTableName(docInfo, tableName);
+	}
+	
+	public boolean parseDocSetWithDocIDArrayJINKYUWithTableName(ArrayList<Integer> docIDs, String tableName) {
+		boolean jobCompleteChecker = true;
+		
+		for (int docid : docIDs){
+			String content = DBManager.getInstance().getText(docid);
+			if (!parseDocJINKYUWithTableName(content, docid, tableName)){
+				jobCompleteChecker = false;
+			}
+		}
+		
+		return jobCompleteChecker;
+	}
+	
+	public ArrayList<DocumentInfo> getParsedDocsWithTableName(ArrayList<Integer> docIDs, String tableName){
+		return DBManager.getInstance().getDocInfoArrayWithTableName(docIDs, tableName);
+	}
+	
 
 }

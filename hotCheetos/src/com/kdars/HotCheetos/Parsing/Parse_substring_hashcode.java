@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_substring_hashcode implements Parse{
-
+	
+	
+	public int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	
+	
 	private static  Parse_substring_hashcode parse_substring_hashcode = new Parse_substring_hashcode();
 	public static Parse_substring_hashcode getInstance(){
 		return	parse_substring_hashcode;
