@@ -105,8 +105,6 @@ public class Workflow {
 	private boolean memoryProbSolved(ArrayList<Integer> docIDList, ArrayList<Integer> corpusDocIDArray, int invertedIndexTableID, int scoreTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
 		
-		
-		//intra 문제 해결 필요.
 		ArrayList<DocumentInfo> docInfoListForIntra = new ArrayList<DocumentInfo>();
 		while (!docIDList.isEmpty()){
 			
