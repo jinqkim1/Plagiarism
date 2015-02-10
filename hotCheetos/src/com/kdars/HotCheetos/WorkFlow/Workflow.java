@@ -114,4 +114,41 @@ public class Workflow {
 		return highestPairList;
 	}
 	
+	public void memoryProbSolved(ArrayList<Integer> docIDList, int invertedIndexTableID, int scoreTableID){
+		int memoryLimit = Configuration.getInstance().getFileListLimit();
+		
+		//intra 문제 해결 필요.
+		//inter 진행 시 memory 문제 해결 필요.
+		while (!docIDList.isEmpty()){
+			
+			if(docIDList.size() <= memoryLimit){
+				Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
+				ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
+				CosineSim cosineSimilarity = new CosineSim();
+				if (!cosineSimilarity.interCalcSimSet(docInfoList, scoreTableID, invertedIndexTableID)){
+					System.out.println("Inter score 저장 실패.");
+				}
+				if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
+					System.out.println("Intra score 저장 실패.");
+				}
+				docIDList.clear();
+				continue;
+			}
+			
+			ArrayList<Integer> segmentedDocIDList = (ArrayList<Integer>) docIDList.subList(0, memoryLimit - 1);
+			Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
+			ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(segmentedDocIDList, invertedIndexTableID);
+			CosineSim cosineSimilarity = new CosineSim();
+			if (!cosineSimilarity.interCalcSimSet(docInfoList, scoreTableID, invertedIndexTableID)){
+				System.out.println("Inter score 저장 실패.");
+			}
+			if (!cosineSimilarity.intraCalcSimSet(docInfoList, scoreTableID)){
+				System.out.println("Intra score 저장 실패.");
+			}
+			
+			docIDList = (ArrayList<Integer>) docIDList.subList(memoryLimit, docIDList.size() - 1);
+			
+		}
+
+	}
 }
