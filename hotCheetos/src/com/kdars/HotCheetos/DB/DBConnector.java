@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
@@ -254,6 +255,7 @@ public class DBConnector {
 	}
 	
 	public ArrayList<DocPair> queryHighestPairs(ArrayList<Integer> docIDList, String scoreTableName){
+		int docIDSizeLimit = Configuration.getInstance().getDocIDListLimit();
 		ArrayList<DocPair> pairList = new ArrayList<DocPair>();
 		
 		ResultSet resultSet = null;
@@ -261,23 +263,51 @@ public class DBConnector {
 		try {
 			double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			StringBuilder queryMaker = new StringBuilder();
-			queryMaker.append("select * from " + scoreTableName + " where (");
-			for (int docid : docIDList){
-				queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
+			while (!docIDList.isEmpty()){
+				if (docIDList.size() <= docIDSizeLimit){
+					StringBuilder queryMaker = new StringBuilder();
+					queryMaker.append("select * from " + scoreTableName + " where (");
+					for (int docid : docIDList){
+						queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
+					}
+					queryMaker.replace(queryMaker.length()-4, queryMaker.length(), ") and " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + simScore + " desc;");
+					
+					resultSet = stmt.executeQuery(queryMaker.toString());
+					
+					while (resultSet.next()){
+						DocPair pair = new DocPair();
+						pair.docID1 = resultSet.getInt(2);
+						pair.docID2 = resultSet.getInt(3);
+						pair.similarity = resultSet.getInt(4);
+						pairList.add(pair);
+					}
+					
+					docIDList.clear();
+					continue;
+				}
+				
+				ArrayList<Integer> segmentedDocIDList = (ArrayList<Integer>) docIDList.subList(0, docIDSizeLimit - 1);
+				StringBuilder queryMaker = new StringBuilder();
+				queryMaker.append("select * from " + scoreTableName + " where (");
+				for (int docid : segmentedDocIDList){
+					queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
+				}
+				queryMaker.replace(queryMaker.length()-4, queryMaker.length(), ") and " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + simScore + " desc;");
+				
+				resultSet = stmt.executeQuery(queryMaker.toString());
+				
+				while (resultSet.next()){
+					DocPair pair = new DocPair();
+					pair.docID1 = resultSet.getInt(2);
+					pair.docID2 = resultSet.getInt(3);
+					pair.similarity = resultSet.getInt(4);
+					pairList.add(pair);
+				}
+				
+				docIDList = (ArrayList<Integer>) docIDList.subList(docIDSizeLimit, docIDList.size() - 1);
 			}
-			queryMaker.replace(queryMaker.length()-4, queryMaker.length(), ") and " + simScore + " >= '" + String.valueOf(simScoreThreshold) + "' order by " + simScore + " desc;");
 			
-			resultSet = stmt.executeQuery(queryMaker.toString());
-			
-			while (resultSet.next()){
-				DocPair pair = new DocPair();
-				pair.docID1 = resultSet.getInt(2);
-				pair.docID2 = resultSet.getInt(3);
-				pair.similarity = resultSet.getInt(4);
-				pairList.add(pair);
-			}
-			
+			Collections.sort(pairList, DocPair.DocPairComparator);
 			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

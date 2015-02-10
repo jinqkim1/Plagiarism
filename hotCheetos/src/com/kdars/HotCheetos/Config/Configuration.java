@@ -51,17 +51,17 @@ public class Configuration {
 		return this.fileListLimit;
 	}
 	
-	private int docIDListLimit = 500; //docID list size limit to prevent long queries in similarity score retrieval.
+	private int docIDListLimit = 100; //docID list size limit to prevent long queries in similarity score retrieval.
 	public int getDocIDListLimit(){
 		return this.docIDListLimit;
 	}
 	
-	private int docInfoListLimit = 500; //Document Info의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 없앰.
+	private int docInfoListLimit = 100; //Document Info의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
 	public int getDocInfoListLimit(){
 		return this.docInfoListLimit;
 	}
 	
-	private int bulkScoreLimit = 500000; //DB에 저장할 score의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 없앰.
+	private int bulkScoreLimit = 500000; //DB에 저장할 score의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
 	public int getbulkScoreLimit(){
 		return this.bulkScoreLimit;
 	}
