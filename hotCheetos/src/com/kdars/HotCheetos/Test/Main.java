@@ -60,6 +60,10 @@ public class Main {
 		
 		Workflow workflowForExperiment = new Workflow();
 		
+		
+//		workflowForExperiment.workFlowExperiment(51, 10, 1);
+		
+		
 		int i = 0;
 		for(int j = 3; j < 11 ; j++){
 			i++;

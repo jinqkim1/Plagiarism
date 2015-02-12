@@ -550,6 +550,7 @@ public class DBManager {
 					csvContent.delete(0,csvContent.length());
 				}
 			}
+
 			return DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName);
 		}
 		
