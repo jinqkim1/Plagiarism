@@ -288,7 +288,7 @@ public class DBConnector {
 					continue;
 				}
 				
-				ArrayList<Integer> segmentedDocIDList = (ArrayList<Integer>) docIDList.subList(0, docIDSizeLimit - 1);
+				ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(docIDList.subList(0, docIDSizeLimit - 1));
 				StringBuilder queryMaker = new StringBuilder();
 				queryMaker.append("select * from `" + scoreTableName + "` where (");
 				for (int docid : segmentedDocIDList){
@@ -306,7 +306,7 @@ public class DBConnector {
 					pairList.add(pair);
 				}
 				
-				docIDList = (ArrayList<Integer>) docIDList.subList(docIDSizeLimit, docIDList.size() - 1);
+				docIDList = new ArrayList<Integer>(docIDList.subList(docIDSizeLimit, docIDList.size() - 1));
 			}
 			
 			Collections.sort(pairList, DocPair.DocPairComparator);
