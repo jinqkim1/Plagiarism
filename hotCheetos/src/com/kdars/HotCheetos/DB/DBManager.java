@@ -20,36 +20,450 @@ public class DBManager {
 	}
 	
 	private String convertIDtoName_Score(int scoreTableID){
-		if (scoreTableID == 1){
-			return Configuration.getInstance().DB_TABLE_NAME_SCORE;
-		}else if( scoreTableID == 2){
+		if (scoreTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_SCORE1;
-		}else if(scoreTableID == 3){
+		} else if (scoreTableID == 2) {
 			return Configuration.getInstance().DB_TABLE_NAME_SCORE2;
+		} else if (scoreTableID == 3) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE3;
+		} else if (scoreTableID == 4) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE4;
+		} else if (scoreTableID == 5) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE5;
+		} else if (scoreTableID == 6) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE6;
+		} else if (scoreTableID == 7) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE7;
+		} else if (scoreTableID == 8) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE8;
+		} else if (scoreTableID == 9) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE9;
+		} else if (scoreTableID == 10) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE10;
+		} else if (scoreTableID == 11) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE11;
+		} else if (scoreTableID == 12) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE12;
+		} else if (scoreTableID == 13) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE13;
+		} else if (scoreTableID == 14) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE14;
+		} else if (scoreTableID == 15) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE15;
+		} else if (scoreTableID == 16) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE16;
+		} else if (scoreTableID == 17) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE17;
+		} else if (scoreTableID == 18) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE18;
+		} else if (scoreTableID == 19) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE19;
+		} else if (scoreTableID == 20) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE20;
+		} else if (scoreTableID == 21) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE21;
+		} else if (scoreTableID == 22) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE22;
+		} else if (scoreTableID == 23) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE23;
+		} else if (scoreTableID == 24) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE24;
+		} else if (scoreTableID == 25) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE25;
+		} else if (scoreTableID == 26) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE26;
+		} else if (scoreTableID == 27) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE27;
+		} else if (scoreTableID == 28) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE28;
+		} else if (scoreTableID == 29) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE29;
+		} else if (scoreTableID == 30) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE30;
+		} else if (scoreTableID == 31) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE31;
+		} else if (scoreTableID == 32) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE32;
+		} else if (scoreTableID == 33) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE33;
+		} else if (scoreTableID == 34) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE34;
+		} else if (scoreTableID == 35) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE35;
+		} else if (scoreTableID == 36) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE36;
+		} else if (scoreTableID == 37) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE37;
+		} else if (scoreTableID == 38) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE38;
+		} else if (scoreTableID == 39) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE39;
+		} else if (scoreTableID == 40) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE40;
+		} else if (scoreTableID == 41) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE41;
+		} else if (scoreTableID == 42) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE42;
+		} else if (scoreTableID == 43) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE43;
+		} else if (scoreTableID == 44) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE44;
+		} else if (scoreTableID == 45) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE45;
+		} else if (scoreTableID == 46) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE46;
+		} else if (scoreTableID == 47) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE47;
+		} else if (scoreTableID == 48) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE48;
+		} else if (scoreTableID == 49) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE49;
+		} else if (scoreTableID == 50) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE50;
+		} else if (scoreTableID == 51) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE51;
+		} else if (scoreTableID == 52) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE52;
+		} else if (scoreTableID == 53) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE53;
+		} else if (scoreTableID == 54) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE54;
+		} else if (scoreTableID == 55) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE55;
+		} else if (scoreTableID == 56) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE56;
+		} else if (scoreTableID == 57) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE57;
+		} else if (scoreTableID == 58) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE58;
+		} else if (scoreTableID == 59) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE59;
+		} else if (scoreTableID == 60) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE60;
+		} else if (scoreTableID == 61) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE61;
+		} else if (scoreTableID == 62) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE62;
+		} else if (scoreTableID == 63) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE63;
+		} else if (scoreTableID == 64) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE64;
+		} else if (scoreTableID == 65) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE65;
+		} else if (scoreTableID == 66) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE66;
+		} else if (scoreTableID == 67) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE67;
+		} else if (scoreTableID == 68) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE68;
+		} else if (scoreTableID == 69) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE69;
+		} else if (scoreTableID == 70) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE70;
+		} else if (scoreTableID == 71) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE71;
+		} else if (scoreTableID == 72) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE72;
 		}
 		
 		return null;
 	}
 	
 	private String convertIDtoName_Location(int locationTableID){
-		if (locationTableID == 1){
-			return Configuration.getInstance().DB_TABLE_NAME_LOCATION;
-		}else if( locationTableID == 2){
+		if (locationTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_LOCATION1;
-		}else if(locationTableID == 3){
+		} else if (locationTableID == 2) {
 			return Configuration.getInstance().DB_TABLE_NAME_LOCATION2;
+		} else if (locationTableID == 3) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION3;
+		} else if (locationTableID == 4) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION4;
+		} else if (locationTableID == 5) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION5;
+		} else if (locationTableID == 6) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION6;
+		} else if (locationTableID == 7) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION7;
+		} else if (locationTableID == 8) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION8;
+		} else if (locationTableID == 9) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION9;
+		} else if (locationTableID == 10) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION10;
+		} else if (locationTableID == 11) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION11;
+		} else if (locationTableID == 12) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION12;
+		} else if (locationTableID == 13) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION13;
+		} else if (locationTableID == 14) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION14;
+		} else if (locationTableID == 15) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION15;
+		} else if (locationTableID == 16) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION16;
+		} else if (locationTableID == 17) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION17;
+		} else if (locationTableID == 18) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION18;
+		} else if (locationTableID == 19) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION19;
+		} else if (locationTableID == 20) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION20;
+		} else if (locationTableID == 21) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION21;
+		} else if (locationTableID == 22) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION22;
+		} else if (locationTableID == 23) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION23;
+		} else if (locationTableID == 24) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION24;
+		} else if (locationTableID == 25) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION25;
+		} else if (locationTableID == 26) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION26;
+		} else if (locationTableID == 27) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION27;
+		} else if (locationTableID == 28) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION28;
+		} else if (locationTableID == 29) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION29;
+		} else if (locationTableID == 30) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION30;
+		} else if (locationTableID == 31) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION31;
+		} else if (locationTableID == 32) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION32;
+		} else if (locationTableID == 33) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION33;
+		} else if (locationTableID == 34) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION34;
+		} else if (locationTableID == 35) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION35;
+		} else if (locationTableID == 36) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION36;
+		} else if (locationTableID == 37) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION37;
+		} else if (locationTableID == 38) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION38;
+		} else if (locationTableID == 39) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION39;
+		} else if (locationTableID == 40) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION40;
+		} else if (locationTableID == 41) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION41;
+		} else if (locationTableID == 42) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION42;
+		} else if (locationTableID == 43) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION43;
+		} else if (locationTableID == 44) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION44;
+		} else if (locationTableID == 45) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION45;
+		} else if (locationTableID == 46) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION46;
+		} else if (locationTableID == 47) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION47;
+		} else if (locationTableID == 48) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION48;
+		} else if (locationTableID == 49) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION49;
+		} else if (locationTableID == 50) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION50;
+		} else if (locationTableID == 51) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION51;
+		} else if (locationTableID == 52) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION52;
+		} else if (locationTableID == 53) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION53;
+		} else if (locationTableID == 54) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION54;
+		} else if (locationTableID == 55) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION55;
+		} else if (locationTableID == 56) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION56;
+		} else if (locationTableID == 57) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION57;
+		} else if (locationTableID == 58) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION58;
+		} else if (locationTableID == 59) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION59;
+		} else if (locationTableID == 60) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION60;
+		} else if (locationTableID == 61) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION61;
+		} else if (locationTableID == 62) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION62;
+		} else if (locationTableID == 63) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION63;
+		} else if (locationTableID == 64) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION64;
+		} else if (locationTableID == 65) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION65;
+		} else if (locationTableID == 66) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION66;
+		} else if (locationTableID == 67) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION67;
+		} else if (locationTableID == 68) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION68;
+		} else if (locationTableID == 69) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION69;
+		} else if (locationTableID == 70) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION70;
+		} else if (locationTableID == 71) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION71;
+		} else if (locationTableID == 72) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION72;
 		}
 		
 		return null;
 	}
 	
 	private String convertIDtoName_InvertedIndex(int invertedIndexTableID){
-		if (invertedIndexTableID == 1){
-			return Configuration.getInstance().DB_TABLE_NAME_INDEX;
-		}else if( invertedIndexTableID == 2){
+		if (invertedIndexTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_INDEX1;
-		}else if(invertedIndexTableID == 3){
+		} else if (invertedIndexTableID == 2) {
 			return Configuration.getInstance().DB_TABLE_NAME_INDEX2;
+		} else if (invertedIndexTableID == 3) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX3;
+		} else if (invertedIndexTableID == 4) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX4;
+		} else if (invertedIndexTableID == 5) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX5;
+		} else if (invertedIndexTableID == 6) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX6;
+		} else if (invertedIndexTableID == 7) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX7;
+		} else if (invertedIndexTableID == 8) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX8;
+		} else if (invertedIndexTableID == 9) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX9;
+		} else if (invertedIndexTableID == 10) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX10;
+		} else if (invertedIndexTableID == 11) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX11;
+		} else if (invertedIndexTableID == 12) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX12;
+		} else if (invertedIndexTableID == 13) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX13;
+		} else if (invertedIndexTableID == 14) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX14;
+		} else if (invertedIndexTableID == 15) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX15;
+		} else if (invertedIndexTableID == 16) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX16;
+		} else if (invertedIndexTableID == 17) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX17;
+		} else if (invertedIndexTableID == 18) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX18;
+		} else if (invertedIndexTableID == 19) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX19;
+		} else if (invertedIndexTableID == 20) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX20;
+		} else if (invertedIndexTableID == 21) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX21;
+		} else if (invertedIndexTableID == 22) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX22;
+		} else if (invertedIndexTableID == 23) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX23;
+		} else if (invertedIndexTableID == 24) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX24;
+		} else if (invertedIndexTableID == 25) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX25;
+		} else if (invertedIndexTableID == 26) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX26;
+		} else if (invertedIndexTableID == 27) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX27;
+		} else if (invertedIndexTableID == 28) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX28;
+		} else if (invertedIndexTableID == 29) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX29;
+		} else if (invertedIndexTableID == 30) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX30;
+		} else if (invertedIndexTableID == 31) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX31;
+		} else if (invertedIndexTableID == 32) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX32;
+		} else if (invertedIndexTableID == 33) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX33;
+		} else if (invertedIndexTableID == 34) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX34;
+		} else if (invertedIndexTableID == 35) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX35;
+		} else if (invertedIndexTableID == 36) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX36;
+		} else if (invertedIndexTableID == 37) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX37;
+		} else if (invertedIndexTableID == 38) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX38;
+		} else if (invertedIndexTableID == 39) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX39;
+		} else if (invertedIndexTableID == 40) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX40;
+		} else if (invertedIndexTableID == 41) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX41;
+		} else if (invertedIndexTableID == 42) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX42;
+		} else if (invertedIndexTableID == 43) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX43;
+		} else if (invertedIndexTableID == 44) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX44;
+		} else if (invertedIndexTableID == 45) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX45;
+		} else if (invertedIndexTableID == 46) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX46;
+		} else if (invertedIndexTableID == 47) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX47;
+		} else if (invertedIndexTableID == 48) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX48;
+		} else if (invertedIndexTableID == 49) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX49;
+		} else if (invertedIndexTableID == 50) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX50;
+		} else if (invertedIndexTableID == 51) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX51;
+		} else if (invertedIndexTableID == 52) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX52;
+		} else if (invertedIndexTableID == 53) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX53;
+		} else if (invertedIndexTableID == 54) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX54;
+		} else if (invertedIndexTableID == 55) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX55;
+		} else if (invertedIndexTableID == 56) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX56;
+		} else if (invertedIndexTableID == 57) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX57;
+		} else if (invertedIndexTableID == 58) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX58;
+		} else if (invertedIndexTableID == 59) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX59;
+		} else if (invertedIndexTableID == 60) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX60;
+		} else if (invertedIndexTableID == 61) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX61;
+		} else if (invertedIndexTableID == 62) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX62;
+		} else if (invertedIndexTableID == 63) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX63;
+		} else if (invertedIndexTableID == 64) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX64;
+		} else if (invertedIndexTableID == 65) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX65;
+		} else if (invertedIndexTableID == 66) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX66;
+		} else if (invertedIndexTableID == 67) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX67;
+		} else if (invertedIndexTableID == 68) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX68;
+		} else if (invertedIndexTableID == 69) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX69;
+		} else if (invertedIndexTableID == 70) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX70;
+		} else if (invertedIndexTableID == 71) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX71;
+		} else if (invertedIndexTableID == 72) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX72;
 		}
 		
 		return null;
@@ -118,6 +532,26 @@ public class DBManager {
 	
 	public boolean insertBulkToHashTable(DocumentInfo docInfo, int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(invertedIndexTableName.contains("string")){
+			StringBuilder csvContent = new StringBuilder();
+			String docIDString = String.valueOf(docInfo.docID);
+			
+			int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
+			int bulkInsertLimitChecker = 0;
+			for (String termHash : docInfo.termFreq.keySet()){
+				csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+				bulkInsertLimitChecker++;
+				if(bulkInsertLimitChecker == bulkInsertLimit){
+					if(!DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName)){
+						System.out.println("Similarity score bulk insert failed.");
+					}
+					bulkInsertLimitChecker = 0;
+					csvContent.delete(0,csvContent.length());
+				}
+			}
+			return DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName);
+		}
 		
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
@@ -190,6 +624,11 @@ public class DBManager {
 
 	public ArrayList<DocumentInfo> getMultipleDocInfoArray(ArrayList<Integer> docIDs, int invertedIndexTableID) {
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(invertedIndexTableName.contains("string")){
+			return DB.queryMultipleDocInfoArrayWithString(docIDs, invertedIndexTableName);
+		}
+		
 		return DB.queryMultipleDocInfoArray(docIDs, invertedIndexTableName);
 	}
 

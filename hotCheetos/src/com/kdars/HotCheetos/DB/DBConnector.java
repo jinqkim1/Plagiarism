@@ -33,11 +33,13 @@ public class DBConnector {
 	private String identifierForIndexTable = "Index";
 	private String hashingDocID = "DocID";
 	private String hashcode = "Hashcode";
+	private String term = "Term";
 	private String termFreq = "TermFrequency";
 	
 	private String locationTable = Configuration.getInstance().DB_TABLE_NAME_LOCATION;
 	private String identifierForLocationTable = "Index";
 	private String locationDocID = "DocID";
+	private String termForLocation = "Term";
 	private String hashcodeForLocation = "Hashcode";
 	private String locationWithinDoc = "LocationWithinDoc";
 	
@@ -204,10 +206,10 @@ public class DBConnector {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + scoreTableName + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE `" + scoreTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + scoreTableName + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + scoreTableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -215,7 +217,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + scoreTableName + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE `" + scoreTableName + "` ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -231,10 +233,10 @@ public class DBConnector {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -242,7 +244,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE `" + tableName + "` ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -266,7 +268,7 @@ public class DBConnector {
 			while (!docIDList.isEmpty()){
 				if (docIDList.size() <= docIDSizeLimit){
 					StringBuilder queryMaker = new StringBuilder();
-					queryMaker.append("select * from " + scoreTableName + " where (");
+					queryMaker.append("select * from `" + scoreTableName + "` where (");
 					for (int docid : docIDList){
 						queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
 					}
@@ -288,7 +290,7 @@ public class DBConnector {
 				
 				ArrayList<Integer> segmentedDocIDList = (ArrayList<Integer>) docIDList.subList(0, docIDSizeLimit - 1);
 				StringBuilder queryMaker = new StringBuilder();
-				queryMaker.append("select * from " + scoreTableName + " where (");
+				queryMaker.append("select * from `" + scoreTableName + "` where (");
 				for (int docid : segmentedDocIDList){
 					queryMaker.append(compare + " = " + docid + " or " + beComparedWith + " = " + docid + " or ");
 				}
@@ -352,10 +354,10 @@ public class DBConnector {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + invertedIndexTableName + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + invertedIndexTableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -363,7 +365,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + invertedIndexTableName + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -375,14 +377,14 @@ public class DBConnector {
 		return true;
 	}
 	
-	public boolean bulkInsertHashWithTableName(String csvContent, String tableName) {
+	public boolean bulkInsertHashWithString(String csvContent, String invertedIndexTableName) {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + term + "," + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -390,7 +392,35 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	
+	public boolean bulkInsertHashWithTableName(String csvContent, String tableName) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE `" + tableName + "` ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -406,10 +436,10 @@ public class DBConnector {
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
 			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + tableName + " DISABLE KEYS");
+			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + tableName + " FIELDS TERMINATED BY ',' (" + hashingDocID + "," + "Term" + "," + termFreq + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + term + "," + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -417,7 +447,7 @@ public class DBConnector {
 			
 			stmt.execute(query);
 			
-			stmt.execute("ALTER TABLE " + tableName + " ENABLE KEYS");
+			stmt.execute("ALTER TABLE `" + tableName + "` ENABLE KEYS");
 			stmt.execute("SET UNIQUE_CHECKS=1; ");
 			
 			stmt.close();
@@ -439,9 +469,35 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+				resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 				while(resultSet.next()){
 					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
+	public ArrayList<DocumentInfo> queryMultipleDocInfoArrayWithString(ArrayList<Integer> docIDs, String invertedIndexTableName) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				resultSet = stmt.executeQuery("select " + term + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+				while(resultSet.next()){
+					docInfo.termFreq.put(resultSet.getString(1), resultSet.getInt(2));
 				}
 				docInfoArray.add(docInfo);
 				resultSet = null;
@@ -462,7 +518,7 @@ public class DBConnector {
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
 			docInfo.docID = docid;
-			resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from " + invertedIndexTableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+			resultSet = stmt.executeQuery("select " + hashcode + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 			while(resultSet.next()){
 				docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
 			}
@@ -487,7 +543,7 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				String sql = "select " + hashcode + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';";
+				String sql = "select " + hashcode + "," + termFreq + " from `" + tableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';";
 				resultSet = stmt.executeQuery(sql);
 				while(resultSet.next()){
 					docInfo.termFreq.put(String.valueOf(resultSet.getInt(1)), resultSet.getInt(2));
@@ -514,7 +570,7 @@ public class DBConnector {
 			for(int docid : docIDs){
 				DocumentInfo docInfo = new DocumentInfo();
 				docInfo.docID = docid;
-				resultSet = stmt.executeQuery("select " + "Term" + "," + termFreq + " from " + tableName + " where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+				resultSet = stmt.executeQuery("select " + term + "," + termFreq + " from `" + tableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 				while(resultSet.next()){
 					docInfo.termFreq.put(resultSet.getString(1), resultSet.getInt(2));
 				}

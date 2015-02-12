@@ -1,5 +1,6 @@
 package com.kdars.HotCheetos.Parsing;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.kdars.HotCheetos.Config.Configuration;
@@ -11,18 +12,46 @@ public class Parse1_noun_string extends Parse1{
 	private String postFix1 = Configuration.getInstance().getPostFix1();
 	private String postFix2 = Configuration.getInstance().getPostFix2();
 	
+	
+	/*Temporary measure for experiment.  Need to delete!!!! */
+	private int nGramSetting = Configuration.getInstance().getNgramSetting();
+	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	/*Temporary measure for experiment.  Need to delete!!!! */
+	
+	
 	@Override
 	boolean parseDoc(String content, int documentID, int invertedIndexTableID) {
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
 		String wordList[] = content.trim().split("\\s+");
-
+		
+		ArrayList<String> nGramMaker = new ArrayList<String>();
+		StringBuilder ngramMaker = new StringBuilder();
+		
+		int ngramCheckIndex = 0;
+		int ngramChecker = 0;
 		for (int i = 0; i < wordList.length; i++) {
 			int postFixChecker = wordList[i].length();
 			String word = deletePostFix(wordList[i]);
 			if (word.length() != postFixChecker) {
-				docInfo = addHash(docInfo, word);
+				
+				ngramChecker++;
+				ngramMaker.append(word);
+				nGramMaker.add(word);
+				
+				if(ngramChecker != this.nGramSetting){
+					continue;
+				}
+				
+				ngramChecker--;
+				if(ngramCheckIndex != 0){
+					ngramMaker.replace(0, ngramCheckIndex, "");
+				}
+				
+				docInfo = addHash(docInfo, ngramMaker.toString());
+				ngramCheckIndex = nGramMaker.get(0).length();
+				nGramMaker.remove(0);
 			}			
 		}
 		
@@ -31,7 +60,7 @@ public class Parse1_noun_string extends Parse1{
 	}
 	
 	private DocumentInfo addHash(DocumentInfo docInfo, String term) {
-		if (term.hashCode() % Configuration.getInstance().getFingerprintSetting() != 0) {
+		if (term.hashCode() % this.fingerprintSetting != 0) {
 			return docInfo;
 		}
 		if (docInfo.termFreq.containsKey(term)) {

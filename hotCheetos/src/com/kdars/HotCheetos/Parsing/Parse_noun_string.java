@@ -19,6 +19,7 @@ public class Parse_noun_string implements Parse {
 
 	@Override
 	public DocumentInfo parseDoc(String content, int documentID) {
+		int mod = Configuration.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
@@ -30,7 +31,7 @@ public class Parse_noun_string implements Parse {
 			int postFixChecker = wordList[i].length();
 			String word = deletePostFix(wordList[i]);
 			if (word.length() != postFixChecker) {
-				if(word.hashCode()%Configuration.getInstance().mod==0){
+				if(word.hashCode()%mod==0){
 					if(docInfo.termFreq.containsKey(word)){
 						int value = docInfo.termFreq.get(word);
 						//docInfo.termFreq.put(key, value+1);
@@ -94,6 +95,7 @@ public class Parse_noun_string implements Parse {
 	}
 	
 	public boolean parseDocJINKYUWithTableName(String content, int documentID, String tableName) {
+		int mod = Configuration.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
@@ -105,7 +107,7 @@ public class Parse_noun_string implements Parse {
 			int postFixChecker = wordList[i].length();
 			String word = deletePostFix(wordList[i]);
 			if (word.length() != postFixChecker) {
-				if(word.hashCode()%Configuration.getInstance().mod==0){
+				if(word.hashCode()%mod==0){
 					if(docInfo.termFreq.containsKey(word)){
 						int value = docInfo.termFreq.get(word);
 						docInfo.termFreq.put(word, value+1);

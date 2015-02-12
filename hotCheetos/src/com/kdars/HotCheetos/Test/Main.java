@@ -3,13 +3,24 @@ package com.kdars.HotCheetos.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
+import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
+import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.Experiment.Experiment;
+import com.kdars.HotCheetos.Parsing.Parse1_nGram_hashcode;
+import com.kdars.HotCheetos.Parsing.Parse1_noun_hashcode;
 import com.kdars.HotCheetos.WorkFlow.Workflow;
 
 public class Main {
-
+	private static int nGramSetting = 2;
+	private static int fingerprintSetting = 1;
+	
+	private static String postFix1 = Configuration.getInstance().getPostFix1();
+	private static String postFix2 = Configuration.getInstance().getPostFix2();
+	
 	public static void main(String[] args) {
 		
 //		System.out.println("\nexperiment1");
@@ -30,26 +41,66 @@ public class Main {
 //		Experiment.getInstance().experiment8();
 		
 		
-		System.out.println("\nexperiment11");
-		Experiment.getInstance().experiment11();
-		System.out.println("\nexperiment22");
-		Experiment.getInstance().experiment22();
-		System.out.println("\nexperiment33");
-		Experiment.getInstance().experiment33();
-		System.out.println("\nexperiment44");
-		Experiment.getInstance().experiment44();
-		System.out.println("\nexperiment55");
-		Experiment.getInstance().experiment55();
-		System.out.println("\nexperiment66");
-		Experiment.getInstance().experiment66();
-		System.out.println("\nexperiment77");
-		Experiment.getInstance().experiment77();
-		System.out.println("\nexperiment88");
-		Experiment.getInstance().experiment88();
+//		System.out.println("\nexperiment11");
+//		Experiment.getInstance().experiment11();
+//		System.out.println("\nexperiment22");
+//		Experiment.getInstance().experiment22();
+//		System.out.println("\nexperiment33");
+//		Experiment.getInstance().experiment33();
+//		System.out.println("\nexperiment44");
+//		Experiment.getInstance().experiment44();
+//		System.out.println("\nexperiment55");
+//		Experiment.getInstance().experiment55();
+//		System.out.println("\nexperiment66");
+//		Experiment.getInstance().experiment66();
+//		System.out.println("\nexperiment77");
+//		Experiment.getInstance().experiment77();
+//		System.out.println("\nexperiment88");
+//		Experiment.getInstance().experiment88();
+		
+		Workflow workflowForExperiment = new Workflow();
+		
+		int i = 0;
+		for(int j = 3; j < 11 ; j++){
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, j, 1);
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, j, 4);
+		}
+		
+		for(int k = 1; k < 11 ; k++){
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, k, 1);
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, k, 4);
+		}
+		
+		for(int j = 3; j < 11 ; j++){
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, j, 1);
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, j, 4);
+		}
+		
+		for(int k = 1; k < 11 ; k++){
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, k, 1);
+			i++;
+			System.out.println(i + "번째 experiment");
+			workflowForExperiment.workFlowExperiment(i, k, 4);
+		}
 		
 		
 //		File zipFile = new File("C:\\Users\\shin\\Desktop\\1.zip");
 //		FileDataImport.getInstance().unZipAndSaveZipFile(zipFile);
 		
 	}
+	
 }

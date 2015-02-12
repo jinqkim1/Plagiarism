@@ -14,6 +14,7 @@ public class Parse_nGram_string implements Parse {
 	}
 	@Override
 	public DocumentInfo parseDoc(String content, int documentID) {
+		int mod = Configuration.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
@@ -25,7 +26,7 @@ public class Parse_nGram_string implements Parse {
 			}
 			String key = wordList[i]+wordList[i+1]+wordList[i+2];
 			
-			if(key.hashCode()%Configuration.getInstance().mod==0){
+			if(key.hashCode()%mod==0){
 				if(docInfo.termFreq.containsKey(key)){
 					int value = docInfo.termFreq.get(key);
 					//docInfo.termFreq.put(key, value+1);
@@ -60,6 +61,7 @@ public class Parse_nGram_string implements Parse {
 	}
 	
 	public boolean parseDocJINKYUWithTableName(String content, int documentID, String tableName) {
+		int mod = Configuration.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
@@ -71,7 +73,7 @@ public class Parse_nGram_string implements Parse {
 			}
 			String key = wordList[i]+wordList[i+1]+wordList[i+2];
 			
-			if(key.hashCode()%Configuration.getInstance().mod==0){
+			if(key.hashCode()%mod==0){
 				if(docInfo.termFreq.containsKey(key)){
 					int value = docInfo.termFreq.get(key);
 					docInfo.termFreq.put(key, value+1);

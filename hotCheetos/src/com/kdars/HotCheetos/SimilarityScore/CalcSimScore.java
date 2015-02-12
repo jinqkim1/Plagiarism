@@ -120,12 +120,12 @@ public abstract class CalcSimScore {
 				continue;
 			}
 			
-			ArrayList<Integer> segmentedDocIDList = (ArrayList<Integer>) corpusDocIDArray.subList(0, docInfoMemoryLimit - 1);
+			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(corpusDocIDArray.subList(0, docInfoMemoryLimit - 1));
 			ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray(segmentedDocIDList, invertedIndexTableID);
 			if (!interCalculateSegment(docInfoList, corpusDocInfoList, scoreTableID, invertedIndexTableID)){
 				return false;
 			}
-			corpusDocIDArray = (ArrayList<Integer>) corpusDocIDArray.subList(docInfoMemoryLimit, corpusDocIDArray.size() - 1);
+			corpusDocIDArray = new ArrayList<Integer>(corpusDocIDArray.subList(docInfoMemoryLimit, corpusDocIDArray.size() - 1));
 		}
 		
 		return true;

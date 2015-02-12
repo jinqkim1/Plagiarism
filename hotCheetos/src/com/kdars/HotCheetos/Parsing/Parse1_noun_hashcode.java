@@ -1,5 +1,6 @@
 package com.kdars.HotCheetos.Parsing;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.kdars.HotCheetos.Config.Configuration;
@@ -11,6 +12,14 @@ public class Parse1_noun_hashcode extends Parse1{
 	private String postFix1 = Configuration.getInstance().getPostFix1();
 	private String postFix2 = Configuration.getInstance().getPostFix2();
 	
+	
+	/*Temporary measure for experiment.  Need to delete!!!! */
+	private int nGramSetting = Configuration.getInstance().getNgramSetting();
+	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	/*Temporary measure for experiment.  Need to delete!!!! */
+	
+	
+	
 	@Override
 	boolean parseDoc(String content, int documentID, int invertedIndexTableID) {
 
@@ -18,12 +27,32 @@ public class Parse1_noun_hashcode extends Parse1{
 		docInfo.docID = documentID;
 
 		String wordList[] = content.trim().split("\\s+");
-
+		
+		ArrayList<Integer> nGramMaker = new ArrayList<Integer>();
+		int ngramMaker = 0;
+		int ngramSupportNumber = 0;
+		int ngramChecker = 0;
 		for (int i = 0; i < wordList.length; i++) {
 			int postFixChecker = wordList[i].length();
 			String word = deletePostFix(wordList[i]);
 			if (word.length() != postFixChecker) {
-				docInfo = addHash(docInfo, word.hashCode());
+				ngramChecker++;
+				ngramMaker += word.hashCode();
+				nGramMaker.add(word.hashCode());
+				
+				if (ngramChecker != this.nGramSetting){
+					continue;
+				}
+				
+				ngramChecker--;
+				
+				if (ngramSupportNumber != 0){
+					ngramMaker -= ngramSupportNumber;
+				}
+				docInfo = addHash(docInfo, ngramMaker);
+				ngramSupportNumber = nGramMaker.get(0);
+				nGramMaker.remove(0);
+				
 			}
 		}
 		
@@ -32,7 +61,7 @@ public class Parse1_noun_hashcode extends Parse1{
 	}
 	
 	private DocumentInfo addHash(DocumentInfo docInfo, int hash) {
-		if (hash % Configuration.getInstance().getFingerprintSetting() != 0) {
+		if (hash % this.fingerprintSetting != 0) {
 			return docInfo;
 		}
 		String hashToString = String.valueOf(hash);
