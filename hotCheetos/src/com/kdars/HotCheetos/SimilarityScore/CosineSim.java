@@ -2,6 +2,7 @@ package com.kdars.HotCheetos.SimilarityScore;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class CosineSim extends CalcSimScore {
 
@@ -12,23 +13,28 @@ public class CosineSim extends CalcSimScore {
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		
-		Iterator<String> iter1 = doc1.keySet().iterator();
-		
+		Iterator iter1 = doc1.entrySet().iterator();
 		while(iter1.hasNext()){
-			String key = iter1.next();
+			Map.Entry pair1 = (Map.Entry)iter1.next();
+			String key = pair1.getKey().toString();
+			double value1 = Double.valueOf(pair1.getValue().toString());
+			
 			if(doc2.containsKey(key)){
-				multiply += ((double)doc1.get(key)) * ((double)doc2.get(key));
-				norm2 += (((double)doc2.get(key)) * ((double)doc2.get(key)));
+				double value2 = (double)doc2.get(key);
+				multiply += (value1 * value2);
+				norm2 += (value2 * value2);
 				doc2.remove(key);
+				
 			}
-			norm1 += (((double)doc1.get(key)) * ((double)doc1.get(key)));
+			norm1 += (value1 * value1);
+			iter1.remove();
 		}
 		
-		Iterator<String> iter2 = doc2.keySet().iterator();
-		
+		Iterator iter2 = doc2.entrySet().iterator();
 		while(iter2.hasNext()){
-			String key = iter2.next();
-			norm2 += (((double)doc2.get(key)) * ((double)doc2.get(key)));
+			Map.Entry pair2 = (Map.Entry)iter2.next();
+			double value2 = Double.valueOf(pair2.getValue().toString());
+			norm2 += (value2 * value2);
 		}
 		
 		double result =  multiply / Math.sqrt(norm1 * norm2);

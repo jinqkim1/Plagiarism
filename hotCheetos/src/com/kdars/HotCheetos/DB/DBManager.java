@@ -2,6 +2,8 @@ package com.kdars.HotCheetos.DB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
@@ -503,22 +505,6 @@ public class DBManager {
 	
 	public ArrayList<DocPair> getHighestPairs(ArrayList<Integer> docIDList, int scoreTableID){
 		String scoreTableName = convertIDtoName_Score(scoreTableID);
-//		int docListSizeLimit = Configuration.getInstance().getDocIDlistLimit();
-//		ArrayList<ArrayList<DocPair>> pairLists = new ArrayList<ArrayList<DocPair>>();
-//		
-//		while(!docIDList.isEmpty()){  //docIDList size가 너무 크면 query가 너무 길어질 가능성이 있기 때문에 잘라서 query 실행하도록 함.
-//			
-//			if (docIDList.size() <= docListSizeLimit){
-//				pairLists.add(DB.queryHighestPairs(docIDList, scoreTableName));
-//				docIDList.clear();
-//			}
-//			
-//			ArrayList<Integer> subList = (ArrayList<Integer>) docIDList.subList(0, docListSizeLimit - 1);
-//			pairLists.add(DB.queryHighestPairs(subList, scoreTableName));
-//			
-//			docIDList = (ArrayList<Integer>) docIDList.subList(docListSizeLimit, docIDList.size() - 1);
-//		}
-		
 		return DB.queryHighestPairs(docIDList, scoreTableName);
 	}
 	
@@ -539,16 +525,22 @@ public class DBManager {
 			
 			int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 			int bulkInsertLimitChecker = 0;
-			for (String termHash : docInfo.termFreq.keySet()){
-				csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+			
+			Iterator it = docInfo.termFreq.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+				
 				bulkInsertLimitChecker++;
 				if(bulkInsertLimitChecker == bulkInsertLimit){
-					if(!DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName)){
+					if(!DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName)){
 						System.out.println("Similarity score bulk insert failed.");
 					}
 					bulkInsertLimitChecker = 0;
 					csvContent.delete(0,csvContent.length());
 				}
+				
+				it.remove();
 			}
 
 			return DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName);
@@ -559,8 +551,12 @@ public class DBManager {
 		
 		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
-		for (String termHash : docInfo.termFreq.keySet()){
-			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+		
+		Iterator it = docInfo.termFreq.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+			
 			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
 				if(!DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName)){
@@ -569,6 +565,8 @@ public class DBManager {
 				bulkInsertLimitChecker = 0;
 				csvContent.delete(0,csvContent.length());
 			}
+			
+			it.remove();
 		}
 		
 		return DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName);
@@ -580,8 +578,12 @@ public class DBManager {
 		
 		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
-		for (String termHash : docInfo.termFreq.keySet()){
-			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+		
+		Iterator it = docInfo.termFreq.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+			
 			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
 				if(!DB.bulkInsertHashWithTableName(csvContent.toString(), tableName)){
@@ -590,6 +592,8 @@ public class DBManager {
 				bulkInsertLimitChecker = 0;
 				csvContent.delete(0,csvContent.length());
 			}
+			
+			it.remove();
 		}
 		
 		return DB.bulkInsertHashWithTableName(csvContent.toString(), tableName);
@@ -601,8 +605,13 @@ public class DBManager {
 		
 		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
-		for (String termHash : docInfo.termFreq.keySet()){
-			csvContent.append(docIDString + "," + termHash + "," + String.valueOf(docInfo.termFreq.get(termHash)) + "\n");
+		
+		Iterator it = docInfo.termFreq.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+			
+			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
 				if(!DB.bulkInsertHashWithStringTableName(csvContent.toString(), tableName)){
 					System.out.println("Similarity score bulk insert failed.");
@@ -610,6 +619,8 @@ public class DBManager {
 				bulkInsertLimitChecker = 0;
 				csvContent.delete(0,csvContent.length());
 			}
+			
+			it.remove();
 		}
 		
 		return DB.bulkInsertHashWithStringTableName(csvContent.toString(), tableName);
