@@ -19,7 +19,7 @@ public class DBManager {
 		return	thisClass;
 	}
 	
-	private String convertIDtoName_Score(int scoreTableID){
+	public String convertIDtoName_Score(int scoreTableID){
 		if (scoreTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_SCORE1;
 		} else if (scoreTableID == 2) {
@@ -169,7 +169,7 @@ public class DBManager {
 		return null;
 	}
 	
-	private String convertIDtoName_Location(int locationTableID){
+	public String convertIDtoName_Location(int locationTableID){
 		if (locationTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_LOCATION1;
 		} else if (locationTableID == 2) {
@@ -319,7 +319,7 @@ public class DBManager {
 		return null;
 	}
 	
-	private String convertIDtoName_InvertedIndex(int invertedIndexTableID){
+	public String convertIDtoName_InvertedIndex(int invertedIndexTableID){
 		if (invertedIndexTableID == 1) {
 			return Configuration.getInstance().DB_TABLE_NAME_INDEX1;
 		} else if (invertedIndexTableID == 2) {

@@ -1,6 +1,8 @@
 package com.kdars.HotCheetos.Test;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -63,41 +65,53 @@ public class Main {
 		
 //		workflowForExperiment.workFlowExperiment(51, 10, 1);
 		
-		
+
 		int i = 0;
 		for(int j = 3; j < 11 ; j++){
 			i++;
-			System.out.println(i + "번째 experiment");
+			String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, j, 1);
+			
 			i++;
-			System.out.println(i + "번째 experiment");
+			experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, j, 4);
 		}
 		
 		for(int k = 1; k < 11 ; k++){
 			i++;
-			System.out.println(i + "번째 experiment");
+			String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, k, 1);
+			
 			i++;
-			System.out.println(i + "번째 experiment");
+			experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, k, 4);
 		}
 		
 		for(int j = 3; j < 11 ; j++){
 			i++;
-			System.out.println(i + "번째 experiment");
+			String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, j, 1);
+			
 			i++;
-			System.out.println(i + "번째 experiment");
+			experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, j, 4);
 		}
 		
 		for(int k = 1; k < 11 ; k++){
 			i++;
-			System.out.println(i + "번째 experiment");
+			String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, k, 1);
+			
 			i++;
-			System.out.println(i + "번째 experiment");
+			experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
+			System.out.println(i + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 			workflowForExperiment.workFlowExperiment(i, k, 4);
 		}
 		

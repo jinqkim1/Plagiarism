@@ -164,7 +164,7 @@ public class Workflow {
 		CosineSim cosineSimilarity = new CosineSim();
 		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(corpusDocIDArray, experimentTableID);
 		finall = System.currentTimeMillis();
-		System.out.println("highest score를 가진 doc pair list를 DB에서 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		System.out.println("highest score를 가진 doc pair list를 DB에서 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초\n\n\n");
 		
 		return highestPairList;
 	}
@@ -172,16 +172,16 @@ public class Workflow {
 	private boolean experimentMemoryProbSolvedBatch(ArrayList<Integer> docIDList, int experimentTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
 		
-		double initial = System.currentTimeMillis();
-		double finall = System.currentTimeMillis();
+//		double initial = System.currentTimeMillis();
+//		double finall = System.currentTimeMillis();
 		
 		//intra 문제 해결 필요.
-		ArrayList<DocumentInfo> docInfoListForIntra = new ArrayList<DocumentInfo>();
+		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			
 			if(docIDList.size() <= docIDMemoryLimit){
 				
-				initial = System.currentTimeMillis();
+//				initial = System.currentTimeMillis();
 				ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
 				if(experimentTableID <= 16){
 					Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
@@ -196,11 +196,11 @@ public class Workflow {
 					Parse1_noun_string test = new Parse1_noun_string();
 					docInfoList = test.getParsedDocs(docIDList, experimentTableID);
 				}
-				finall = System.currentTimeMillis();
-				System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+//				finall = System.currentTimeMillis();
+//				System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 				
 				CosineSim cosineSimilarity = new CosineSim();
-				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docInfoListForIntra, experimentTableID, experimentTableID)){
+				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
 					System.out.println("Processing failed. Need to check workflow.");
 					return false;
 				}
@@ -209,7 +209,7 @@ public class Workflow {
 			}
 			
 			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(docIDList.subList(0, docIDMemoryLimit));
-			initial = System.currentTimeMillis();
+//			initial = System.currentTimeMillis();
 			ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
 			if(experimentTableID <= 16){
 				Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
@@ -224,15 +224,16 @@ public class Workflow {
 				Parse1_noun_string test = new Parse1_noun_string();
 				docInfoList = test.getParsedDocs(segmentedDocIDList, experimentTableID);
 			}
-			finall = System.currentTimeMillis();
-			System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+//			finall = System.currentTimeMillis();
+//			System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
 			
 			CosineSim cosineSimilarity = new CosineSim();
-			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docInfoListForIntra, experimentTableID, experimentTableID)){
+			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
 				System.out.println("Processing failed. Need to check workflow.");
 				return false;
 			}
-			docInfoListForIntra = docInfoList;
+			
+			docIDListList.add(segmentedDocIDList);
 			docIDList = new ArrayList<Integer>(docIDList.subList(docIDMemoryLimit, docIDList.size()));
 			
 		}
@@ -243,14 +244,14 @@ public class Workflow {
 	private boolean memoryProbSolved(ArrayList<Integer> docIDList, ArrayList<Integer> corpusDocIDArray, int invertedIndexTableID, int scoreTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
 		
-		ArrayList<DocumentInfo> docInfoListForIntra = new ArrayList<DocumentInfo>();
+		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			
 			if(docIDList.size() <= docIDMemoryLimit){
 				Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 				ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
 				CosineSim cosineSimilarity = new CosineSim();
-				if (!cosineSimilarity.simCalcProcessor(docInfoList, corpusDocIDArray, docInfoListForIntra, invertedIndexTableID, scoreTableID)){
+				if (!cosineSimilarity.simCalcProcessor(docInfoList, corpusDocIDArray, docIDListList, invertedIndexTableID, scoreTableID)){
 					System.out.println("Processing failed. Need to check workflow.");
 					return false;
 				}
@@ -262,11 +263,12 @@ public class Workflow {
 			Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 			ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(segmentedDocIDList, invertedIndexTableID);
 			CosineSim cosineSimilarity = new CosineSim();
-			if (!cosineSimilarity.simCalcProcessor(docInfoList, corpusDocIDArray, docInfoListForIntra, invertedIndexTableID, scoreTableID)){
+			if (!cosineSimilarity.simCalcProcessor(docInfoList, corpusDocIDArray, docIDListList, invertedIndexTableID, scoreTableID)){
 				System.out.println("Processing failed. Need to check workflow.");
 				return false;
 			}
-			docInfoListForIntra = docInfoList;
+			
+			docIDListList.add(segmentedDocIDList);
 			docIDList = new ArrayList<Integer>(docIDList.subList(docIDMemoryLimit, docIDList.size()));
 			
 		}
@@ -279,14 +281,14 @@ public class Workflow {
 		
 		
 		//intra 문제 해결 필요.
-		ArrayList<DocumentInfo> docInfoListForIntra = new ArrayList<DocumentInfo>();
+		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			
 			if(docIDList.size() <= docIDMemoryLimit){
 				Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 				ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(docIDList, invertedIndexTableID);
 				CosineSim cosineSimilarity = new CosineSim();
-				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docInfoListForIntra, invertedIndexTableID, scoreTableID)){
+				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, invertedIndexTableID, scoreTableID)){
 					System.out.println("Processing failed. Need to check workflow.");
 					return false;
 				}
@@ -298,11 +300,11 @@ public class Workflow {
 			Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 			ArrayList<DocumentInfo> docInfoList = test.getParsedDocs(segmentedDocIDList, invertedIndexTableID);
 			CosineSim cosineSimilarity = new CosineSim();
-			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docInfoListForIntra, invertedIndexTableID, scoreTableID)){
+			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, invertedIndexTableID, scoreTableID)){
 				System.out.println("Processing failed. Need to check workflow.");
 				return false;
 			}
-			docInfoListForIntra = docInfoList;
+			docIDListList.add(segmentedDocIDList);
 			docIDList = new ArrayList<Integer>(docIDList.subList(docIDMemoryLimit, docIDList.size()));
 			
 		}

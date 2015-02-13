@@ -16,13 +16,17 @@ public abstract class CalcSimScore {
 		return DBManager.getInstance().getHighestPairs(docIDList, scoreTableID);
 	}
 	
-	public boolean simCalcProcessorBatch(ArrayList<DocumentInfo> docInfoList, ArrayList<DocumentInfo> docInfoListForIntra, int invertedIndexTableID, int scoreTableID){
-		if(docInfoListForIntra.size() != 0){
-			if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForIntra, scoreTableID)){
-				System.out.println("Intra support score 저장 실패.");
-				return false;
+	public boolean simCalcProcessorBatch(ArrayList<DocumentInfo> docInfoList, ArrayList<ArrayList<Integer>> docIDListListForIntraInterCalc, int invertedIndexTableID, int scoreTableID){
+		if(docIDListListForIntraInterCalc.size() != 0){
+			for(ArrayList<Integer> docIDListForInterInIntra : docIDListListForIntraInterCalc){
+				ArrayList<DocumentInfo> docInfoListForInterInIntra = DBManager.getInstance().getMultipleDocInfoArray(docIDListForInterInIntra, invertedIndexTableID);
+				if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForInterInIntra, scoreTableID)){
+					System.out.println("Intra support score 저장 실패.");
+					return false;
+				}
 			}
 		}
+		
 		if (!intraCalcSimSet(docInfoList, scoreTableID)){
 			System.out.println("Intra score 저장 실패.");
 			return false;
@@ -31,13 +35,17 @@ public abstract class CalcSimScore {
 		return true;
 	}
 	
-	public boolean simCalcProcessor(ArrayList<DocumentInfo> docInfoList, ArrayList<Integer> corpusDocIDArray, ArrayList<DocumentInfo> docInfoListForIntra, int invertedIndexTableID, int scoreTableID){
-		if(docInfoListForIntra.size() != 0){
-			if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForIntra, scoreTableID)){
-				System.out.println("Intra support score 저장 실패.");
-				return false;
+	public boolean simCalcProcessor(ArrayList<DocumentInfo> docInfoList, ArrayList<Integer> corpusDocIDArray, ArrayList<ArrayList<Integer>> docIDListListForIntraInterCalc, int invertedIndexTableID, int scoreTableID){
+		if(docIDListListForIntraInterCalc.size() != 0){
+			for(ArrayList<Integer> docIDListForInterInIntra : docIDListListForIntraInterCalc){
+				ArrayList<DocumentInfo> docInfoListForInterInIntra = DBManager.getInstance().getMultipleDocInfoArray(docIDListForInterInIntra, invertedIndexTableID);
+				if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForInterInIntra, scoreTableID)){
+					System.out.println("Intra support score 저장 실패.");
+					return false;
+				}
 			}
 		}
+		
 		if (!interCalcSimSet(docInfoList, corpusDocIDArray, scoreTableID, invertedIndexTableID)){
 			System.out.println("Inter score 저장 실패.");
 			return false;

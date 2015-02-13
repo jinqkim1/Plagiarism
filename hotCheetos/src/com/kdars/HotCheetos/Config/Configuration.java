@@ -52,7 +52,7 @@ public class Configuration {
 	/* Similarity score threshold setting for clustering */
 	
 	/* limit settings to prevent excessive memory usage */
-	private int fileListLimit = 50; //input으로 받는 file list가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
+	private int fileListLimit = 100; //input으로 받는 file list가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
 	public int getFileListLimit(){
 		return this.fileListLimit;
 	}
