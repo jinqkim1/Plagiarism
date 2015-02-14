@@ -426,7 +426,7 @@ public class Configuration {
 	//table ID == 67
 	public final String DB_TABLE_NAME_INDEX67 = "8-gram_noun_string_invertedindextable";
 	public final String DB_TABLE_NAME_LOCATION67 = "8-gram_noun_string_charlocationtable";
-	public final String DB_TABLE_NAME_SCORE67 = "8-gram_noun_hashcode_simscoretable";
+	public final String DB_TABLE_NAME_SCORE67 = "8-gram_noun_string_simscoretable";
 	
 	//table ID == 68
 	public final String DB_TABLE_NAME_INDEX68 = "8-gram_noun_string_fingerprint_invertedindextable";
