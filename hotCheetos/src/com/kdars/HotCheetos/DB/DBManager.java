@@ -537,7 +537,7 @@ public class DBManager {
 						System.out.println("Similarity score bulk insert failed.");
 					}
 					bulkInsertLimitChecker = 0;
-					csvContent.delete(0,csvContent.length());
+					csvContent = new StringBuilder();
 				}
 				
 				it.remove();
@@ -563,7 +563,7 @@ public class DBManager {
 					System.out.println("Similarity score bulk insert failed.");
 				}
 				bulkInsertLimitChecker = 0;
-				csvContent.delete(0,csvContent.length());
+				csvContent = new StringBuilder();
 			}
 			
 			it.remove();
@@ -590,7 +590,7 @@ public class DBManager {
 					System.out.println("Similarity score bulk insert failed.");
 				}
 				bulkInsertLimitChecker = 0;
-				csvContent.delete(0,csvContent.length());
+				csvContent = new StringBuilder();
 			}
 			
 			it.remove();
@@ -617,7 +617,7 @@ public class DBManager {
 					System.out.println("Similarity score bulk insert failed.");
 				}
 				bulkInsertLimitChecker = 0;
-				csvContent.delete(0,csvContent.length());
+				csvContent = new StringBuilder();
 			}
 			
 			it.remove();

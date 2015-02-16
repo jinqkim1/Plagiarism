@@ -49,7 +49,7 @@ public class Parse1_noun_string extends Parse1{
 					ngramMaker.replace(0, ngramCheckIndex, "");
 				}
 				
-				docInfo = addHash(docInfo, ngramMaker.toString());
+				addHash(docInfo, ngramMaker.toString());
 				ngramCheckIndex = nGramMaker.get(0).length();
 				nGramMaker.remove(0);
 			}			
@@ -59,17 +59,16 @@ public class Parse1_noun_string extends Parse1{
 		
 	}
 	
-	private DocumentInfo addHash(DocumentInfo docInfo, String term) {
+	private void addHash(DocumentInfo docInfo, String term) {
 		if (term.hashCode() % this.fingerprintSetting != 0) {
-			return docInfo;
+			return;
 		}
 		if (docInfo.termFreq.containsKey(term)) {
 			int value = docInfo.termFreq.get(term);
 			docInfo.termFreq.replace(term, value + 1);
-			return docInfo;
+			return;
 		}
 		docInfo.termFreq.put(term, 1);
-		return docInfo;
 	}
 	
 	private String deletePostFix(String processedString) {

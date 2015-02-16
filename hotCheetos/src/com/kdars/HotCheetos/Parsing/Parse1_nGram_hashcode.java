@@ -84,7 +84,7 @@ public class Parse1_nGram_hashcode extends Parse1{
 			
 			//nGramMaker arrayList에 parameter로 받은 n-gram 갯수만큼의 hashcode가 차면 hashcode를 더해서 hashmap 만들고, 0번째 hashcode를 버림으로써 다음 ngram 만들 준비.
 			if (nGramMaker.size() == this.nGramSetting){
-				docInfo = addHash(docInfo, ngramMaker);
+				addHash(docInfo, ngramMaker);
 				ngramMaker -= nGramMaker.get(0);
 				nGramMaker.remove(0);
 			}
@@ -97,17 +97,16 @@ public class Parse1_nGram_hashcode extends Parse1{
 		return DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
 	}
 	
-	private DocumentInfo addHash(DocumentInfo docInfo, int hash) {
+	private void addHash(DocumentInfo docInfo, int hash) {
 		if (hash % this.fingerprintSetting != 0) {
-			return docInfo;
+			return;
 		}
 		String hashToString = String.valueOf(hash);
 		if (docInfo.termFreq.containsKey(hashToString)) {
 			int value = docInfo.termFreq.get(hashToString);
 			docInfo.termFreq.replace(hashToString, value + 1);
-			return docInfo;
+			return;
 		}
 		docInfo.termFreq.put(hashToString, 1);
-		return docInfo;
 	}
 }

@@ -8,11 +8,12 @@ public class CosineSim extends CalcSimScore {
 
 	@Override
 	public double calcSim(HashMap<String, Integer> doc1, HashMap<String, Integer> doc2) {
-		
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		
+		doc1 = new HashMap<String, Integer>(doc1);
+		doc2 = new HashMap<String, Integer>(doc2);
 		Iterator iter1 = doc1.entrySet().iterator();
 		while(iter1.hasNext()){
 			Map.Entry pair1 = (Map.Entry)iter1.next();
@@ -35,6 +36,7 @@ public class CosineSim extends CalcSimScore {
 			Map.Entry pair2 = (Map.Entry)iter2.next();
 			double value2 = Double.valueOf(pair2.getValue().toString());
 			norm2 += (value2 * value2);
+			iter2.remove();
 		}
 		
 		double result =  multiply / Math.sqrt(norm1 * norm2);

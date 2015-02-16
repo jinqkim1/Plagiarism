@@ -50,7 +50,7 @@ public class DBConnector {
 	private String simScore = "SimilarityScore";
 	
 	public DBConnector(){
-		//TODO: Connector »ý¼ºµÇ¸é connect ½ÃµµÇØ¼­ ¼º°øÇÏ¸é ok, ½ÇÆÐÇÏ¸é Ç¥½Ã.
+		//TODO: Connector ï¿½ï¿½ï¿½ï¿½ï¿½Ç¸ï¿½ connect ï¿½Ãµï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ok, ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ Ç¥ï¿½ï¿½.
 
 		if ((sqlConnection = connect()) == null){
 			System.exit(2);
@@ -81,7 +81,7 @@ public class DBConnector {
 			resultSet = stmt.executeQuery("select " + docID + "," + docContent + " from " + textTable + ";");
 
 			while (resultSet.next()) {
-				textMap.put(resultSet.getInt(1), resultSet.getString(2));
+				textMap.put(resultSet.getInt(1), unescape(resultSet.getString(2)));
 			}
 
 			stmt.close();
@@ -104,7 +104,7 @@ public class DBConnector {
 			while (resultSet.next()) {
 				DocumentInfo temp = new DocumentInfo();
 				temp.docID=resultSet.getInt(1);
-				temp.contents=resultSet.getString(2);
+				temp.contents=unescape(resultSet.getString(2));
 				textMap.add(temp);
 			}
 
@@ -169,7 +169,7 @@ public class DBConnector {
 			resultSet = stmt.executeQuery("select " + docContent + " from "+ textTable + " where " + docID + " = '" + String.valueOf(documentID) +"';");
 			
 			while(resultSet.next()){
-				text = resultSet.getString(1);
+				text = unescape(resultSet.getString(1));
 			}
 			
 			stmt.close();

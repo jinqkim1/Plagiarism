@@ -77,7 +77,7 @@ public abstract class CalcSimScore {
 						return false;
 					}
 					bulkInsertLimitChecker = 0;
-					csvContent.delete(0,csvContent.length());
+					csvContent = new StringBuilder();
 					
 				}
 			}
@@ -93,9 +93,10 @@ public abstract class CalcSimScore {
 		int bulkInsertLimitChecker = 0;
 		for(int i=0; i<docInfoList.size(); i++){
 			int docid1 = docInfoList.get(i).docID;
+			HashMap<String, Integer> doc1 = docInfoList.get(i).termFreq;
 			for(int j=i+1; j<docInfoList.size(); ++j){
-				int docid2 = docInfoList.get(j).docID;
-				double simscore = calcSim(docInfoList.get(i).termFreq, docInfoList.get(j).termFreq);
+				int docid2 = docInfoList.get(j).docID;				
+				double simscore = calcSim(doc1, docInfoList.get(j).termFreq);
 				
 				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 				
@@ -105,7 +106,7 @@ public abstract class CalcSimScore {
 						return false;
 					}
 					bulkInsertLimitChecker = 0;
-					csvContent.delete(0,csvContent.length());
+					csvContent = new StringBuilder();
 					
 				}
 				
@@ -158,7 +159,7 @@ public abstract class CalcSimScore {
 						return false;
 					}
 					bulkInsertLimitChecker = 0;
-					csvContent.delete(0,csvContent.length());
+					csvContent = new StringBuilder();
 				}
 			}
 		}
