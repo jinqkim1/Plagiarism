@@ -171,7 +171,7 @@ public class Workflow {
 	
 	private boolean experimentMemoryProbSolvedBatch(ArrayList<Integer> docIDList, int experimentTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
-		
+		docIDList = new ArrayList<Integer>(docIDList);
 //		double initial = System.currentTimeMillis();
 //		double finall = System.currentTimeMillis();
 		
@@ -243,6 +243,7 @@ public class Workflow {
 	
 	private boolean memoryProbSolved(ArrayList<Integer> docIDList, ArrayList<Integer> corpusDocIDArray, int invertedIndexTableID, int scoreTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		docIDList = new ArrayList<Integer>(docIDList);
 		
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
@@ -278,7 +279,7 @@ public class Workflow {
 	
 	private boolean memoryProbSolvedBatch(ArrayList<Integer> docIDList, int invertedIndexTableID, int scoreTableID){
 		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
-		
+		docIDList = new ArrayList<Integer>(docIDList);
 		
 		//intra 문제 해결 필요.
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
