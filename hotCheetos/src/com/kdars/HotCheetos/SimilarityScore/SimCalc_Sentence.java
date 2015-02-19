@@ -63,17 +63,20 @@ public class SimCalc_Sentence extends CalcSimScore{
 		ArrayList<Integer> intersectingSentencesFromDoc2 = new ArrayList<Integer>();
 		
 		doc1 = new HashMap<Integer, SentenceInfo>(doc1);
+		doc2 = new HashMap<Integer, SentenceInfo>(doc2);
 		
-		Iterator it1 = doc1.entrySet().iterator();
+		HashMap<Integer, SentenceInfo> doc1Instance = new HashMap<Integer, SentenceInfo>(doc1);
+		
+		Iterator it1 = doc1Instance.entrySet().iterator();
 		while(it1.hasNext()){
 			Map.Entry pair1 = (Map.Entry) it1.next();
 			SentenceInfo senInfo1 = (SentenceInfo) pair1.getValue();
 			int sentenceID1 = senInfo1.sentenceID;
 			HashMap<String, Integer> senInfoMap1 = senInfo1.termFreq;
 			
-			doc2 = new HashMap<Integer, SentenceInfo>(doc2);
+			HashMap<Integer, SentenceInfo> doc2Instance = new HashMap<Integer, SentenceInfo>(doc2);
 			
-			Iterator it2 = doc2.entrySet().iterator();
+			Iterator it2 = doc2Instance.entrySet().iterator();
 			while(it2.hasNext()){
 				Map.Entry pair2 = (Map.Entry) it2.next();
 				SentenceInfo senInfo2 = (SentenceInfo) pair2.getValue();
@@ -95,8 +98,15 @@ public class SimCalc_Sentence extends CalcSimScore{
 			it1.remove();
 		}
 		
-		double doc1Score = (double)intersectingSentencesFromDoc1.size() / (double)doc1.size();
-		double doc2Score = (double)intersectingSentencesFromDoc2.size() / (double)doc2.size();
+		Double doc1Score = (double)intersectingSentencesFromDoc1.size() / (double)doc1.size();
+		if(doc1Score.isNaN()){
+			doc1Score = 0d;
+		}
+		
+		Double doc2Score = (double)intersectingSentencesFromDoc2.size() / (double)doc2.size();
+		if(doc2Score.isNaN()){
+			doc2Score = 0d;
+		}
 		
 		doc1doc2SimScores.add(doc1Score);
 		doc1doc2SimScores.add(doc2Score);
@@ -197,6 +207,75 @@ public class SimCalc_Sentence extends CalcSimScore{
 		}
 		
 		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
+	}
+
+	@Override
+	public boolean simCalcProcessorBatch(ArrayList<DocumentInfo> docInfoList, ArrayList<ArrayList<Integer>> docIDListListForIntraInterCalc, int invertedIndexTableID, int scoreTableID){
+		if(docIDListListForIntraInterCalc.size() != 0){
+			for(ArrayList<Integer> docIDListForInterInIntra : docIDListListForIntraInterCalc){
+				ArrayList<DocumentInfo> docInfoListForInterInIntra = DBManager.getInstance().getMultipleDocInfoArray_Sentence(docIDListForInterInIntra, invertedIndexTableID);
+				if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForInterInIntra, scoreTableID)){
+					System.out.println("Intra support score 저장 실패.");
+					return false;
+				}
+			}
+		}
+		
+		if (!intraCalcSimSet(docInfoList, scoreTableID)){
+			System.out.println("Intra score 저장 실패.");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	boolean simCalcProcessor(ArrayList<DocumentInfo> docInfoList, ArrayList<Integer> corpusDocIDArray, ArrayList<ArrayList<Integer>> docIDListListForIntraInterCalc, int invertedIndexTableID, int scoreTableID){
+		if(docIDListListForIntraInterCalc.size() != 0){
+			for(ArrayList<Integer> docIDListForInterInIntra : docIDListListForIntraInterCalc){
+				ArrayList<DocumentInfo> docInfoListForInterInIntra = DBManager.getInstance().getMultipleDocInfoArray_Sentence(docIDListForInterInIntra, invertedIndexTableID);
+				if(!interCalcForIntraCalcSimSet(docInfoList, docInfoListForInterInIntra, scoreTableID)){
+					System.out.println("Intra support score 저장 실패.");
+					return false;
+				}
+			}
+		}
+		
+		if (!interCalcSimSet(docInfoList, corpusDocIDArray, scoreTableID, invertedIndexTableID)){
+			System.out.println("Inter score 저장 실패.");
+			return false;
+		}
+		if (!intraCalcSimSet(docInfoList, scoreTableID)){
+			System.out.println("Intra score 저장 실패.");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	boolean interCalcSimSet(ArrayList<DocumentInfo> docInfoList,  ArrayList<Integer> corpusDocIDArray, int scoreTableID, int invertedIndexTableID){
+		int docInfoMemoryLimit = Configuration.getInstance().getDocInfoListLimit();
+		while(!corpusDocIDArray.isEmpty()){
+			if(corpusDocIDArray.size() <= docInfoMemoryLimit){
+				ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray_Sentence(corpusDocIDArray, invertedIndexTableID);
+				if (!interCalculateSegment(docInfoList, corpusDocInfoList, scoreTableID, invertedIndexTableID)){
+					return false;
+				}
+				corpusDocIDArray.clear();
+				continue;
+			}
+			
+			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(corpusDocIDArray.subList(0, docInfoMemoryLimit - 1));
+			ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray_Sentence(segmentedDocIDList, invertedIndexTableID);
+			if (!interCalculateSegment(docInfoList, corpusDocInfoList, scoreTableID, invertedIndexTableID)){
+				return false;
+			}
+			corpusDocIDArray = new ArrayList<Integer>(corpusDocIDArray.subList(docInfoMemoryLimit, corpusDocIDArray.size() - 1));
+		}
+		
+		return true;
+
 	}
 
 }

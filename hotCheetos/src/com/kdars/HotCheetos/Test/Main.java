@@ -76,9 +76,6 @@ public class Main {
 		
 		Workflow workflowForExperiment = new Workflow();
 		
-		
-		workflowForExperiment.workFlowExperiment_Sentence(73, 1);
-		workflowForExperiment.workFlowExperiment_Sentence(74, 4);
 		workflowForExperiment.workFlowExperiment_Sentence(75, 1);
 		workflowForExperiment.workFlowExperiment_Sentence(76, 4);
 		

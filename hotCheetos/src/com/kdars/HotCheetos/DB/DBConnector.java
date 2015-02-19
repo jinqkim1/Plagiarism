@@ -582,6 +582,7 @@ public class DBConnector {
 					int senID = resultSet.getInt(1);
 					if(docInfo.sentenceInfoMap.containsKey(senID)){
 						docInfo.sentenceInfoMap.get(senID).termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+						continue;
 					}
 					SentenceInfo senInfo = new SentenceInfo();
 					senInfo.sentenceID = senID;

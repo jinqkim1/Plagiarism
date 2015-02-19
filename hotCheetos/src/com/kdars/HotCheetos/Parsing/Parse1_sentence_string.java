@@ -16,13 +16,15 @@ public class Parse1_sentence_string extends Parse1{
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 		
-		String sentenceList[] = content.trim().split(".");
+		String sentenceList[] = content.trim().split("\\.");
 		
 		int sentenceID = 0;
 		for(String sentence : sentenceList){
 			if(sentence.length() > 5){
 				sentenceID++;
-				docInfo.sentenceInfoMap.put(sentenceID, parseSentence(sentence, sentenceID));
+				SentenceInfo senInfo = new SentenceInfo();
+				senInfo = parseSentence(sentence, sentenceID);
+				docInfo.sentenceInfoMap.put(sentenceID, senInfo);
 			}
 		}
 		
@@ -39,7 +41,9 @@ public class Parse1_sentence_string extends Parse1{
 //		senInfo.sentenceSize = wordList.length;
 		
 		for(String word : wordList){
-			addHashToSenInfo(senInfo, word);
+			if(word.length() > 2){
+				addHashToSenInfo(senInfo, word);
+			}
 		}
 		
 		return senInfo;
