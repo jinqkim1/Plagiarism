@@ -11,6 +11,9 @@ import com.kdars.HotCheetos.PairStructure.DocPair;
 public abstract class CalcSimScore {
 	
 	abstract double calcSim(HashMap<String, Integer> doc1, HashMap<String, Integer> doc2);
+	abstract boolean interCalcForIntraCalcSimSet(ArrayList<DocumentInfo> intraDocInfoListForInter1, ArrayList<DocumentInfo> intraDocInfoListForInter2, int scoreTableID);
+	abstract boolean intraCalcSimSet(ArrayList<DocumentInfo> docInfoList, int scoreTableID);
+	abstract boolean interCalculateSegment(ArrayList<DocumentInfo> docInfoList, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID);
 	
 	public ArrayList<DocPair> getHighestScorePairs(ArrayList<Integer> docIDList, int scoreTableID){
 		return DBManager.getInstance().getHighestPairs(docIDList, scoreTableID);
@@ -58,65 +61,6 @@ public abstract class CalcSimScore {
 		return true;
 	}
 	
-	private boolean interCalcForIntraCalcSimSet(ArrayList<DocumentInfo> intraDocInfoListForInter1, ArrayList<DocumentInfo> intraDocInfoListForInter2, int scoreTableID){
-		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
-		
-		int bulkInsertLimitChecker = 0;
-		for(DocumentInfo docInfo1 : intraDocInfoListForInter1){
-			int docid1 = docInfo1.docID;
-			for (DocumentInfo docInfo2 : intraDocInfoListForInter2){
-				int docid2 = docInfo2.docID;
-				double simscore = calcSim(docInfo1.termFreq, docInfo2.termFreq);
-				
-				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-				
-				bulkInsertLimitChecker++;
-				if (bulkInsertLimitChecker == bulkInsertLimit){
-					if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID)){
-						return false;
-					}
-					bulkInsertLimitChecker = 0;
-					csvContent = new StringBuilder();
-					
-				}
-			}
-		}
-		
-		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
-	}
-	
-	private boolean intraCalcSimSet(ArrayList<DocumentInfo> docInfoList, int scoreTableID){
-		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
-		
-		int bulkInsertLimitChecker = 0;
-		for(int i=0; i<docInfoList.size(); i++){
-			int docid1 = docInfoList.get(i).docID;
-			HashMap<String, Integer> doc1 = docInfoList.get(i).termFreq;
-			for(int j=i+1; j<docInfoList.size(); ++j){
-				int docid2 = docInfoList.get(j).docID;				
-				double simscore = calcSim(doc1, docInfoList.get(j).termFreq);
-				
-				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-				
-				bulkInsertLimitChecker++;
-				if (bulkInsertLimitChecker == bulkInsertLimit){
-					if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID)){
-						return false;
-					}
-					bulkInsertLimitChecker = 0;
-					csvContent = new StringBuilder();
-					
-				}
-				
-			}
-		}
-		
-		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
-
-	}
-	
 	private boolean interCalcSimSet(ArrayList<DocumentInfo> docInfoList,  ArrayList<Integer> corpusDocIDArray, int scoreTableID, int invertedIndexTableID){
 		int docInfoMemoryLimit = Configuration.getInstance().getDocInfoListLimit();
 		while(!corpusDocIDArray.isEmpty()){
@@ -139,32 +83,6 @@ public abstract class CalcSimScore {
 		
 		return true;
 
-	}
-	
-	private boolean interCalculateSegment(ArrayList<DocumentInfo> docInfoList, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
-		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
-		int bulkInsertLimitChecker = 0;
-		
-		for (DocumentInfo docInfo1 : docInfoList){
-			int docid1 = docInfo1.docID;
-			for (DocumentInfo docInfo2 : corpusDocInfoList){
-				int docid2 = docInfo2.docID;
-				double simscore = calcSim(docInfo1.termFreq, docInfo2.termFreq);
-				csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-				
-				bulkInsertLimitChecker++;
-				if (bulkInsertLimitChecker == bulkInsertLimit){
-					if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID)){
-						return false;
-					}
-					bulkInsertLimitChecker = 0;
-					csvContent = new StringBuilder();
-				}
-			}
-		}
-		
-		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
 	}
 	
 }

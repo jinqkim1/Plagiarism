@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
 import com.kdars.HotCheetos.PairStructure.DocPair;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
@@ -32,6 +33,7 @@ public class DBConnector {
 	private String invertedIndexTable = Configuration.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
 	private String hashingDocID = "DocID";
+	private String sentenceID = "SentenceID";
 	private String hashcode = "Hashcode";
 	private String term = "Term";
 	private String termFreq = "TermFrequency";
@@ -404,6 +406,59 @@ public class DBConnector {
 		return true;
 	}
 	
+	public boolean bulkInsertSentence(String csvContent, String invertedIndexTableName) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + sentenceID + "," + hashcode + ", " + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean bulkInsertSentenceWithString(String csvContent, String invertedIndexTableName) {
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			stmt.execute("SET UNIQUE_CHECKS=0; ");
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
+			
+			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + sentenceID + "," + term + "," + termFreq + ");";
+			
+			InputStream content = IOUtils.toInputStream(csvContent);
+			
+			stmt.setLocalInfileInputStream(content);
+			
+			stmt.execute(query);
+			
+			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` ENABLE KEYS");
+			stmt.execute("SET UNIQUE_CHECKS=1; ");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 	
 	public boolean bulkInsertHashWithTableName(String csvContent, String tableName) {
 		try {
@@ -498,6 +553,74 @@ public class DBConnector {
 				resultSet = stmt.executeQuery("select " + term + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
 				while(resultSet.next()){
 					docInfo.termFreq.put(resultSet.getString(1), resultSet.getInt(2));
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
+	public ArrayList<DocumentInfo> queryMultipleDocInfoArray_Sentence(ArrayList<Integer> docIDs, String invertedIndexTableName) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				resultSet = stmt.executeQuery("select " + sentenceID + "," + hashcode + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+				
+				while(resultSet.next()){
+					int senID = resultSet.getInt(1);
+					if(docInfo.sentenceInfoMap.containsKey(senID)){
+						docInfo.sentenceInfoMap.get(senID).termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					}
+					SentenceInfo senInfo = new SentenceInfo();
+					senInfo.sentenceID = senID;
+					senInfo.termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					docInfo.sentenceInfoMap.put(senID, senInfo);
+				}
+				docInfoArray.add(docInfo);
+				resultSet = null;
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return docInfoArray;
+	}
+	
+	public ArrayList<DocumentInfo> queryMultipleDocInfoArrayWithString_Sentence(ArrayList<Integer> docIDs, String invertedIndexTableName) {
+		ArrayList<DocumentInfo> docInfoArray = new ArrayList<DocumentInfo>();
+		ResultSet resultSet = null;
+		
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			for(int docid : docIDs){
+				DocumentInfo docInfo = new DocumentInfo();
+				docInfo.docID = docid;
+				resultSet = stmt.executeQuery("select " + sentenceID + "," + term + "," + termFreq + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = '" + String.valueOf(docid) + "';");
+				
+				while(resultSet.next()){
+					int senID = resultSet.getInt(1);
+					if(docInfo.sentenceInfoMap.containsKey(senID)){
+						docInfo.sentenceInfoMap.get(senID).termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					}
+					SentenceInfo senInfo = new SentenceInfo();
+					senInfo.sentenceID = senID;
+					senInfo.termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					docInfo.sentenceInfoMap.put(senID, senInfo);
 				}
 				docInfoArray.add(docInfo);
 				resultSet = null;

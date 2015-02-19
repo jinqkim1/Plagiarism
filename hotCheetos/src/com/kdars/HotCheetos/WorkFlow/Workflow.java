@@ -16,9 +16,12 @@ import com.kdars.HotCheetos.Parsing.Parse1_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse1_nGram_string;
 import com.kdars.HotCheetos.Parsing.Parse1_noun_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse1_noun_string;
+import com.kdars.HotCheetos.Parsing.Parse1_sentence_hashcode;
+import com.kdars.HotCheetos.Parsing.Parse1_sentence_string;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse_noun_hashcode;
 import com.kdars.HotCheetos.SimilarityScore.CosineSim;
+import com.kdars.HotCheetos.SimilarityScore.SimCalc_Sentence;
 
 public class Workflow {
 	
@@ -102,6 +105,50 @@ public class Workflow {
 		return highestPairList;
 	}
 	
+	public ArrayList<DocPair> workFlowExperiment_Sentence(int experimentTableID, int fingerprint){
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();
+		
+		Configuration.getInstance().setFingerprintSetting(fingerprint);
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
+		finall = System.currentTimeMillis();
+		System.out.println("작업 시작 전 먼저 DB에 있는 모든 docID를 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		
+		if(experimentTableID == 73 || experimentTableID == 74){
+			Parse1_sentence_hashcode test = new Parse1_sentence_hashcode();
+			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
+				System.out.println("Inverted index 저장 실패.");
+			}
+			finall = System.currentTimeMillis();
+			System.out.println("Input 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		}else if(experimentTableID == 75 || experimentTableID == 76){
+			Parse1_sentence_string test = new Parse1_sentence_string();
+			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
+				System.out.println("Inverted index 저장 실패.");
+			}
+			finall = System.currentTimeMillis();
+			System.out.println("Input 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		}
+		
+		initial = System.currentTimeMillis();
+		if (!experimentMemoryProbSolvedBatch_Sentence(corpusDocIDArray, experimentTableID)){
+			System.out.println("Processing failed. Need to check memoryProbSolved method.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 parse된 데이터 가져와서 simscore 계산 후 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis(); //doc ID list가 너무 클 경우에는 query가 너무 길어짐. 추가 logic 필요.
+		SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
+		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(corpusDocIDArray, experimentTableID);
+		finall = System.currentTimeMillis();
+		System.out.println("highest score를 가진 doc pair list를 DB에서 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초\n\n\n");
+		
+		return highestPairList;
+	}
 	
 	public ArrayList<DocPair> workFlowExperiment(int experimentTableID, int ngramwindow, int fingerprint){
 		double initial = System.currentTimeMillis();
@@ -167,6 +214,68 @@ public class Workflow {
 		System.out.println("highest score를 가진 doc pair list를 DB에서 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초\n\n\n");
 		
 		return highestPairList;
+	}
+	
+	private boolean experimentMemoryProbSolvedBatch_Sentence(ArrayList<Integer> docIDList, int experimentTableID){
+		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		docIDList = new ArrayList<Integer>(docIDList);
+//		double initial = System.currentTimeMillis();
+//		double finall = System.currentTimeMillis();
+		
+		//intra 문제 해결 필요.
+		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
+		while (!docIDList.isEmpty()){
+			
+			if(docIDList.size() <= docIDMemoryLimit){
+				
+//				initial = System.currentTimeMillis();
+				ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+				
+				if(experimentTableID == 73 || experimentTableID == 74){
+					Parse1_sentence_hashcode test = new Parse1_sentence_hashcode();
+					docInfoList = test.getParsedDocs_Sentence(docIDList, experimentTableID);
+				}else if(experimentTableID == 75 || experimentTableID == 76){
+					Parse1_sentence_string test = new Parse1_sentence_string();
+					docInfoList = test.getParsedDocs_Sentence(docIDList, experimentTableID);
+				}
+				
+//				finall = System.currentTimeMillis();
+//				System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+				
+				SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
+				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
+					System.out.println("Processing failed. Need to check workflow.");
+					return false;
+				}
+				docIDList.clear();
+				continue;
+			}
+			
+			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(docIDList.subList(0, docIDMemoryLimit));
+//			initial = System.currentTimeMillis();
+			ArrayList<DocumentInfo> docInfoList = new ArrayList<DocumentInfo>();
+			if(experimentTableID == 73 || experimentTableID == 74){
+				Parse1_sentence_hashcode test = new Parse1_sentence_hashcode();
+				docInfoList = test.getParsedDocs_Sentence(segmentedDocIDList, experimentTableID);
+			}else if(experimentTableID == 75 || experimentTableID == 76){
+				Parse1_sentence_string test = new Parse1_sentence_string();
+				docInfoList = test.getParsedDocs_Sentence(segmentedDocIDList, experimentTableID);
+			}
+//			finall = System.currentTimeMillis();
+//			System.out.println("DB에서 docInfo list 만들어오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+			
+			SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
+			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
+				System.out.println("Processing failed. Need to check workflow.");
+				return false;
+			}
+			
+			docIDListList.add(segmentedDocIDList);
+			docIDList = new ArrayList<Integer>(docIDList.subList(docIDMemoryLimit, docIDList.size()));
+			
+		}
+		
+		return true;
 	}
 	
 	private boolean experimentMemoryProbSolvedBatch(ArrayList<Integer> docIDList, int experimentTableID){

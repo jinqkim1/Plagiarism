@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
 import com.kdars.HotCheetos.PairStructure.DocPair;
 
 public class DBManager {
@@ -166,6 +167,14 @@ public class DBManager {
 			return Configuration.getInstance().DB_TABLE_NAME_SCORE71;
 		} else if (scoreTableID == 72) {
 			return Configuration.getInstance().DB_TABLE_NAME_SCORE72;
+		} else if (scoreTableID == 73) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE73;
+		} else if (scoreTableID == 74) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE74;
+		} else if (scoreTableID == 75) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE75;
+		} else if (scoreTableID == 76) {
+			return Configuration.getInstance().DB_TABLE_NAME_SCORE76;
 		}
 		
 		return null;
@@ -316,6 +325,14 @@ public class DBManager {
 			return Configuration.getInstance().DB_TABLE_NAME_LOCATION71;
 		} else if (locationTableID == 72) {
 			return Configuration.getInstance().DB_TABLE_NAME_LOCATION72;
+		} else if (locationTableID == 73) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION73;
+		} else if (locationTableID == 74) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION74;
+		} else if (locationTableID == 75) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION75;
+		} else if (locationTableID == 76) {
+			return Configuration.getInstance().DB_TABLE_NAME_LOCATION76;
 		}
 		
 		return null;
@@ -466,6 +483,14 @@ public class DBManager {
 			return Configuration.getInstance().DB_TABLE_NAME_INDEX71;
 		} else if (invertedIndexTableID == 72) {
 			return Configuration.getInstance().DB_TABLE_NAME_INDEX72;
+		} else if (invertedIndexTableID == 73) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX73;
+		} else if (invertedIndexTableID == 74) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX74;
+		} else if (invertedIndexTableID == 75) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX75;
+		} else if (invertedIndexTableID == 76) {
+			return Configuration.getInstance().DB_TABLE_NAME_INDEX76;
 		}
 		
 		return null;
@@ -572,6 +597,84 @@ public class DBManager {
 		return DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName);
 	}
 	
+	public boolean insertBulkToSentenceTable(DocumentInfo docInfo, int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(invertedIndexTableName.contains("string")){
+			StringBuilder csvContent = new StringBuilder();
+			String docIDString = String.valueOf(docInfo.docID);
+			
+			int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
+			int bulkInsertLimitChecker = 0;
+			
+			Iterator it_sentence = docInfo.sentenceInfoMap.entrySet().iterator();
+			while(it_sentence.hasNext()){
+				Map.Entry pairs = (Map.Entry)it_sentence.next();
+				String sentenceIDString = pairs.getKey().toString();
+				
+				SentenceInfo senInfo = (SentenceInfo) pairs.getValue();
+				Iterator it = senInfo.termFreq.entrySet().iterator();
+				
+				while(it.hasNext()){
+					Map.Entry pair = (Map.Entry)it.next();
+					csvContent.append(docIDString + "," + sentenceIDString + "," + pair.getKey().toString() + "," + pair.getValue().toString() + "\n");
+					
+					bulkInsertLimitChecker++;
+					if(bulkInsertLimitChecker == bulkInsertLimit){
+						if(!DB.bulkInsertSentenceWithString(csvContent.toString(), invertedIndexTableName)){
+							System.out.println("Similarity score bulk insert failed.");
+						}
+						bulkInsertLimitChecker = 0;
+						csvContent = new StringBuilder();
+					}
+					
+					it.remove();
+				}
+				
+				it_sentence.remove();
+			}
+			
+			return DB.bulkInsertSentenceWithString(csvContent.toString(), invertedIndexTableName);
+		}
+		
+
+
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docInfo.docID);
+		
+		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
+		int bulkInsertLimitChecker = 0;
+		
+		Iterator it_sentence = docInfo.sentenceInfoMap.entrySet().iterator();
+		while(it_sentence.hasNext()){
+			Map.Entry pairs = (Map.Entry)it_sentence.next();
+			String sentenceIDString = pairs.getKey().toString();
+			
+			SentenceInfo senInfo = (SentenceInfo) pairs.getValue();
+			Iterator it = senInfo.termFreq.entrySet().iterator();
+			
+			while(it.hasNext()){
+				Map.Entry pair = (Map.Entry)it.next();
+				csvContent.append(docIDString + "," + sentenceIDString + "," + pair.getKey().toString() + "," + pair.getValue().toString() + "\n");
+				
+				bulkInsertLimitChecker++;
+				if(bulkInsertLimitChecker == bulkInsertLimit){
+					if(!DB.bulkInsertSentence(csvContent.toString(), invertedIndexTableName)){
+						System.out.println("Similarity score bulk insert failed.");
+					}
+					bulkInsertLimitChecker = 0;
+					csvContent = new StringBuilder();
+				}
+				
+				it.remove();
+			}
+			
+			it_sentence.remove();
+		}
+		
+		return DB.bulkInsertSentence(csvContent.toString(), invertedIndexTableName);
+	}
+	
 	public boolean insertBulkToHashTableWithTableName(DocumentInfo docInfo, String tableName){
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
@@ -643,7 +746,17 @@ public class DBManager {
 		
 		return DB.queryMultipleDocInfoArray(docIDs, invertedIndexTableName);
 	}
-
+	
+	public ArrayList<DocumentInfo> getMultipleDocInfoArray_Sentence(ArrayList<Integer> docIDs, int invertedIndexTableID) {
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(invertedIndexTableName.contains("string")){
+			return DB.queryMultipleDocInfoArrayWithString_Sentence(docIDs, invertedIndexTableName);
+		}
+		
+		return DB.queryMultipleDocInfoArray_Sentence(docIDs, invertedIndexTableName);
+	}
+	
 	public DocumentInfo getDocInfoArray(int docid, int invertedIndexTableID) {
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
 		return DB.queryDocInfoArray(docid, invertedIndexTableName);

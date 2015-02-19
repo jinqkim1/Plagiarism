@@ -52,17 +52,17 @@ public class Configuration {
 	/* Similarity score threshold setting for clustering */
 	
 	/* limit settings to prevent excessive memory usage */
-	private int fileListLimit = 1500; //input으로 받는 file list가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
+	private int fileListLimit = 25; //input으로 받는 file list가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
 	public int getFileListLimit(){
 		return this.fileListLimit;
 	}
 	
-	private int docIDListLimit = 1500; //docID list size limit to prevent long queries in similarity score retrieval.
+	private int docIDListLimit = 25; //docID list size limit to prevent long queries in similarity score retrieval.
 	public int getDocIDListLimit(){
 		return this.docIDListLimit;
 	}
 	
-	private int docInfoListLimit = 1500; //Document Info의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
+	private int docInfoListLimit = 25; //Document Info의 갯수가 limit을 넘으면 잘라서 처리할 수 있도록 하여 메모리 문제 해결.
 	public int getDocInfoListLimit(){
 		return this.docInfoListLimit;
 	}
@@ -452,6 +452,26 @@ public class Configuration {
 	public final String DB_TABLE_NAME_INDEX72 = "10-gram_noun_string_fingerprint_invertedindextable";
 	public final String DB_TABLE_NAME_LOCATION72 = "10-gram_noun_string_fingerprint_charlocationtable";
 	public final String DB_TABLE_NAME_SCORE72 = "10-gram_noun_string_fingerprint_simscoretable";
+	
+	//table ID == 73
+	public final String DB_TABLE_NAME_INDEX73 = "sentence_hashcode_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION73 = "sentence_hashcode_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE73 = "sentence_hashcode_simscoretable";
+	
+	//table ID == 74
+	public final String DB_TABLE_NAME_INDEX74 = "sentence_hashcode_fingerprint_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION74 = "sentence_hashcode_fingerprint_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE74 = "sentence_hashcode_fingerprint_simscoretable";
+	
+	//table ID == 75
+	public final String DB_TABLE_NAME_INDEX75 = "sentence_string_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION75 = "sentence_string_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE75 = "sentence_string_simscoretable";
+	
+	//table ID == 76
+	public final String DB_TABLE_NAME_INDEX76 = "sentence_string_fingerprint_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION76 = "sentence_string_fingerprint_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE76 = "sentence_string_fingerprint_simscoretable";
 	
 		/* experiment DB */
 	/* DB Connect Info */
