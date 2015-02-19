@@ -1,24 +1,41 @@
 package com.kdars.HotCheetos.Parsing;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reporter;
+
 import com.kdars.HotCheetos.Config.Configuration;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class Parse1_nGram_string extends Parse1{
+public class NGram_string_Mapper extends MapReduceBase implements Mapper<IntWritable, Text, Text, IntWritable>{
+	// Mapper< inputDocID, inputDocumentContent, outputNgram, outputOne>
 	
-	
-	/*Temporary measure for experiment.  Need to delete!!!! */
+	private final IntWritable one = new IntWritable(1);
+	private Text word = new Text();
 	private int nGramSetting = Configuration.getInstance().getNgramSetting();
 	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
-	/*Temporary measure for experiment.  Need to delete!!!! */
 	
+	private int invertedIndexTableID = 37;  //3-gram string fingerprint
 	
 	@Override
-	boolean parseDoc(String content, int documentID, int invertedIndexTableID) {
-
-		DocumentInfo docInfo = new DocumentInfo();
-		docInfo.docID = documentID;
-
+	public void map(IntWritable inputKey, Text inputValue, OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException {
+		
+		String documentContent = inputValue.toString();
+		int documentID = inputKey.get();
+		
+		parseDoc(documentContent, output);
+	}
+	
+	private void parseDoc(String content, OutputCollector<Text, IntWritable> output) throws IOException {
+		
 		String wordList[] = content.trim().split("\\s+");
 		
 		StringBuilder ngramMaker = new StringBuilder();
@@ -38,7 +55,7 @@ public class Parse1_nGram_string extends Parse1{
 			ngramChecker++;
 			ngramMaker.append(word);
 			
-			if(ngramChecker != this.nGramSetting){
+			if(ngramChecker != nGramSetting){
 				
 //				//마침표로 끝나는 단어일 경우, skip하고 다음 포문 탐.
 //				if (word.charAt(word.length()-1) == '.'){
@@ -68,25 +85,18 @@ public class Parse1_nGram_string extends Parse1{
 				ngramMaker.replace(0, ngramCheckIndex, "");
 			}
 			
-			addHash(docInfo, ngramMaker.toString());
-			ngramCheckIndex = wordList[i- this.nGramSetting + 1].length();
+			addHash(ngramMaker.toString(), output);
+			ngramCheckIndex = wordList[i- nGramSetting + 1].length();
 			
 		}
-		
-		return DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
 	
 	}
 	
-	private void addHash(DocumentInfo docInfo, String term) {
-		if (term.hashCode() % this.fingerprintSetting != 0) {
-			return;
+	private void addHash(String term, OutputCollector<Text, IntWritable> output) throws IOException {
+		if (term.hashCode() % fingerprintSetting == 0) {
+			word.set(term);
+			output.collect(word, one);
 		}
-		if (docInfo.termFreq.containsKey(term)) {
-			int value = docInfo.termFreq.get(term);
-			docInfo.termFreq.replace(term, value + 1);
-			return;
-		}
-		docInfo.termFreq.put(term, 1);
 	}
 	
 }
