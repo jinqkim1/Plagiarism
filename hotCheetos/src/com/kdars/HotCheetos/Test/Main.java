@@ -64,21 +64,18 @@ public class Main {
 		
 		
 		
-//		String scoreRange = String.valueOf(0.5);
-//		for (int i = 1 ; i < 73 ; i++){
-//			String tableName = DBManager.getInstance().convertIDtoName_Score(i);
+		String scoreRange = String.valueOf(0.8);
+		for (int i = 1 ; i < 73 ; i++){
+			String tableName = DBManager.getInstance().convertIDtoName_Score(i);
 //			String query = "select plagiarismdb.texttable.DocID , plagiarismdb.texttable.Title, plagiarismdb.`" + tableName + "`.DocID , plagiarismdb.`" + tableName + "`.ComparedDocID , plagiarismdb.`" + tableName + "`.SimilarityScore into outfile '" + tableName + "_" + scoreRange + ".txt' fields terminated by ',' enclosed by '\"' lines terminated by '\\n' from  plagiarismdb.texttable, plagiarismdb.`" + tableName + "` where (plagiarismdb.`" + tableName + "`.DocID = plagiarismdb.texttable.DocID or plagiarismdb.`" + tableName + "`.ComparedDocID = plagiarismdb.texttable.DocID) and plagiarismdb.`" + tableName + "`.SimilarityScore > " + scoreRange + " order by similarityscore desc;";
-//			System.out.println(query);
-//		}
+			String query = "select DocID, ComparedDocID, SimilarityScore into outfile '" + tableName + "_" + scoreRange + ".txt'  fields terminated by ',' enclosed by '\"' lines terminated by '\\n' from plagiarismdb.`" + tableName + "` where SimilarityScore >= " + scoreRange + " order by similarityscore desc;";
+			System.out.println(query);
+		}
 
 		
 		
 		
 		Workflow workflowForExperiment = new Workflow();
-		
-		workflowForExperiment.workFlowExperiment_Sentence(75, 1);
-		workflowForExperiment.workFlowExperiment_Sentence(76, 4);
-		
 		
 		ArrayList<Integer> fingerprintList = new ArrayList<Integer>();
 		fingerprintList.add(1);
