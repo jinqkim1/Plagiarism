@@ -17,7 +17,7 @@ public class PdfMapper extends Mapper<Text, Text, Text, Text>{
 		String[] processingLines = content.toString().trim().split("\\r?\\n");
 		
 		for(String oneLine : processingLines){
-			processingContent.append(textExtractor(oneLine));
+			processingContent.append(textExtractor(oneLine) + "/n");
 		}
 		
 		Text processedContent = new Text();
