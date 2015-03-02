@@ -9,6 +9,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class PdfDriver {
 	
@@ -25,7 +26,7 @@ public class PdfDriver {
 		
 		// specify input and output dirs
 		firstJob.setInputFormatClass(PdfFileInputFormat.class);
-		firstJob.setOutputFormatClass(FileOutputFormat.class);
+		firstJob.setOutputFormatClass(TextOutputFormat.class);
 		FileInputFormat.addInputPath(firstJob, new Path("input"));
 		FileOutputFormat.setOutputPath(firstJob, new Path("output"));
 		
@@ -34,7 +35,7 @@ public class PdfDriver {
 		
 		// specify a reducer
 		firstJob.setReducerClass(PdfReducer.class);
-		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
+//		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
 		
 		System.exit(firstJob.waitForCompletion(true)?0:1);
 
