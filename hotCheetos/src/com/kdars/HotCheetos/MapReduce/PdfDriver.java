@@ -14,33 +14,38 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 import com.kdars.HotCheetos.Parsing.NGram_string_Driver;
 
 public class PdfDriver {
 	
 	public void driver() throws IOException, InterruptedException, ClassNotFoundException {
-		Configuration conf = new Configuration();
-		Job job = Job.getInstance(conf);
+		
+		Job firstJob = Job.getInstance();
+		firstJob.setJobName("ExtractAndParse");
+		Configuration conf = firstJob.getConfiguration();
 		
 		// specify output types
-		job.setOutputKeyClass(Text.class);  //Term
-		job.setOutputValueClass(IntWritable.class);  //TermFrequency
+		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
+		firstJob.setMapOutputValueClass(Text.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
+		firstJob.setOutputKeyClass(Text.class);  //Term
+		firstJob.setOutputValueClass(IntWritable.class);  //TermFrequency
 		
 		// specify input and output dirs
-		job.setInputFormatClass(PdfFileInputFormat.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
-		FileInputFormat.addInputPath(job, new Path("input"));
-		FileOutputFormat.setOutputPath(job, new Path("output"));
+		firstJob.setInputFormatClass(PdfFileInputFormat.class);
+		firstJob.setOutputFormatClass(FileOutputFormat.class);
+		FileInputFormat.addInputPath(firstJob, new Path("input"));
+		FileOutputFormat.setOutputPath(firstJob, new Path("output"));
 		
 		// specify a mapper
-		job.setMapperClass(PdfMapper.class);
+		firstJob.setMapperClass(PdfMapper.class);
 		
 		// specify a reducer
-		job.setReducerClass(PdfReducer.class);
-		job.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
+		firstJob.setReducerClass(PdfReducer.class);
+		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
 		
-		System.out.println(job.waitForCompletion(true));
+		System.exit(firstJob.waitForCompletion(true)?0:1);
 
 	}
 }
