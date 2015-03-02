@@ -5,26 +5,17 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.InputFormat;
-import org.apache.hadoop.mapred.JobClient;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-
-import com.kdars.HotCheetos.Parsing.NGram_string_Driver;
 
 public class PdfDriver {
 	
 	public void driver() throws IOException, InterruptedException, ClassNotFoundException {
-		
-		Job firstJob = Job.getInstance();
+		Configuration conf = new Configuration();
+		Job firstJob = Job.getInstance(conf);
 		firstJob.setJobName("ExtractAndParse");
-		Configuration conf = firstJob.getConfiguration();
 		
 		// specify output types
 		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
