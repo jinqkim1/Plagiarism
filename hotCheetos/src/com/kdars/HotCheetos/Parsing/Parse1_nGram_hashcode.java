@@ -31,14 +31,25 @@ public class Parse1_nGram_hashcode extends Parse1{
 		ArrayList<Integer> nGramMaker = new ArrayList<Integer>();
 		int ngramMaker = 0;
 		
+		//마침표가 붙어있는 단어일 경우, 2글자까지는 무시. 마침표가 붙어있지 않다면 1글자까지는 무시.
+		int validTermChecker = 0; //단어 길이 측정.
+		boolean periodChecker = false;
+		
 //		int lastIndexOfnonBlankCharacter = 0;
 		int hashCharSum = 0;
 		for (int i = 0; i < wholeChar.length; i++){
 			
 			//whitespace가 아닌 캐릭터는 해쉬코드 더함.
 			if (wholeChar[i] != ' '){
+				
+				validTermChecker++;
+				
 				hashCharSum += wholeChar[i];
 //				lastIndexOfnonBlankCharacter = i;
+				
+				if (wholeChar[i] == '.'){
+					periodChecker = true;
+				}
 				
 				//문장의 마지막 단어 처리.
 				if (i != wholeChar.length - 1){
@@ -48,6 +59,16 @@ public class Parse1_nGram_hashcode extends Parse1{
 			
 			//연속으로 whitespace일 경우에는 그 다음 포문 탐.
 			if (hashCharSum == 0){
+				continue;
+			}
+			
+			//마침표가 붙어있는 단어일 경우, 2글자까지는 무시. 마침표가 붙어있지 않다면 1글자까지는 무시.
+			if (periodChecker && validTermChecker <= 2){
+				periodChecker = false;
+				validTermChecker = 0;
+				continue;
+			}else if ((!periodChecker) && validTermChecker < 2){
+				validTermChecker = 0;
 				continue;
 			}
 			
@@ -91,7 +112,9 @@ public class Parse1_nGram_hashcode extends Parse1{
 			
 			//whitespace가 detect되고 한글자 짜리 단어가 아니라면, 새로운 ngramComponent를 만들기 위해 hashCharSum 리셋함. 
 			hashCharSum = 0;
-			
+			// 단어 길이 체커 0으로 리셋. 마침표 여부 확인 boolean 리셋.
+			validTermChecker = 0;
+			periodChecker = false;
 		}
 
 		return DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
