@@ -13,10 +13,16 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class PdfDriver {
 	
-	public void driver() throws IOException, InterruptedException, ClassNotFoundException {
+	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
+		// TODO Auto-generated method stub
+		driver(args);
+	}
+	
+	public static void driver(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		Job firstJob = Job.getInstance(conf);
 		firstJob.setJobName("ExtractAndParse");
+		firstJob.setJarByClass(com.kdars.HotCheetos.MapReduce.PdfDriver.class);
 		
 		// specify output types
 		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
@@ -27,8 +33,8 @@ public class PdfDriver {
 		// specify input and output dirs
 		firstJob.setInputFormatClass(PdfFileInputFormat.class);
 		firstJob.setOutputFormatClass(TextOutputFormat.class);
-		FileInputFormat.addInputPath(firstJob, new Path("input"));
-		FileOutputFormat.setOutputPath(firstJob, new Path("output"));
+		FileInputFormat.addInputPath(firstJob, new Path(args[1]));
+		FileOutputFormat.setOutputPath(firstJob, new Path(args[2]));
 		
 		// specify a mapper
 		firstJob.setMapperClass(PdfMapper.class);

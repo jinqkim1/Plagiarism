@@ -65,7 +65,7 @@ public class Parse1_noun_string extends Parse1{
 		}
 		if (docInfo.termFreq.containsKey(term)) {
 			int value = docInfo.termFreq.get(term);
-			docInfo.termFreq.replace(term, value + 1);
+			docInfo.termFreq.put(term, value + 1);
 			return;
 		}
 		docInfo.termFreq.put(term, 1);

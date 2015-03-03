@@ -38,7 +38,7 @@ public class PdfReducer extends Reducer<Text, Text, Text, IntWritable>{
 		
 		//여기서 inverted index table에 저장함.
 		//일단 test를 위해 default로 3-gram hashcode fingerprint 진행하게 됨.
-		DocumentInfo docInfo = test.parseDoc(content, docID, 73);  // 여기서 73은 table id로 일단 sentence-hashcode table에 저장하게 됨.
+		DocumentInfo docInfo = test.parseDoc(content, docID, 75);  // 여기서 73은 table id로 일단 sentence-hashcode table에 저장하게 됨.
 		
 		for(String key : docInfo.termFreq.keySet()){
 			Text keyText = new Text();

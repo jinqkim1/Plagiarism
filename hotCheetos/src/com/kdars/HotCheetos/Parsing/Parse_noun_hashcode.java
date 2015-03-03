@@ -44,7 +44,7 @@ public class Parse_noun_hashcode implements Parse {
 		String hashToString = String.valueOf(hash);
 		if (docInfo.termFreq.containsKey(hashToString)) {
 			int value = docInfo.termFreq.get(hashToString);
-			docInfo.termFreq.replace(hashToString, value + 1);
+			docInfo.termFreq.put(hashToString, value + 1);
 			return docInfo;
 		}
 		docInfo.termFreq.put(hashToString, 1);

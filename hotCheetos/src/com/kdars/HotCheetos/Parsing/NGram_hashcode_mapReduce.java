@@ -107,7 +107,7 @@ public class NGram_hashcode_mapReduce{
 		String hashToString = String.valueOf(hash);
 		if (docInfo.termFreq.containsKey(hashToString)) {
 			int value = docInfo.termFreq.get(hashToString);
-			docInfo.termFreq.replace(hashToString, value + 1);
+			docInfo.termFreq.put(hashToString, value + 1);
 			return;
 		}
 		docInfo.termFreq.put(hashToString, 1);

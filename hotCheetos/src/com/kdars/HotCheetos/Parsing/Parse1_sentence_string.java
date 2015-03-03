@@ -56,7 +56,7 @@ public class Parse1_sentence_string extends Parse1{
 		
 		if (senInfo.termFreq.containsKey(word)) {
 			int value = senInfo.termFreq.get(word);
-			senInfo.termFreq.replace(word, value + 1);
+			senInfo.termFreq.put(word, value + 1);
 			return;
 		}
 		senInfo.termFreq.put(word, 1);

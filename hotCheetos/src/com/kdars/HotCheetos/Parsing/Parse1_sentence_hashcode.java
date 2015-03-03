@@ -56,7 +56,7 @@ public class Parse1_sentence_hashcode extends Parse1{
 		String hashToString = String.valueOf(hash);
 		if (senInfo.termFreq.containsKey(hashToString)) {
 			int value = senInfo.termFreq.get(hashToString);
-			senInfo.termFreq.replace(hashToString, value + 1);
+			senInfo.termFreq.put(hashToString, value + 1);
 			return;
 		}
 		senInfo.termFreq.put(hashToString, 1);
