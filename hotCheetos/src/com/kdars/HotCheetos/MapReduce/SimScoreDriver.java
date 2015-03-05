@@ -55,10 +55,10 @@ public class SimScoreDriver {
 		DBInputFormat.setInput(secondJob, inputDBRecords.class, inputQuery, inputCountQuery);
 		
 		// specify a mapper
-		secondJob.setMapperClass(SimScoreMapper.class);
+		//secondJob.setMapperClass(SimScoreMapper.class);
 		
 		// specify a reducer
-		secondJob.setReducerClass(SimScoreReducer.class);
+		//secondJob.setReducerClass(SimScoreReducer.class);
 //		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
 		
 		System.exit(secondJob.waitForCompletion(true)?0:1);

@@ -37,7 +37,12 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 		FSDataInputStream fileIn = fs.open(split.getPath());
 		PDDocument pdf = PDDocument.load(fileIn);
 		PDFTextStripper stripper = new PDFTextStripper();
-		this.content = stripper.getText(pdf);
+		try{
+			this.content = stripper.getText(pdf);
+		}catch(Exception ex){
+			this.content = "";
+		}
+		
 		this.fileName = file.getName();
 		}
 
