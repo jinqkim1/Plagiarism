@@ -2,7 +2,7 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
@@ -11,8 +11,8 @@ public class Parse1_nGram_hashcode extends Parse1{
 	private ArrayList<Integer> stopwordHashList = new ArrayList<Integer>();
 	
 	/*Temporary measure for experiment.  Need to delete!!!! */
-	private int nGramSetting = Configuration.getInstance().getNgramSetting();
-	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	private int nGramSetting = Configurations.getInstance().getNgramSetting();
+	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
 	public Parse1_nGram_hashcode(){

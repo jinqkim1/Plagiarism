@@ -1,6 +1,6 @@
 package com.kdars.HotCheetos.Parsing;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
@@ -8,7 +8,7 @@ import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
 public class Parse1_sentence_hashcode extends Parse1{
 	
 	/*Temporary measure for experiment.  Need to delete!!!! */
-	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
 	@Override

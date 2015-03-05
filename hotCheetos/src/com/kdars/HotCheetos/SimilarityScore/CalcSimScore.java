@@ -3,7 +3,7 @@ package com.kdars.HotCheetos.SimilarityScore;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.PairStructure.DocPair;

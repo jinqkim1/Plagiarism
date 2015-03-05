@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
@@ -90,7 +90,7 @@ public class Parse_nGram_hashcode implements Parse{
 	}
 	
 	public DocumentInfo addHash(DocumentInfo docInfo, int hash) {
-		if (hash % Configuration.getInstance().getFingerprintSetting() != 0) {
+		if (hash % Configurations.getInstance().getFingerprintSetting() != 0) {
 			return docInfo;
 		}
 		String hashToString = String.valueOf(hash);

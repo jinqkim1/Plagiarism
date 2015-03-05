@@ -6,17 +6,14 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class Parse1_nGram_string extends Parse1{
-	
+public class NGram_string_mapReduce {
 	
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	private int nGramSetting = Configurations.getInstance().getNgramSetting();
 	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
-	
-	@Override
-	boolean parseDoc(String content, int documentID, int invertedIndexTableID) {
+	public DocumentInfo parseDoc(String content, int documentID, int invertedIndexTableID) {
 
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
@@ -90,8 +87,10 @@ public class Parse1_nGram_string extends Parse1{
 			wordListIndexSupporter.remove(0);
 		}
 		
-		return DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
-	
+		DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
+		
+		return docInfo;
+		
 	}
 	
 	private void addHash(DocumentInfo docInfo, String term) {
@@ -105,5 +104,4 @@ public class Parse1_nGram_string extends Parse1{
 		}
 		docInfo.termFreq.put(term, 1);
 	}
-	
 }

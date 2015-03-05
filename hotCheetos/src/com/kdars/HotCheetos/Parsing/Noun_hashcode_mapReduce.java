@@ -7,8 +7,7 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class Parse1_noun_string extends Parse1{
-	
+public class Noun_hashcode_mapReduce {
 	private String postFix1 = Configurations.getInstance().getPostFix1();
 	private String postFix2 = Configurations.getInstance().getPostFix2();
 	
@@ -18,57 +17,58 @@ public class Parse1_noun_string extends Parse1{
 	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
-	
-	@Override
-	boolean parseDoc(String content, int documentID, int invertedIndexTableID) {
+	public DocumentInfo parseDoc(String content, int documentID, int invertedIndexTableID) {
+
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
 		String wordList[] = content.trim().split("\\s+");
 		
-		ArrayList<String> nGramMaker = new ArrayList<String>();
-		StringBuilder ngramMaker = new StringBuilder();
-		
-		int ngramCheckIndex = 0;
+		ArrayList<Integer> nGramMaker = new ArrayList<Integer>();
+		int ngramMaker = 0;
+		int ngramSupportNumber = 0;
 		int ngramChecker = 0;
 		for (int i = 0; i < wordList.length; i++) {
 			int postFixChecker = wordList[i].length();
 			String word = deletePostFix(wordList[i]);
 			if (word.length() != postFixChecker) {
-				
 				ngramChecker++;
-				ngramMaker.append(word);
-				nGramMaker.add(word);
+				ngramMaker += word.hashCode();
+				nGramMaker.add(word.hashCode());
 				
-				if(ngramChecker != this.nGramSetting){
+				if (ngramChecker != this.nGramSetting){
 					continue;
 				}
 				
 				ngramChecker--;
-				if(ngramCheckIndex != 0){
-					ngramMaker.replace(0, ngramCheckIndex, "");
-				}
 				
-				addHash(docInfo, ngramMaker.toString());
-				ngramCheckIndex = nGramMaker.get(0).length();
+				if (ngramSupportNumber != 0){
+					ngramMaker -= ngramSupportNumber;
+				}
+				addHash(docInfo, ngramMaker);
+				ngramSupportNumber = nGramMaker.get(0);
 				nGramMaker.remove(0);
-			}			
+				
+			}
 		}
 		
-		return DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
+		DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
+		
+		return docInfo;
 		
 	}
 	
-	private void addHash(DocumentInfo docInfo, String term) {
-		if (term.hashCode() % this.fingerprintSetting != 0) {
+	private void addHash(DocumentInfo docInfo, int hash) {
+		if (hash % this.fingerprintSetting != 0) {
 			return;
 		}
-		if (docInfo.termFreq.containsKey(term)) {
-			int value = docInfo.termFreq.get(term);
-			docInfo.termFreq.put(term, value + 1);
+		String hashToString = String.valueOf(hash);
+		if (docInfo.termFreq.containsKey(hashToString)) {
+			int value = docInfo.termFreq.get(hashToString);
+			docInfo.termFreq.put(hashToString, value + 1);
 			return;
 		}
-		docInfo.termFreq.put(term, 1);
+		docInfo.termFreq.put(hashToString, 1);
 	}
 	
 	private String deletePostFix(String processedString) {
@@ -94,5 +94,4 @@ public class Parse1_noun_string extends Parse1{
 
 		return processedString;
 	}
-	
 }

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_noun_string implements Parse {
-	private String postFix1 = Configuration.getInstance().getPostFix1();
-	private String postFix2 = Configuration.getInstance().getPostFix2();
+	private String postFix1 = Configurations.getInstance().getPostFix1();
+	private String postFix2 = Configurations.getInstance().getPostFix2();
 	private static Parse_noun_string parse_noun_string = new Parse_noun_string();
 
 	public static Parse_noun_string getInstance() {
@@ -19,7 +19,7 @@ public class Parse_noun_string implements Parse {
 
 	@Override
 	public DocumentInfo parseDoc(String content, int documentID) {
-		int mod = Configuration.getInstance().getFingerprintSetting();
+		int mod = Configurations.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
@@ -95,7 +95,7 @@ public class Parse_noun_string implements Parse {
 	}
 	
 	public boolean parseDocJINKYUWithTableName(String content, int documentID, String tableName) {
-		int mod = Configuration.getInstance().getFingerprintSetting();
+		int mod = Configurations.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 

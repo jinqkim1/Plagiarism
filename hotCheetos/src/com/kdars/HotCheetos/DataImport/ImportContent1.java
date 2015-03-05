@@ -11,12 +11,12 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.PDFParser.PDFFileParser;
 
 public class ImportContent1 {
-	private String extractTextPattern = Configuration.getInstance().getTextPattern();
+	private String extractTextPattern = Configurations.getInstance().getTextPattern();
 	
 	public ArrayList<Integer> importProcessor(ArrayList<File> zipFileList){
 		ArrayList<Integer> docIDList = new ArrayList<Integer>();

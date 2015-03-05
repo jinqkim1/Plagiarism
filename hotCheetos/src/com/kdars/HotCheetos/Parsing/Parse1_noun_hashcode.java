@@ -3,19 +3,19 @@ package com.kdars.HotCheetos.Parsing;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse1_noun_hashcode extends Parse1{
 	
-	private String postFix1 = Configuration.getInstance().getPostFix1();
-	private String postFix2 = Configuration.getInstance().getPostFix2();
+	private String postFix1 = Configurations.getInstance().getPostFix1();
+	private String postFix2 = Configurations.getInstance().getPostFix2();
 	
 	
 	/*Temporary measure for experiment.  Need to delete!!!! */
-	private int nGramSetting = Configuration.getInstance().getNgramSetting();
-	private int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	private int nGramSetting = Configurations.getInstance().getNgramSetting();
+	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
 	

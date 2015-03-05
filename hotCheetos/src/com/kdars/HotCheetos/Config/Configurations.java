@@ -1,9 +1,9 @@
 package com.kdars.HotCheetos.Config;
 
-public class Configuration {
+public class Configurations {
 	
-	private static  Configuration settings = new Configuration();
-	public static Configuration getInstance(){
+	private static  Configurations settings = new Configurations();
+	public static Configurations getInstance(){
 		return	settings;
 	}
 	
@@ -30,7 +30,7 @@ public class Configuration {
 	/* N-gram setting */
 	
 	/* Finger-printing setting */
-	private int mod = 4;
+	private int mod = 1;
 	public int getFingerprintSetting(){  //mod의 배수로 hashcode 선택하는 동작을 위한 setting.
 		return this.mod;
 	}
@@ -88,6 +88,9 @@ public class Configuration {
 	public final String DB_USER_PASS = "jinqkim69";
 	public final String DB_TABLE_NAME_TEXT = "texttable";
 	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
+	
+	//mapReduce testing.  Testing on Default tables.
+	//table ID == 0   (Temporary)
 	public final String DB_TABLE_NAME_INDEX = "invertedindextable";
 	public final String DB_TABLE_NAME_LOCATION = "charlocationtable";
 	public final String DB_TABLE_NAME_SCORE = "simscoretable";
@@ -472,6 +475,26 @@ public class Configuration {
 	public final String DB_TABLE_NAME_INDEX76 = "sentence_string_fingerprint_invertedindextable";
 	public final String DB_TABLE_NAME_LOCATION76 = "sentence_string_fingerprint_charlocationtable";
 	public final String DB_TABLE_NAME_SCORE76 = "sentence_string_fingerprint_simscoretable";
+	
+	//table ID == 77
+	public final String DB_TABLE_NAME_INDEX77 = "prism_3-gram_hashcode_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION77 = "prism_3-gram_hashcode_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE77 = "prism_3-gram_hashcode_simscoretable";
+	
+	//table ID == 78
+	public final String DB_TABLE_NAME_INDEX78 = "prism_3-gram_string_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION78 = "prism_3-gram_string_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE78 = "prism_3-gram_string_simscoretable";
+	
+	//table ID == 79
+	public final String DB_TABLE_NAME_INDEX79 = "prism_3-gram_noun_hashcode_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION79 = "prism_3-gram_noun_hashcode_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE79 = "prism_3-gram_noun_hashcode_simscoretable";
+	
+	//table ID == 80
+	public final String DB_TABLE_NAME_INDEX80 = "prism_3-gram_noun_string_invertedindextable";
+	public final String DB_TABLE_NAME_LOCATION80 = "prism_3-gram_noun_string_charlocationtable";
+	public final String DB_TABLE_NAME_SCORE80 = "prism_3-gram_noun_string_simscoretable";
 	
 		/* experiment DB */
 	/* DB Connect Info */

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
@@ -118,7 +118,7 @@ public class SimCalc_Sentence extends CalcSimScore{
 	boolean interCalcForIntraCalcSimSet(ArrayList<DocumentInfo> intraDocInfoListForInter1, ArrayList<DocumentInfo> intraDocInfoListForInter2, int scoreTableID) {
 
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit() / 2;
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit() / 2;
 		
 		int bulkInsertLimitChecker = 0;
 		for(DocumentInfo docInfo1 : intraDocInfoListForInter1){
@@ -149,7 +149,7 @@ public class SimCalc_Sentence extends CalcSimScore{
 	@Override
 	boolean intraCalcSimSet(ArrayList<DocumentInfo> docInfoList, int scoreTableID) {
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		
 		int bulkInsertLimitChecker = 0;
 		for(int i=0; i<docInfoList.size(); i++){
@@ -183,7 +183,7 @@ public class SimCalc_Sentence extends CalcSimScore{
 	@Override
 	boolean interCalculateSegment(ArrayList<DocumentInfo> docInfoList, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID) {
 		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configuration.getInstance().getbulkScoreLimit();
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 		
 		for (DocumentInfo docInfo1 : docInfoList){
@@ -255,7 +255,7 @@ public class SimCalc_Sentence extends CalcSimScore{
 	
 	@Override
 	boolean interCalcSimSet(ArrayList<DocumentInfo> docInfoList,  ArrayList<Integer> corpusDocIDArray, int scoreTableID, int invertedIndexTableID){
-		int docInfoMemoryLimit = Configuration.getInstance().getDocInfoListLimit();
+		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		while(!corpusDocIDArray.isEmpty()){
 			if(corpusDocIDArray.size() <= docInfoMemoryLimit){
 				ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray_Sentence(corpusDocIDArray, invertedIndexTableID);

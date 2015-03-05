@@ -26,7 +26,10 @@ public class PdfReducer extends Reducer<Text, Text, Text, IntWritable>{
 			content = text.toString();
 			
 			//여기서 text table에 저장 후 docID 가져옴.
-			docID = DBManager.getInstance().insertRowAndGetDocIDArray(title.toString(), text.toString());  //결국 하나 밖에 안 담음.
+//			docID = DBManager.getInstance().insertRowAndGetDocIDArray(title.toString(), text.toString());  //결국 하나 밖에 안 담음.
+			
+			//prism test 후 다시 복구 필요.
+			docID = DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(title.toString(), text.toString());
 		}
 		
 		if (contentCount != 1){
@@ -38,17 +41,23 @@ public class PdfReducer extends Reducer<Text, Text, Text, IntWritable>{
 		
 		//여기서 inverted index table에 저장함.
 		//일단 test를 위해 default로 3-gram hashcode fingerprint 진행하게 됨.
-		DocumentInfo docInfo = test.parseDoc(content, docID, 75);  // 여기서 73은 table id로 일단 sentence-hashcode table에 저장하게 됨.
+		DocumentInfo docInfo = test.parseDoc(content, docID, 77);  // 여기서 0은 table id로 일단 default table인  'invertedindextable'에 저장하게 됨.
 		
-		for(String key : docInfo.termFreq.keySet()){
-			Text keyText = new Text();
-			keyText.set(key);
-			
-			IntWritable valueInt = new IntWritable();
-			valueInt.set(docInfo.termFreq.get(key));
-			
-			context.write(keyText, valueInt);
-		}
+//		for(String key : docInfo.termFreq.keySet()){
+//			Text keyText = new Text();
+//			keyText.set(key);
+//			
+//			IntWritable valueInt = new IntWritable();
+//			valueInt.set(docInfo.termFreq.get(key));
+//			
+//			context.write(keyText, valueInt);
+//		}
+		
+		Text keyText = new Text();
+		keyText.set("1");
+		IntWritable valueInt = new IntWritable();
+		valueInt.set(1);
+		context.write(keyText, valueInt);
 		
 	}
 }

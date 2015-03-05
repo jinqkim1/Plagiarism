@@ -3,7 +3,7 @@ package com.kdars.HotCheetos.Parsing;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
@@ -14,14 +14,14 @@ public class Parse_nGram_string implements Parse {
 	}
 	@Override
 	public DocumentInfo parseDoc(String content, int documentID) {
-		int mod = Configuration.getInstance().getFingerprintSetting();
+		int mod = Configurations.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
 		String wordList[] = content.trim().split("\\s+");
 
 		for (int i = 0; i < wordList.length; i++) {
-			if(i+Configuration.getInstance().getNgramSetting() >wordList.length){
+			if(i+Configurations.getInstance().getNgramSetting() >wordList.length){
 				break;
 			}
 			String key = wordList[i]+wordList[i+1]+wordList[i+2];
@@ -61,14 +61,14 @@ public class Parse_nGram_string implements Parse {
 	}
 	
 	public boolean parseDocJINKYUWithTableName(String content, int documentID, String tableName) {
-		int mod = Configuration.getInstance().getFingerprintSetting();
+		int mod = Configurations.getInstance().getFingerprintSetting();
 		DocumentInfo docInfo = new DocumentInfo();
 		docInfo.docID = documentID;
 
 		String wordList[] = content.trim().split("\\s+");
 
 		for (int i = 0; i < wordList.length; i++) {
-			if(i+Configuration.getInstance().getNgramSetting() >wordList.length){
+			if(i+Configurations.getInstance().getNgramSetting() >wordList.length){
 				break;
 			}
 			String key = wordList[i]+wordList[i+1]+wordList[i+2];

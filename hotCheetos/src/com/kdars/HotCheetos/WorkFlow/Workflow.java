@@ -1,16 +1,18 @@
 package com.kdars.HotCheetos.WorkFlow;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DataImport.ImportContent1;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.MapReduce.PdfDriver;
 import com.kdars.HotCheetos.PairStructure.DocPair;
 import com.kdars.HotCheetos.Parsing.Parse1_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse1_nGram_string;
@@ -105,11 +107,44 @@ public class Workflow {
 		return highestPairList;
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	public Integer TEMPORARYprismWorkFlow(String[] args, int invertedIndexTableID, int scoreTableID) throws ClassNotFoundException, IOException, InterruptedException{
+		
+		double initial = System.currentTimeMillis();
+		double finall = System.currentTimeMillis();
+		
+		initial = System.currentTimeMillis();
+		PdfDriver drive = new PdfDriver();
+		int jobComplete = drive.driver(args);
+		finall = System.currentTimeMillis();
+		System.out.println("Input 텍스트 파일을 hashing 하고 DB에 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		System.out.println();
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArrayPRISM();
+		finall = System.currentTimeMillis();
+		System.out.println("작업 시작 전 먼저 DB에 있는 모든 docID를 가져오는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		initial = System.currentTimeMillis();
+		ArrayList<Integer> nullArray = new ArrayList<Integer>();
+		if (!memoryProbSolved(corpusDocIDArray,nullArray, invertedIndexTableID, scoreTableID)){
+			System.out.println("Processing failed. Need to check memoryProbSolved method.");
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("DB에서 parse된 데이터 가져와서 simscore 계산 후 저장하는데 걸린 시간  :  " + (finall - initial)/1000 + "초");
+		
+		return jobComplete;
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	
+	
 	public ArrayList<DocPair> workFlowExperiment_Sentence(int experimentTableID, int fingerprint){
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
-		Configuration.getInstance().setFingerprintSetting(fingerprint);
+		Configurations.getInstance().setFingerprintSetting(fingerprint);
 		
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
@@ -154,8 +189,8 @@ public class Workflow {
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
-		Configuration.getInstance().setNgramSetting(ngramwindow);
-		Configuration.getInstance().setFingerprintSetting(fingerprint);
+		Configurations.getInstance().setNgramSetting(ngramwindow);
+		Configurations.getInstance().setFingerprintSetting(fingerprint);
 		
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
@@ -217,7 +252,7 @@ public class Workflow {
 	}
 	
 	private boolean experimentMemoryProbSolvedBatch_Sentence(ArrayList<Integer> docIDList, int experimentTableID){
-		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		int docIDMemoryLimit = Configurations.getInstance().getDocIDListLimit();
 		docIDList = new ArrayList<Integer>(docIDList);
 //		double initial = System.currentTimeMillis();
 //		double finall = System.currentTimeMillis();
@@ -279,7 +314,7 @@ public class Workflow {
 	}
 	
 	private boolean experimentMemoryProbSolvedBatch(ArrayList<Integer> docIDList, int experimentTableID){
-		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		int docIDMemoryLimit = Configurations.getInstance().getDocIDListLimit();
 		docIDList = new ArrayList<Integer>(docIDList);
 //		double initial = System.currentTimeMillis();
 //		double finall = System.currentTimeMillis();
@@ -351,7 +386,7 @@ public class Workflow {
 	}
 	
 	private boolean memoryProbSolved(ArrayList<Integer> docIDList, ArrayList<Integer> corpusDocIDArray, int invertedIndexTableID, int scoreTableID){
-		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		int docIDMemoryLimit = Configurations.getInstance().getDocIDListLimit();
 		docIDList = new ArrayList<Integer>(docIDList);
 		
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
@@ -387,7 +422,7 @@ public class Workflow {
 	}
 	
 	private boolean memoryProbSolvedBatch(ArrayList<Integer> docIDList, int invertedIndexTableID, int scoreTableID){
-		int docIDMemoryLimit = Configuration.getInstance().getDocIDListLimit();
+		int docIDMemoryLimit = Configurations.getInstance().getDocIDListLimit();
 		docIDList = new ArrayList<Integer>(docIDList);
 		
 		//intra 문제 해결 필요.

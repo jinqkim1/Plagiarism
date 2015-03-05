@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
@@ -17,8 +17,8 @@ public class Parse_noun_hashcode implements Parse {
 		return parse_noun_hashcode;
 	}
 
-	private String postFix1 = Configuration.getInstance().getPostFix1();
-	private String postFix2 = Configuration.getInstance().getPostFix2();
+	private String postFix1 = Configurations.getInstance().getPostFix1();
+	private String postFix2 = Configurations.getInstance().getPostFix2();
 
 	@Override
 	public DocumentInfo parseDoc(String content, int documentID) {
@@ -38,7 +38,7 @@ public class Parse_noun_hashcode implements Parse {
 	}
 
 	public DocumentInfo addHash(DocumentInfo docInfo, int hash) {
-		if (hash % Configuration.getInstance().getFingerprintSetting() != 0) {
+		if (hash % Configurations.getInstance().getFingerprintSetting() != 0) {
 			return docInfo;
 		}
 		String hashToString = String.valueOf(hash);

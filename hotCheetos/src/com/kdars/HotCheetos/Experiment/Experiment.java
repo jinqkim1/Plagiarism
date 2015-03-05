@@ -2,7 +2,7 @@ package com.kdars.HotCheetos.Experiment;
 
 import java.util.ArrayList;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.Parsing.Parse_nGram_hashcode;

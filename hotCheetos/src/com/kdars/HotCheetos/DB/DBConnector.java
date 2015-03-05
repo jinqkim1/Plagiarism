@@ -11,7 +11,7 @@ import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
 import com.kdars.HotCheetos.PairStructure.DocPair;
@@ -21,16 +21,16 @@ import com.mysql.jdbc.Statement;
 public class DBConnector {
 	private Connection sqlConnection;
 	
-	private String textTable = Configuration.getInstance().DB_TABLE_NAME_TEXT;
+	private String textTable = Configurations.getInstance().DB_TABLE_NAME_TEXT;
 	private String docID = "DocID";
 	private String docTitle = "Title";
 	private String docContent = "Text";
 	
-	private String deletelist = Configuration.getInstance().DB_TABLE_NAME_STOPWORD;
+	private String deletelist = Configurations.getInstance().DB_TABLE_NAME_STOPWORD;
 	private String identifierForStopwordTable = "Index";
 	private String stopWords = "Stopword";
 	
-	private String invertedIndexTable = Configuration.getInstance().DB_TABLE_NAME_INDEX;
+	private String invertedIndexTable = Configurations.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
 	private String hashingDocID = "DocID";
 	private String sentenceID = "SentenceID";
@@ -38,14 +38,14 @@ public class DBConnector {
 	private String term = "Term";
 	private String termFreq = "TermFrequency";
 	
-	private String locationTable = Configuration.getInstance().DB_TABLE_NAME_LOCATION;
+	private String locationTable = Configurations.getInstance().DB_TABLE_NAME_LOCATION;
 	private String identifierForLocationTable = "Index";
 	private String locationDocID = "DocID";
 	private String termForLocation = "Term";
 	private String hashcodeForLocation = "Hashcode";
 	private String locationWithinDoc = "LocationWithinDoc";
 	
-	private String scoreTable = Configuration.getInstance().DB_TABLE_NAME_SCORE;
+	private String scoreTable = Configurations.getInstance().DB_TABLE_NAME_SCORE;
 	private String identifierForScoreTable = "Index";
 	private String compare = "DocID";
 	private String beComparedWith = "ComparedDocID";
@@ -74,6 +74,23 @@ public class DBConnector {
 		}
 		return true;
 	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	public boolean insertTextPRISM(String title, String text){
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			String escapedTitle = escape(title);
+			String escapedText = escape(text);
+			stmt.executeUpdate("insert into texttable_prism (" + docTitle + ", " + docContent + ") values (\"" + escapedTitle + "\", \"" + escapedText + "\");");
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
 	
 	public HashMap<Integer,String> queryAllText() {
 		HashMap<Integer,String> textMap = new HashMap<Integer,String>();
@@ -141,6 +158,29 @@ public class DBConnector {
 		return docIDList;
 	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	public ArrayList<Integer> queryAllTextAsDocIDListPRISM() {
+		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			resultSet = stmt.executeQuery("select " + docID + " from texttable_prism;");
+
+			while (resultSet.next()) {
+				docIDList.add(resultSet.getInt(1));
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return docIDList;
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	
 	public Integer queryTextAsDocID(String title) {
 		int docID = 0;
 		ResultSet resultSet = null;
@@ -162,6 +202,30 @@ public class DBConnector {
 
 		return docID;
 	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	public Integer queryTextAsDocIDPRISM(String title) {
+		int docID = 0;
+		ResultSet resultSet = null;
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			String escapedTitle = escape(title);
+			resultSet = stmt.executeQuery("select " + docID + " from texttable_prism where " + docTitle + " = \"" + escapedTitle + "\";");
+
+			while (resultSet.next()) {
+				docID = resultSet.getInt(1);
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+		return docID;
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
 	
 	public String queryText(int documentID){
 		String text = null;
@@ -259,13 +323,13 @@ public class DBConnector {
 	}
 	
 	public ArrayList<DocPair> queryHighestPairs(ArrayList<Integer> docIDList, String scoreTableName){
-		int docIDSizeLimit = Configuration.getInstance().getDocIDListLimit();
+		int docIDSizeLimit = Configurations.getInstance().getDocIDListLimit();
 		ArrayList<DocPair> pairList = new ArrayList<DocPair>();
 		
 		ResultSet resultSet = null;
 		
 		try {
-			double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
+			double simScoreThreshold = Configurations.getInstance().getSimScoreThreshold();
 			java.sql.Statement stmt = sqlConnection.createStatement();
 			while (!docIDList.isEmpty()){
 				if (docIDList.size() <= docIDSizeLimit){
@@ -323,7 +387,7 @@ public class DBConnector {
 	}
 	
 	public ArrayList<ArrayList<Integer>> queryHighScoresForCluster(){
-		double simScoreThreshold = Configuration.getInstance().getSimScoreThreshold();
+		double simScoreThreshold = Configurations.getInstance().getSimScoreThreshold();
 		ArrayList<ArrayList<Integer>> docIDLists = new ArrayList<ArrayList<Integer>>();
 		ArrayList<Integer> docIDList = new ArrayList<Integer>();
 		ArrayList<Integer> comparedDocIDList = new ArrayList<Integer>();
@@ -750,10 +814,10 @@ public class DBConnector {
 	private Connection connect(){
 		java.sql.Connection sqlConnection = null;
 		
-		String jdbcUrl = Configuration.getInstance().DB_JDBC_URL;
-		String DBName = Configuration.getInstance().DB_NAME;
-		String userID = Configuration.getInstance().DB_USER_ID;
-		String userPass = Configuration.getInstance().DB_USER_PASS;
+		String jdbcUrl = Configurations.getInstance().DB_JDBC_URL;
+		String DBName = Configurations.getInstance().DB_NAME;
+		String userID = Configurations.getInstance().DB_USER_ID;
+		String userPass = Configurations.getInstance().DB_USER_PASS;
 		
 		try{
 			Class.forName("com.mysql.jdbc.Driver");

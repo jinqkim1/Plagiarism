@@ -2,14 +2,14 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
 
-import com.kdars.HotCheetos.Config.Configuration;
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public abstract class Parse1 {
-	protected int nGramSetting = Configuration.getInstance().getNgramSetting();
-	protected int substringSetting = Configuration.getInstance().getSubstringSetting();
-	protected int fingerprintSetting = Configuration.getInstance().getFingerprintSetting();
+	protected int nGramSetting = Configurations.getInstance().getNgramSetting();
+	protected int substringSetting = Configurations.getInstance().getSubstringSetting();
+	protected int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	protected ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
 	
 	abstract boolean parseDoc(String content, int documentID, int invertedIndexTableID);

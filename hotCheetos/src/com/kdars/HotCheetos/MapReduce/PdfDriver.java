@@ -13,12 +13,12 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class PdfDriver {
 	
-	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		driver(args);
-	}
+//	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
+//		// TODO Auto-generated method stub
+//		driver(args);
+//	}
 	
-	public static void driver(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+	public int driver(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		Job firstJob = Job.getInstance(conf);
 		firstJob.setJobName("ExtractAndParse");
@@ -43,7 +43,10 @@ public class PdfDriver {
 		firstJob.setReducerClass(PdfReducer.class);
 //		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
 		
-		System.exit(firstJob.waitForCompletion(true)?0:1);
-
+		int jobComplete = 1;
+		while (jobComplete != 0){
+			jobComplete = firstJob.waitForCompletion(true)?0:1;
+		}
+		return jobComplete;
 	}
 }
