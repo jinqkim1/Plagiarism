@@ -81,6 +81,23 @@ public class Configurations {
 	}
 	/* Characters to be extracted */
 	
+	/* Map-Reduce-Related Configurations */
+	private int tableID = 77;   //77 = prism_3-gram_hashcode  ;  78 = prism_3-gram_string  ;  79 = prism_noun_hashcode  ;  80 = prism_noun_string
+	public int getTableID(){
+		return this.tableID;
+	}
+	
+	private String IntermediateOUTPUT_PATH = "/user/hadoop/intermediate_output";  //doc id와 term & termfreq 들이 저장됨.
+	public String getIntermediateOUTPUT_PATH(){
+		return this.IntermediateOUTPUT_PATH;
+	}
+	
+	private String IntermediateOUTPUT_PATH1 = "/user/hadoop/intermediate_output1";  //아무것도 저장 안됨.
+	public String getIntermediateOUTPUT_PATH1(){
+		return this.IntermediateOUTPUT_PATH1;
+	} 
+	/* Map-Reduce-Related Configurations */
+	
 	/* DB Connect Info */
 	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.4:3306/GraphDB";
 	public final String DB_NAME = "plagiarismdb"; 

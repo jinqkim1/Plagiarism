@@ -5,48 +5,44 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 
 public class PdfDriver {
 	
-//	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
-//		// TODO Auto-generated method stub
-//		driver(args);
-//	}
-	
-	public int driver(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
+	public int driver(String inputPath, String outputPath) throws IOException, InterruptedException, ClassNotFoundException {
 		Configuration conf = new Configuration();
 		Job firstJob = Job.getInstance(conf);
 		firstJob.setJobName("ExtractAndParse");
 		firstJob.setJarByClass(com.kdars.HotCheetos.MapReduce.PdfDriver.class);
 		
+		//Turning off reducer for this job
+		firstJob.setNumReduceTasks(0);
+		
 		// specify output types
-		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
-		firstJob.setMapOutputValueClass(Text.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
-		firstJob.setOutputKeyClass(Text.class);  //Term
-		firstJob.setOutputValueClass(IntWritable.class);  //TermFrequency
+		firstJob.setMapOutputKeyClass(IntWritable.class);  //DocID
+		firstJob.setMapOutputValueClass(MapWritable.class);  //HashMap of terms and termFrequencies
+
+//		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
+//		firstJob.setMapOutputValueClass(Text.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
+//		firstJob.setOutputKeyClass(IntWritable.class);  //DocID
+//		firstJob.setOutputValueClass(MapWritable.class);  //HashMap of terms and termFrequencies
 		
 		// specify input and output dirs
 		firstJob.setInputFormatClass(PdfFileInputFormat.class);
-		firstJob.setOutputFormatClass(TextOutputFormat.class);
-		FileInputFormat.addInputPath(firstJob, new Path(args[1]));
-		FileOutputFormat.setOutputPath(firstJob, new Path(args[2]));
+		firstJob.setOutputFormatClass(SequenceFileOutputFormat.class);
+		FileInputFormat.addInputPath(firstJob, new Path(inputPath));
+		FileOutputFormat.setOutputPath(firstJob, new Path(outputPath));
 		
 		// specify a mapper
 		firstJob.setMapperClass(PdfMapper.class);
 		
-		// specify a reducer
-		firstJob.setReducerClass(PdfReducer.class);
-//		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallel하기 때문에 combiner는 필요 없을 듯?
+//		// specify a reducer
+//		firstJob.setReducerClass(PdfReducer.class);
 		
-		int jobComplete = 1;
-		while (jobComplete != 0){
-			jobComplete = firstJob.waitForCompletion(true)?0:1;
-		}
-		return jobComplete;
+		return firstJob.waitForCompletion(true)?0:1;
 	}
 }

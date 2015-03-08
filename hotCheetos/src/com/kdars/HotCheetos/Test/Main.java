@@ -74,16 +74,16 @@ public class Main {
 //			System.out.println(query);
 //		}
 		
-
+		
 		
 		Workflow workflowForExperiment = new Workflow();
 		
 		String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(77);
 		System.out.println(77 + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
-		int jobComplete = workflowForExperiment.TEMPORARYprismWorkFlow(args, 77, 77);
+		int jobComplete = workflowForExperiment.TEMPORARYprismWorkFlow(args);
 		System.out.println("실험 끝나면 text table drop 후 다시 create 해야함!!!!!!!!!!!!");
-		System.out.println("실험 끝나면 Reducer의 DB table id 이름 바꿔줘야함!!!!!!!!!!!!!");
-		System.exit(jobComplete);
+		System.out.println("실험 끝나면 Mapper에서 DB table id 이름 바꿔줘야함!!!!!!!!!!!!!");
+		System.exit(jobComplete);  //다 잘 끝나면 0이 들어가서 system exit될 것임.
 		
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(78);
 //		System.out.println(78 + "번째 experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");

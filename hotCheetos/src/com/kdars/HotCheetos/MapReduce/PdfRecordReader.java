@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-public class PdfRecordReader extends RecordReader {
+public class PdfRecordReader extends RecordReader<LongWritable, Text> {
 
 	private String[] lines = null;
 	private LongWritable key = null; //line ³Ñ¹ö 

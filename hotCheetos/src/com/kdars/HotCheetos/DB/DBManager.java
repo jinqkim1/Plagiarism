@@ -5,6 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.Text;
+
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.SentenceInfo;
@@ -539,9 +543,18 @@ public class DBManager {
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
 	public Integer insertRowAndGetDocIDArrayPRISM(String title, String processedContent){
-		if (DB.insertTextPRISM(title, processedContent)){
-			return DB.queryTextAsDocIDPRISM(title);
+		if(DB.queryTextAsDocIDPRISM(title) == 0){  //0으로 올라온다는 것은 어떤 mapper도 아직 text db에 문서를 저장하지 않았다는 뜻. 고로 정상 동작 실시.
+			if (DB.insertTextPRISM(title, processedContent)){
+				return DB.queryTextAsDocIDPRISM(title);
+			}
 		}
+		
+		if(DB.deleteText_PRISM(title)){  //이미 들어가 있는 거라면 해당 데이터 지운 후 insert 실시.
+			if (DB.insertTextPRISM(title, processedContent)){
+				return DB.queryTextAsDocIDPRISM(title);
+			}
+		}
+		
 		return null;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
@@ -626,6 +639,69 @@ public class DBManager {
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
 			csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+			
+			bulkInsertLimitChecker++;
+			if(bulkInsertLimitChecker == bulkInsertLimit){
+				if(!DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName)){
+					System.out.println("Similarity score bulk insert failed.");
+				}
+				bulkInsertLimitChecker = 0;
+				csvContent = new StringBuilder();
+			}
+			
+			it.remove();
+		}
+		
+		return DB.bulkInsertHash(csvContent.toString(), invertedIndexTableName);
+	}
+	
+	public boolean insertBulkToHashTable_MapReduce(int docID, MapWritable termFreqMap, int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(DB.checkHash(docID, invertedIndexTableName) != 0){  //이미 해당 docid의 hash들이 들어가있을 경우에는, map reduce 도중에 죽은 것으로 판단. 지우고 처음부터 다시 insert함.
+			boolean deleteChecker = false;
+			while(!deleteChecker){
+				deleteChecker = DB.deleteHash(docID, invertedIndexTableName);
+			}
+		}
+		
+		if(invertedIndexTableName.contains("string")){
+			StringBuilder csvContent = new StringBuilder();
+			String docIDString = String.valueOf(docID);
+			
+			int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
+			int bulkInsertLimitChecker = 0;
+			
+			Iterator it = termFreqMap.entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pairs = (Map.Entry)it.next();
+				csvContent.append("1," + docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+				
+				bulkInsertLimitChecker++;
+				if(bulkInsertLimitChecker == bulkInsertLimit){
+					if(!DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName)){
+						System.out.println("Similarity score bulk insert failed.");
+					}
+					bulkInsertLimitChecker = 0;
+					csvContent = new StringBuilder();
+				}
+				
+				it.remove();
+			}
+
+			return DB.bulkInsertHashWithString(csvContent.toString(), invertedIndexTableName);
+		}
+		
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docID);
+		
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
+		int bulkInsertLimitChecker = 0;
+		
+		Iterator it = termFreqMap.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			csvContent.append("1," + docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
 			
 			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
@@ -791,6 +867,28 @@ public class DBManager {
 		
 		return DB.queryMultipleDocInfoArray(docIDs, invertedIndexTableName);
 	}
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	public ArrayList<Integer> getCurrentDocIDsFromInvertedIndexTable(int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		return DB.queryCurrentDocIDsFromInvertedIndexTable(invertedIndexTableName);
+	}
+	
+	public ArrayList<Integer> flagInputAndGetCurrentDocIDsFromInvertedIndexTable(int docID, int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		return DB.flagAndqueryCurrentDocIDsFromInvertedIndexTable(docID, invertedIndexTableName);
+	}
+	
+	public boolean flagCompleteDocuments(int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		return DB.switchFlagFromTwoToZero(invertedIndexTableName);
+	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
+	
 	
 	public ArrayList<DocumentInfo> getMultipleDocInfoArray_Sentence(ArrayList<Integer> docIDs, int invertedIndexTableID) {
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);

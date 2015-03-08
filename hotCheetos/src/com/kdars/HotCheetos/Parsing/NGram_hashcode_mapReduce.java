@@ -2,6 +2,10 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.util.ArrayList;
 
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.Text;
+
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
@@ -21,9 +25,8 @@ public class NGram_hashcode_mapReduce{
 		}
 	}
 	
-	public DocumentInfo parseDoc(String content, int documentID, int invertedIndexTableID) {
-		DocumentInfo docInfo = new DocumentInfo();
-		docInfo.docID = documentID;
+	public MapWritable parseDoc(String content, int documentID, int invertedIndexTableID) {
+		MapWritable termFreqMap = new MapWritable();
 		
 		char wholeChar[] = content.toCharArray();
 		
@@ -104,7 +107,7 @@ public class NGram_hashcode_mapReduce{
 			
 			//nGramMaker arrayList에 parameter로 받은 n-gram 갯수만큼의 hashcode가 차면 hashcode를 더해서 hashmap 만들고, 0번째 hashcode를 버림으로써 다음 ngram 만들 준비.
 			if (nGramMaker.size() == this.nGramSetting){
-				addHash(docInfo, ngramMaker);
+				addHash(termFreqMap, ngramMaker);
 				ngramMaker -= nGramMaker.get(0);
 				nGramMaker.remove(0);
 			}
@@ -116,21 +119,26 @@ public class NGram_hashcode_mapReduce{
 			periodChecker = false;
 		}
 
-		DBManager.getInstance().insertBulkToHashTable(docInfo, invertedIndexTableID);
+//		DBManager.getInstance().insertBulkToHashTable_MapReduce(documentID, termFreqMap, invertedIndexTableID);
 		
-		return docInfo;
+		return termFreqMap;
 	}
 	
-	private void addHash(DocumentInfo docInfo, int hash) {
+	private void addHash(MapWritable termFreqMap, int hash) {
 		if (hash % this.fingerprintSetting != 0) {
 			return;
 		}
-		String hashToString = String.valueOf(hash);
-		if (docInfo.termFreq.containsKey(hashToString)) {
-			int value = docInfo.termFreq.get(hashToString);
-			docInfo.termFreq.put(hashToString, value + 1);
+		Text hashToText = new Text();
+		hashToText.set(String.valueOf(hash));
+		
+		IntWritable value = new IntWritable();
+		if (termFreqMap.containsKey(hashToText)) {
+			value = (IntWritable) termFreqMap.get(hashToText);
+			value.set(value.get() + 1);
+			termFreqMap.put(hashToText, value);
 			return;
 		}
-		docInfo.termFreq.put(hashToString, 1);
+		value.set(1);
+		termFreqMap.put(hashToText, value);
 	}
 }
