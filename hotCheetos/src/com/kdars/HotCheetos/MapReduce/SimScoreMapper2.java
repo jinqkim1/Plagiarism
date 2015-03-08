@@ -22,6 +22,7 @@ public class SimScoreMapper2  extends Mapper<IntWritable, MapWritable, IntWritab
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
+		//도중에 죽으면 망함.. 이 부분 고려 필요.
 		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().flagInputAndGetCurrentDocIDsFromInvertedIndexTable(docID.get(), tableID);
 		
 		while(corpusDocIDList.isEmpty()){  //만약에 input documents와 비교할 corpus document가 DB에 없다면 while문을 타지 않음.

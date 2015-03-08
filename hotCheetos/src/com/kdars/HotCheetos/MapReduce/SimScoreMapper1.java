@@ -21,6 +21,8 @@ public class SimScoreMapper1 extends Mapper<IntWritable, MapWritable, IntWritabl
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
+		DBManager.getInstance().checkForScore_MapReduce(docID.get(), tableID);  //만약 mapReduce 하던 도중에 죽었다면 그 때까지 저장되었던 계산들은 DB에서 지우고 다시 시작.
+		
 		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(tableID);
 		
 		while(corpusDocIDList.isEmpty()){  //만약에 input documents와 비교할 corpus document가 DB에 없다면 while문을 타지 않음.
@@ -52,7 +54,6 @@ public class SimScoreMapper1 extends Mapper<IntWritable, MapWritable, IntWritabl
 		StringBuilder csvContent = new StringBuilder();
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
-		
 
 		int docid1 = docID.get();
 		for (DocumentInfo docInfo2 : corpusDocInfoList){

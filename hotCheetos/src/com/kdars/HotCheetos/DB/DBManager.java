@@ -586,6 +586,11 @@ public class DBManager {
 		return DB.bulkInsertScore(csvContent, scoreTableName);
 	}
 	
+	public boolean checkForScore_MapReduce(int docID, int scoreTableID){
+		String scoreTableName = convertIDtoName_Score(scoreTableID);
+		return DB.deleteDuplicatesInScoreTable(docID, scoreTableName);
+	}
+	
 	public ArrayList<DocPair> getHighestPairs(ArrayList<Integer> docIDList, int scoreTableID){
 		String scoreTableName = convertIDtoName_Score(scoreTableID);
 		return DB.queryHighestPairs(docIDList, scoreTableName);

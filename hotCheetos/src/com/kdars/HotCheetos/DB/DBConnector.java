@@ -305,6 +305,25 @@ public class DBConnector {
 		return stopwordList;
 	}
 	
+	public boolean deleteDuplicatesInScoreTable(int docID, String scoreTableName){
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			
+			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
+			
+			stmt.execute("delete from `" + scoreTableName + "` where " + compare + " = " + String.valueOf(docID) + ";");
+			
+			stmt.execute("UNLOCK TABLES;");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean bulkInsertScore(String csvContent, String scoreTableName){
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
