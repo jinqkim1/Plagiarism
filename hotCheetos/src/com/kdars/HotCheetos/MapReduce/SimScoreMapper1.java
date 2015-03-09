@@ -59,7 +59,7 @@ public class SimScoreMapper1 extends Mapper<IntWritable, MapWritable, IntWritabl
 		for (DocumentInfo docInfo2 : corpusDocInfoList){
 			int docid2 = docInfo2.docID;
 			double simscore = calcSim(termFreqMap, docInfo2.termFreq);
-			csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
+			csvContent.append("0,"+String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 			
 			bulkInsertLimitChecker++;
 			if (bulkInsertLimitChecker == bulkInsertLimit){

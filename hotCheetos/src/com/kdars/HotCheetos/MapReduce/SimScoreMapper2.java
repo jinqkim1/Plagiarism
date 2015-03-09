@@ -22,7 +22,8 @@ public class SimScoreMapper2  extends Mapper<IntWritable, MapWritable, IntWritab
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
-		//도중에 죽으면 망함.. 이 부분 고려 필요.
+		DBManager.getInstance().deleteDuplicateScores(docID.get(), tableID);  //도중에 죽었다면 flag가 1로 되어있을 것이므로, flag가 1이면서 inputdocument id가 같은 row들을 db에서 지우고 다시 시작.
+		
 		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().flagInputAndGetCurrentDocIDsFromInvertedIndexTable(docID.get(), tableID);
 		
 		while(corpusDocIDList.isEmpty()){  //만약에 input documents와 비교할 corpus document가 DB에 없다면 while문을 타지 않음.
@@ -45,6 +46,8 @@ public class SimScoreMapper2  extends Mapper<IntWritable, MapWritable, IntWritab
 		
 		}
 		
+		DBManager.getInstance().unflag_Score(docID.get(), tableID);  //score 계산 및 저장이 정상적으로 완료되었다면 flag를 0으로 다시 set해주기.
+		
 		return;
 	}
 	
@@ -52,13 +55,12 @@ public class SimScoreMapper2  extends Mapper<IntWritable, MapWritable, IntWritab
 		StringBuilder csvContent = new StringBuilder();
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
-		
 
 		int docid1 = docID.get();
 		for (DocumentInfo docInfo2 : corpusDocInfoList){
 			int docid2 = docInfo2.docID;
 			double simscore = calcSim(termFreqMap, docInfo2.termFreq);
-			csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
+			csvContent.append("1," + String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 			
 			bulkInsertLimitChecker++;
 			if (bulkInsertLimitChecker == bulkInsertLimit){

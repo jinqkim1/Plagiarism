@@ -48,6 +48,7 @@ public class DBConnector {
 	
 	private String scoreTable = Configurations.getInstance().DB_TABLE_NAME_SCORE;
 	private String identifierForScoreTable = "Index";
+	private String scoreFlag = "CalculationDuplicateFlag";
 	private String compare = "DocID";
 	private String beComparedWith = "ComparedDocID";
 	private String simScore = "SimilarityScore";
@@ -324,6 +325,44 @@ public class DBConnector {
 		return true;
 	}
 	
+	public boolean deleteDuplicatesInScoreTable_WithFlag(int docID, String scoreTableName){
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			
+			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
+			
+			stmt.execute("delete from `" + scoreTableName + "` where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
+			
+			stmt.execute("UNLOCK TABLES;");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean switchFlagFromOneToZero_Score(int docID, String scoreTableName){
+		try {
+			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+			
+			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
+			
+			stmt.execute("update `" + scoreTableName + "` set " + scoreFlag + " = 0 where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
+			
+			stmt.execute("UNLOCK TABLES;");
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean bulkInsertScore(String csvContent, String scoreTableName){
 		try {
 			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
@@ -334,7 +373,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + scoreTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + scoreTableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + scoreTableName + "` FIELDS TERMINATED BY ',' (" + scoreFlag + ", " + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -366,7 +405,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + scoreFlag + ", " + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -791,7 +830,7 @@ public class DBConnector {
 		return docIDList;
 	}
 	
-	public boolean switchFlagFromTwoToZero(String invertedIndexTableName){
+	public boolean switchFlagFromTwoToZero_invertedIndex(String invertedIndexTableName){
 		
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();

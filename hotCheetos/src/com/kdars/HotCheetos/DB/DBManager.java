@@ -586,6 +586,16 @@ public class DBManager {
 		return DB.bulkInsertScore(csvContent, scoreTableName);
 	}
 	
+	public boolean deleteDuplicateScores(int docID, int scoreTableID){
+		String scoreTableName = convertIDtoName_Score(scoreTableID);
+		return DB.deleteDuplicatesInScoreTable_WithFlag(docID, scoreTableName);
+	}
+	
+	public boolean unflag_Score(int docID, int scoreTableID){
+		String scoreTableName = convertIDtoName_Score(scoreTableID);
+		return DB.switchFlagFromOneToZero_Score(docID, scoreTableName);
+	}
+	
 	public boolean checkForScore_MapReduce(int docID, int scoreTableID){
 		String scoreTableName = convertIDtoName_Score(scoreTableID);
 		return DB.deleteDuplicatesInScoreTable(docID, scoreTableName);
@@ -890,7 +900,7 @@ public class DBManager {
 	public boolean flagCompleteDocuments(int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
 		
-		return DB.switchFlagFromTwoToZero(invertedIndexTableName);
+		return DB.switchFlagFromTwoToZero_invertedIndex(invertedIndexTableName);
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
 	
