@@ -26,7 +26,7 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 		FileSplit split = (FileSplit) genericSplit;
 		Configuration job = context.getConfiguration();
 		final Path file = split.getPath();
-
+		
 		/*
 		 * The below code contains the logic for opening the file and seek to
 		 * the start of the split. Here we are applying the Pdf Parsing logic

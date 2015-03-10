@@ -18,7 +18,6 @@ public class PdfMapper extends Mapper<Text, Text, IntWritable, MapWritable>{
 	@Override
 	public void map(Text title, Text content, Context context) throws IOException, InterruptedException {
 		
-		
 		//raw text에서 Korean, English, Period, Whitespace만 걸러냄.
 		StringBuilder processingContent = new StringBuilder();
 		String[] processingLines = content.toString().trim().split("\\r?\\n");
