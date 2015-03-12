@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -23,9 +23,10 @@ public class PdfDriver {
 		firstJob.setNumReduceTasks(0);
 		
 		// specify output types
-		firstJob.setMapOutputKeyClass(IntWritable.class);  //DocID
-		firstJob.setMapOutputValueClass(MapWritable.class);  //HashMap of terms and termFrequencies
-
+		firstJob.setOutputKeyClass(LongWritable.class);  //DocID
+		firstJob.setOutputValueClass(MapWritable.class);  //HashMap of terms and termFrequencies
+		
+		
 //		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
 //		firstJob.setMapOutputValueClass(Text.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
 //		firstJob.setOutputKeyClass(IntWritable.class);  //DocID

@@ -39,6 +39,9 @@ public class PdfRecordReader extends RecordReader<LongWritable, Text> {
 		String parsedText = null;
 		PDFTextStripper stripper = new PDFTextStripper();
 		parsedText = stripper.getText(pdf);
+		
+		System.out.println(parsedText);
+		
 		this.lines = parsedText.split("\n");
 		}
 

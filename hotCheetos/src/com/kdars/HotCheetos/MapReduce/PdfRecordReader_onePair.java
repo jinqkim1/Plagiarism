@@ -13,47 +13,53 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
+public class PdfRecordReader_onePair extends RecordReader<Text, Object> {
 
-	private String content = null;
-	private String fileName = null;
+	private Path file = null;
 	private Text key = null; //PDF 파일 제목 
-	private Text value = null; //PDF 파일 텍스트
+	private Object value = null; //PDF 파일 텍스트
 
 	@Override
-	public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException, InterruptedException {
+	public void initialize(InputSplit genericSplit, TaskAttemptContext context)
+			throws IOException, InterruptedException {
 		
 		FileSplit split = (FileSplit) genericSplit;
-		Configuration job = context.getConfiguration();
-		final Path file = split.getPath();
-		
-		/*
-		 * The below code contains the logic for opening the file and seek to
-		 * the start of the split. Here we are applying the Pdf Parsing logic
-		 * 먼저 file system에 PDF file이 저장되어 있어야 함
-		 */
+		this.file = split.getPath();
+//		FileSplit split = (FileSplit) genericSplit;
+//		Configuration job = context.getConfiguration();
+//		final Path file = split.getPath();
+//
+//		/*
+//		 * The below code contains the logic for opening the file and seek to
+//		 * the start of the split. Here we are applying the Pdf Parsing logic 먼저
+//		 * file system에 PDF file이 저장되어 있어야 함
+//		 */
+//
+//		try {
+//			FileSystem fs = file.getFileSystem(job);
+//			FSDataInputStream fileIn = fs.open(split.getPath());
+//			PDDocument pdf = PDDocument.load(fileIn);
+//			PDFTextStripper stripper = new PDFTextStripper();
+//			this.content = stripper.getText(pdf);
+//			this.fileName = file.getName();
+//		} catch (Exception ex) {
+//			this.content = "";
+//			this.fileName = "";
+//		}
 
-		FileSystem fs = file.getFileSystem(job);
-		FSDataInputStream fileIn = fs.open(split.getPath());
-		PDDocument pdf = PDDocument.load(fileIn);
-		PDFTextStripper stripper = new PDFTextStripper();
-		try{
-			this.content = stripper.getText(pdf);
-		}catch(Exception ex){
-			this.content = "";
-		}
-		
-		this.fileName = file.getName();
-		}
+	}
 
 	@Override
 	public boolean nextKeyValue() throws IOException, InterruptedException {
 
 		if (key == null) {
 			key = new Text();
-			key.set(this.fileName);
-			value = new Text();
-			value.set(this.content);
+			key.set(file.getName());
+			value = this.file;
+			
+//			Path file = this.fileSplit.getPath();
+//			key = file;
+//			value = PDDocument.load(file.getFileSystem(this.job).open(file));
 		} else {
 			return false;
 		}
@@ -72,7 +78,7 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 	}
 
 	@Override
-	public Text getCurrentValue() throws IOException, InterruptedException {
+	public Object getCurrentValue() throws IOException, InterruptedException {
 
 		return value;
 	}

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -14,14 +15,14 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class SimScoreMapper1 extends Mapper<IntWritable, MapWritable, IntWritable, MapWritable>{
+public class SimScoreMapper1 extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
 	
 	@Override
-	public void map(IntWritable docID, MapWritable termFreqMap, Context context) throws IOException, InterruptedException {
+	public void map(LongWritable docID, MapWritable termFreqMap, Context context) throws IOException, InterruptedException {
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
-		DBManager.getInstance().checkForScore_MapReduce(docID.get(), tableID);  //만약 mapReduce 하던 도중에 죽었다면 그 때까지 저장되었던 계산들은 DB에서 지우고 다시 시작.
+		DBManager.getInstance().checkForScore_MapReduce((int)docID.get(), tableID);  //만약 mapReduce 하던 도중에 죽었다면 그 때까지 저장되었던 계산들은 DB에서 지우고 다시 시작.
 		
 		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(tableID);
 		
@@ -45,17 +46,17 @@ public class SimScoreMapper1 extends Mapper<IntWritable, MapWritable, IntWritabl
 		
 		}
 		
-		DBManager.getInstance().insertBulkToHashTable_MapReduce(docID.get(), termFreqMap, tableID);
+		DBManager.getInstance().insertBulkToHashTable_MapReduce((int) docID.get(), termFreqMap, tableID);
 		
 		return;
 	}
 	
-	private boolean simScore_Calculation_OneVSCorpus(IntWritable docID, MapWritable termFreqMap, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
+	private boolean simScore_Calculation_OneVSCorpus(LongWritable docID, MapWritable termFreqMap, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
 		StringBuilder csvContent = new StringBuilder();
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 
-		int docid1 = docID.get();
+		int docid1 = (int) docID.get();
 		for (DocumentInfo docInfo2 : corpusDocInfoList){
 			int docid2 = docInfo2.docID;
 			double simscore = calcSim(termFreqMap, docInfo2.termFreq);

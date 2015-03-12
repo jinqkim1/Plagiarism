@@ -25,8 +25,8 @@ public class SimScoreDriver1 {
 		secondJob.setNumReduceTasks(0);
 		
 		// specify output types
-		secondJob.setMapOutputKeyClass(IntWritable.class);  //Title of a PDF file
-		secondJob.setMapOutputValueClass(MapWritable.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
+		secondJob.setOutputKeyClass(IntWritable.class);  //Title of a PDF file
+		secondJob.setOutputValueClass(MapWritable.class);  //영어, 한글, whitespace, period만 포함한 content of a PDF file
 		
 		// specify input and output dirs
 		secondJob.setInputFormatClass(SequenceFileInputFormat.class);

@@ -13,16 +13,17 @@ import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 public class NGram_hashcode_mapReduce{
 	
 	private ArrayList<Integer> stopwordHashList = new ArrayList<Integer>();
-	private ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
+//	private ArrayList<String> stopWordList = DBManager.getInstance().getStopwords();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	private int nGramSetting = Configurations.getInstance().getNgramSetting();
 	private int fingerprintSetting = Configurations.getInstance().getFingerprintSetting();
 	/*Temporary measure for experiment.  Need to delete!!!! */
 	
 	public NGram_hashcode_mapReduce(){
-		for (String stopword : stopWordList){
-			stopwordHashList.add(stopword.hashCode());
-		}
+//		for (String stopword : stopWordList){
+//			stopwordHashList.add(stopword.hashCode());
+//		}
+		stopwordHashList.add(0);
 	}
 	
 	public MapWritable parseDoc(String content, int documentID, int invertedIndexTableID) {
