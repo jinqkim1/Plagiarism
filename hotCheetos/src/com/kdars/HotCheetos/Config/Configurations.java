@@ -8,12 +8,12 @@ public class Configurations {
 	}
 	
 	/* special character pattern setting */
-	private String postFix1 = "Àº|´Â|ÀÌ|°¡|À»|¸¦|¿¡|ÀÇ|µµ|¸¸|·Î|¿Í|°ú";
+	private String postFix1 = "ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½|ï¿½ï¿½";
 	public String getPostFix1(){
 		return this.postFix1;
 	}
 	
-	private String postFix2 = "¿¡¼­|¿¡°Ô|ÇÑÅ×|·Î¼­|·Î½á|²²¼­|±îÁö|Á¶Â÷|ºÎÅÍ|¸¶Àú";
+	private String postFix2 = "ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½Î¼ï¿½|ï¿½Î½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½";
 	public String getPostFix2(){
 		return this.postFix2;
 	}
@@ -21,7 +21,7 @@ public class Configurations {
 	
 	/* N-gram setting */
 	private int windowSize = 3;
-	public int getNgramSetting(){  //N-gramÀÇ size¸¦ windowSize·Î setting.
+	public int getNgramSetting(){  //N-gramï¿½ï¿½ sizeï¿½ï¿½ windowSizeï¿½ï¿½ setting.
 		return this.windowSize;
 	}
 	public void setNgramSetting(int windowSize){
@@ -31,7 +31,7 @@ public class Configurations {
 	
 	/* Finger-printing setting */
 	private int mod = 1;
-	public int getFingerprintSetting(){  //modÀÇ ¹è¼ö·Î hashcode ¼±ÅÃÇÏ´Â µ¿ÀÛÀ» À§ÇÑ setting.
+	public int getFingerprintSetting(){  //modï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ hashcode ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ setting.
 		return this.mod;
 	}
 	public void setFingerprintSetting(int mod){
@@ -39,7 +39,7 @@ public class Configurations {
 	}
 	
 	private int substringSize = 15;
-	public int getSubstringSetting(){  //substringSizeÀÇ °¹¼ö¸¸Å­ÀÇ Ä³¸¯ÅÍ·Î substring »ý¼ºÇÏ´Â µ¿ÀÛÀ» À§ÇÑ setting.
+	public int getSubstringSetting(){  //substringSizeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í·ï¿½ substring ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ setting.
 		return this.substringSize;
 	}
 	/* Finger-printing setting */
@@ -52,7 +52,7 @@ public class Configurations {
 	/* Similarity score threshold setting for clustering */
 	
 	/* limit settings to prevent excessive memory usage */
-	private int fileListLimit = 25; //inputÀ¸·Î ¹Þ´Â file list°¡ limitÀ» ³ÑÀ¸¸é Àß¶ó¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï ÇÏ¿© ¸Þ¸ð¸® ¹®Á¦ ÇØ°á.
+	private int fileListLimit = 25; //inputï¿½ï¿½ï¿½ï¿½ ï¿½Þ´ï¿½ file listï¿½ï¿½ limitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¶ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½.
 	public int getFileListLimit(){
 		return this.fileListLimit;
 	}
@@ -62,19 +62,19 @@ public class Configurations {
 		return this.docIDListLimit;
 	}
 	
-	private int docInfoListLimit = 25; //Document InfoÀÇ °¹¼ö°¡ limitÀ» ³ÑÀ¸¸é Àß¶ó¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï ÇÏ¿© ¸Þ¸ð¸® ¹®Á¦ ÇØ°á.
+	private int docInfoListLimit = 25; //Document Infoï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ limitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¶ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½.
 	public int getDocInfoListLimit(){
 		return this.docInfoListLimit;
 	}
 	
-	private int bulkScoreLimit = 500000; //DB¿¡ ÀúÀåÇÒ scoreÀÇ °¹¼ö°¡ limitÀ» ³ÑÀ¸¸é Àß¶ó¼­ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï ÇÏ¿© ¸Þ¸ð¸® ¹®Á¦ ÇØ°á.
+	private int bulkScoreLimit = 500000; //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ scoreï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ limitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¶ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½Ï¿ï¿½ ï¿½Þ¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½.
 	public int getbulkScoreLimit(){
 		return this.bulkScoreLimit;
 	}
 	/* limit settings to prevent excessive memory usage */
 	
 	/* Characters to be extracted */
-	//¿µ¾î, ÇÑ±Û, whitespace, ¸¶Ä§Ç¥¸¸ ³²±â°í ³ª¸ÓÁö´Â ´Ù ¹ö¸².
+	//ï¿½ï¿½ï¿½ï¿½, ï¿½Ñ±ï¿½, whitespace, ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
 	public String getTextPattern(){
 		return this.extractTextPattern;
@@ -87,15 +87,20 @@ public class Configurations {
 		return this.tableID;
 	}
 	
-	private String IntermediateOUTPUT_PATH = "/user/hadoop/intermediate_output";  //doc id¿Í term & termfreq µéÀÌ ÀúÀåµÊ.
+	private String IntermediateOUTPUT_PATH = "/user/hadoop/intermediate_output";  //doc idï¿½ï¿½ term & termfreq ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 	public String getIntermediateOUTPUT_PATH(){
 		return this.IntermediateOUTPUT_PATH;
 	}
 	
-	private String IntermediateOUTPUT_PATH1 = "/user/hadoop/intermediate_output1";  //¾Æ¹«°Íµµ ÀúÀå ¾ÈµÊ.
+	private String IntermediateOUTPUT_PATH1 = "/user/hadoop/intermediate_output1";  //ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Èµï¿½.
 	public String getIntermediateOUTPUT_PATH1(){
 		return this.IntermediateOUTPUT_PATH1;
-	} 
+	}
+	
+	private String IntermediateOUTPUT_PATH2 = "/user/hadoop/intermediate_output2";  //ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Èµï¿½.
+	public String getIntermediateOUTPUT_PATH2(){
+		return this.IntermediateOUTPUT_PATH2;
+	}
 	/* Map-Reduce-Related Configurations */
 	
 	/* DB Connect Info */

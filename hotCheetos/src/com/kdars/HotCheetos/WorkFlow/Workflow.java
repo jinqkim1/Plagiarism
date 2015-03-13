@@ -12,6 +12,7 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.ImportContent1;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.MapReduce.ParsingDriver;
 import com.kdars.HotCheetos.MapReduce.PdfDriver;
 import com.kdars.HotCheetos.MapReduce.SimScoreDriver1;
 import com.kdars.HotCheetos.MapReduce.SimScoreDriver2;
@@ -33,23 +34,23 @@ public class Workflow {
 	}
 
 	public void batchDocsWorkFlow(){
-		//invertedIndexTableID, locationTableID, scoreTableID¿¡ µû¸¥ tableÀÌ ¾øÀ½. »ý¼º ÇÊ¿ä.
+		//invertedIndexTableID, locationTableID, scoreTableIDï¿½ï¿½ ï¿½ï¿½ tableï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ ï¿½Ê¿ï¿½.
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> docIDList = DBManager.getInstance().getAllTextAsDocIDArray();
 		finall = System.currentTimeMillis();
-		System.out.println("DB¿¡¼­ ¸ðµç ÅØ½ºÆ® ÆÄÀÏÀ» ÀÐ¾î¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("DBï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 		int invertedIndexTableID = 1;
 		if (!test.parseDocSet(docIDList, invertedIndexTableID)){
-			System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+			System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("¸ðµç ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		int scoreTableID = 1;
@@ -57,13 +58,13 @@ public class Workflow {
 			System.out.println("Processing failed. Need to check memoryProbSolvedBatch method.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("DB¿¡¼­ parseµÈ µ¥ÀÌÅÍ °¡Á®¿Í¼­ simscore °è»ê ÈÄ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("DBï¿½ï¿½ï¿½ï¿½ parseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ simscore ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 //		initial = System.currentTimeMillis();
 //		CosineSim cosineSimilarity = new CosineSim();
 //		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(docIDList, scoreTableID);
 //		finall = System.currentTimeMillis();
-//		System.out.println("hashing setÀÇ ¸ðµç pairÀÇ similarity °è»êÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//		System.out.println("hashing setï¿½ï¿½ ï¿½ï¿½ï¿½ pairï¿½ï¿½ similarity ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 	}
 	
@@ -75,40 +76,40 @@ public class Workflow {
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
 		finall = System.currentTimeMillis();
-		System.out.println("ÀÛ¾÷ ½ÃÀÛ Àü ¸ÕÀú DB¿¡ ÀÖ´Â ¸ðµç docID¸¦ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ docIDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 
 		initial = System.currentTimeMillis();
 		ImportContent1 importData = new ImportContent1();
 		ArrayList<Integer> docIDList = importData.importProcessor(zipFileList);
 		finall = System.currentTimeMillis();
-		System.out.println("µé¾î¿Â ¾ÐÃàÆÄÀÏÀ» unzipÇÏ°í stringÀ» »ÌÀº ´ÙÀ½, string¿¡¼­ ÇÊ¿äÇÑ text¸¸ ÃßÃâÇÑ ÈÄ¿¡ docIDList¸¦ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ unzipï¿½Ï°ï¿½ stringï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, stringï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ textï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¿ï¿½ docIDListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 		if (!test.parseDocSet(docIDList, invertedIndexTableID)){
-			System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+			System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		if (!memoryProbSolved(docIDList, corpusDocIDArray, invertedIndexTableID, scoreTableID)){
 			System.out.println("Processing failed. Need to check memoryProbSolved method.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("DB¿¡¼­ parseµÈ µ¥ÀÌÅÍ °¡Á®¿Í¼­ simscore °è»ê ÈÄ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("DBï¿½ï¿½ï¿½ï¿½ parseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ simscore ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
-		initial = System.currentTimeMillis(); //doc ID list°¡ ³Ê¹« Å¬ °æ¿ì¿¡´Â query°¡ ³Ê¹« ±æ¾îÁü. Ãß°¡ logic ÇÊ¿ä.
+		initial = System.currentTimeMillis(); //doc ID listï¿½ï¿½ ï¿½Ê¹ï¿½ Å¬ ï¿½ï¿½ì¿¡ï¿½ï¿½ queryï¿½ï¿½ ï¿½Ê¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ß°ï¿½ logic ï¿½Ê¿ï¿½.
 		CosineSim cosineSimilarity = new CosineSim();
 		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(docIDList, scoreTableID);
 		finall = System.currentTimeMillis();
-		System.out.println("hashing setÀÇ ¸ðµç pairÀÇ similarity °è»êÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("hashing setï¿½ï¿½ ï¿½ï¿½ï¿½ pairï¿½ï¿½ similarity ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		return highestPairList;
 	}
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	public Integer TEMPORARYprismWorkFlow(String[] args) throws ClassNotFoundException, IOException, InterruptedException{
 		
 		String finalINPUT_PATH = args[1];
@@ -116,42 +117,53 @@ public class Workflow {
 		
 		String intermediateOUTPUT_PATH = Configurations.getInstance().getIntermediateOUTPUT_PATH();
 		String intermediateOUTPUT_PATH1 = Configurations.getInstance().getIntermediateOUTPUT_PATH1();
+		String intermediateOUTPUT_PATH2 = Configurations.getInstance().getIntermediateOUTPUT_PATH2();
 		
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
 		initial = System.currentTimeMillis();
-		//input¿¡ PDF fileµéÀÌ µé¾î°¡ ÀÖ´Ù°í °¡Á¤ ÈÄ, pdf ÆÄÀÏÀ» ÀÐ¾î¼­ Text extract ÈÄ preprocessingÀ» ÇÑ ´ÙÀ½ testdb¿¡ ÀúÀåÇÏ°í parsing ÁøÇà. parsingµÈ data´Â <docID, hashMap> ÇüÅÂ·Î hdfs¿¡ ÀúÀåµÊ. (parseµÈ data´Â ¾ÆÁ÷ db¿¡ ÀúÀåÇÏÁö ¾ÊÀ½)
+		//inputï¿½ï¿½ PDF fileï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î°¡ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, pdf ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾î¼­ Text extract ï¿½ï¿½ preprocessingï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ testdbï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ parsing ï¿½ï¿½ï¿½ï¿½. parsingï¿½ï¿½ dataï¿½ï¿½ <docID, hashMap> ï¿½ï¿½ï¿½Â·ï¿½ hdfsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. (parseï¿½ï¿½ dataï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ dbï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 		PdfDriver drive = new PdfDriver(); 
 		int jobComplete = drive.driver(finalINPUT_PATH, intermediateOUTPUT_PATH);
 		finall = System.currentTimeMillis();
-		System.out.println("PDF Driver µµ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("PDF Driver ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		System.out.println();
 		
 		initial = System.currentTimeMillis();
-		//parseµÇ¾î hdfs¿¡ ÀúÀåµÈ data¸¦ ÇÑ pair¾¿ (Áï, ÇÑ document¾¿) mapper°¡ Ã³¸®ÇÔ. °¢ mapper¿¡¼­´Â ÇÑ document ´ë ±âÁ¸¿¡ ÀúÀåµÇ¾î ÀÖ´ø corpus¿Í similairty°è»ê. (input document °£ÀÇ similarity°è»êÀº ÇÏÁö ¾ÊÀ½)
-		SimScoreDriver1 drive1 = new SimScoreDriver1();
+		//inputï¿½ï¿½ PDF fileï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î°¡ ï¿½Ö´Ù°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, pdf ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾î¼­ Text extract ï¿½ï¿½ preprocessingï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ testdbï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ parsing ï¿½ï¿½ï¿½ï¿½. parsingï¿½ï¿½ dataï¿½ï¿½ <docID, hashMap> ï¿½ï¿½ï¿½Â·ï¿½ hdfsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. (parseï¿½ï¿½ dataï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ dbï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		ParsingDriver drive1 = new ParsingDriver(); 
 		int jobComplete1 = drive1.driver(intermediateOUTPUT_PATH, intermediateOUTPUT_PATH1);
 		finall = System.currentTimeMillis();
-		System.out.println("SimScore Driver1 µµ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("PDF Driver ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		System.out.println();
 		
 		initial = System.currentTimeMillis();
-		//parseµÇ¾î hdfs¿¡ ÀúÀåµÈ data¸¦ ÇÑ pair¾¿ (Áï, ÇÑ document¾¿) mapper°¡ Ã³¸®ÇÔ. °¢ mapper¿¡¼­´Â ÇÑ document ´ë "INPUT" corpus¿Í similairty°è»ê. (input document °£ÀÇ similarity°è»ê¸¸ ÇÔ.)
-		SimScoreDriver2 drive2 = new SimScoreDriver2();
-		int jobComplete2 = drive2.driver(intermediateOUTPUT_PATH, intermediateOUTPUT_PATH1);
+		//parseï¿½Ç¾ï¿½ hdfsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ dataï¿½ï¿½ ï¿½ï¿½ pairï¿½ï¿½ (ï¿½ï¿½, ï¿½ï¿½ documentï¿½ï¿½) mapperï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ mapperï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ document ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ corpusï¿½ï¿½ similairtyï¿½ï¿½ï¿½. (input document ï¿½ï¿½ï¿½ï¿½ similarityï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		SimScoreDriver1 drive2 = new SimScoreDriver1();
+		int jobComplete2 = drive2.driver(intermediateOUTPUT_PATH1, intermediateOUTPUT_PATH2);
 		finall = System.currentTimeMillis();
-		System.out.println("SimScore Driver1 µµ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("SimScore Driver1 ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		System.out.println();
 		
-		//ÀÌ ½ÃÁ¡¿¡¼­´Â ¸ðµç input documentµéÀº invertedindextable¿¡¼­ 2·Î flag ¼¼¿öÁ® ÀÖÀ» °Í. 0À¸·Î ¸¸µé¾î ÁÖ±â.
+		initial = System.currentTimeMillis();
+		//parseï¿½Ç¾ï¿½ hdfsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ dataï¿½ï¿½ ï¿½ï¿½ pairï¿½ï¿½ (ï¿½ï¿½, ï¿½ï¿½ documentï¿½ï¿½) mapperï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ mapperï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ document ï¿½ï¿½ "INPUT" corpusï¿½ï¿½ similairtyï¿½ï¿½ï¿½. (input document ï¿½ï¿½ï¿½ï¿½ similarityï¿½ï¿½ê¸¸ ï¿½ï¿½.)
+		SimScoreDriver2 drive3 = new SimScoreDriver2();
+		int jobComplete3 = drive3.driver(intermediateOUTPUT_PATH1, intermediateOUTPUT_PATH2);
+		finall = System.currentTimeMillis();
+		System.out.println("SimScore Driver1 ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
+		System.out.println();
+		
+		//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ input documentï¿½ï¿½ï¿½ï¿½ invertedindextableï¿½ï¿½ï¿½ï¿½ 2ï¿½ï¿½ flag ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½. 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½.
 		DBManager.getInstance().flagCompleteDocuments(Configurations.getInstance().getTableID());
 		
-		//¸¸µé¾îÁø output directoryµé ¸ðµÎ Áö¿ò.
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ output directoryï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		FileSystem hdfs = FileSystem.get(new Configuration());
 		Path deleteIntermediateOutputPath = new Path(intermediateOUTPUT_PATH);
 		Path deleteIntermediateOutputPath1 = new Path(intermediateOUTPUT_PATH1);
+		Path deleteIntermediateOutputPath2 = new Path(intermediateOUTPUT_PATH2);
 		Path deleteOutputPath = new Path(finalOUTPUT_PATH);
+		
 		if(hdfs.exists(deleteIntermediateOutputPath)){
 			hdfs.delete(deleteIntermediateOutputPath, true);  //delete existing directory
 		}
@@ -160,18 +172,22 @@ public class Workflow {
 			hdfs.delete(deleteIntermediateOutputPath1, true);  //delete existing directory
 		}
 		
+		if(hdfs.exists(deleteIntermediateOutputPath2)){
+			hdfs.delete(deleteIntermediateOutputPath2, true);  //delete existing directory
+		}
+		
 		if(hdfs.exists(deleteOutputPath)){
 			hdfs.delete(deleteOutputPath, true);  //delete existing directory
 		}
 		
-		if (jobComplete == 0 && jobComplete1 == 0 && jobComplete2 == 0){  //¼¼ °¡Áö jobÀ» ¸ðµÎ ¿Ïº®ÇÏ°Ô ¼öÇàÇÏ¿´À» ¶§¸¸ 0À¸·Î ¸®ÅÏ. ¾Æ´Ï¸é 1·Î ¸®ÅÏ.
+		if (jobComplete == 0 && jobComplete1 == 0 && jobComplete2 == 0){  //ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ jobï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ïºï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½Æ´Ï¸ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			return 0;
 		}
 		
 		return 1;
 	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	
 	
 	public ArrayList<DocPair> workFlowExperiment_Sentence(int experimentTableID, int fingerprint){
@@ -183,24 +199,24 @@ public class Workflow {
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
 		finall = System.currentTimeMillis();
-		System.out.println("ÀÛ¾÷ ½ÃÀÛ Àü ¸ÕÀú DB¿¡ ÀÖ´Â ¸ðµç docID¸¦ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ docIDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		
 		if(experimentTableID == 73 || experimentTableID == 74){
 			Parse1_sentence_hashcode test = new Parse1_sentence_hashcode();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}else if(experimentTableID == 75 || experimentTableID == 76){
 			Parse1_sentence_string test = new Parse1_sentence_string();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}
 		
 		initial = System.currentTimeMillis();
@@ -208,13 +224,13 @@ public class Workflow {
 			System.out.println("Processing failed. Need to check memoryProbSolved method.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("DB¿¡¼­ parseµÈ µ¥ÀÌÅÍ °¡Á®¿Í¼­ simscore °è»ê ÈÄ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("DBï¿½ï¿½ï¿½ï¿½ parseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ simscore ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
-		initial = System.currentTimeMillis(); //doc ID list°¡ ³Ê¹« Å¬ °æ¿ì¿¡´Â query°¡ ³Ê¹« ±æ¾îÁü. Ãß°¡ logic ÇÊ¿ä.
+		initial = System.currentTimeMillis(); //doc ID listï¿½ï¿½ ï¿½Ê¹ï¿½ Å¬ ï¿½ï¿½ì¿¡ï¿½ï¿½ queryï¿½ï¿½ ï¿½Ê¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ß°ï¿½ logic ï¿½Ê¿ï¿½.
 		SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
 		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(corpusDocIDArray, experimentTableID);
 		finall = System.currentTimeMillis();
-		System.out.println("highest score¸¦ °¡Áø doc pair list¸¦ DB¿¡¼­ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ\n\n\n");
+		System.out.println("highest scoreï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ doc pair listï¿½ï¿½ DBï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½\n\n\n");
 		
 		return highestPairList;
 	}
@@ -229,44 +245,44 @@ public class Workflow {
 		initial = System.currentTimeMillis();
 		ArrayList<Integer> corpusDocIDArray = DBManager.getInstance().getAllTextAsDocIDArray();
 		finall = System.currentTimeMillis();
-		System.out.println("ÀÛ¾÷ ½ÃÀÛ Àü ¸ÕÀú DB¿¡ ÀÖ´Â ¸ðµç docID¸¦ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ docIDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 
 //		initial = System.currentTimeMillis();
 //		ImportContent1 importData = new ImportContent1();
 //		ArrayList<Integer> docIDList = importData.importProcessor(zipFileList);
 //		finall = System.currentTimeMillis();
-//		System.out.println("µé¾î¿Â ¾ÐÃàÆÄÀÏÀ» unzipÇÏ°í stringÀ» »ÌÀº ´ÙÀ½, string¿¡¼­ ÇÊ¿äÇÑ text¸¸ ÃßÃâÇÑ ÈÄ¿¡ docIDList¸¦ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ unzipï¿½Ï°ï¿½ stringï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, stringï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ textï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¿ï¿½ docIDListï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
 		initial = System.currentTimeMillis();
 		
 		if(experimentTableID <= 16){
 			Parse1_nGram_hashcode test = new Parse1_nGram_hashcode();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}else if(experimentTableID > 16 && experimentTableID <= 36){
 			Parse1_noun_hashcode test = new Parse1_noun_hashcode();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}else if(experimentTableID > 36 && experimentTableID <= 52){
 			Parse1_nGram_string test = new Parse1_nGram_string();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}else{
 			Parse1_noun_string test = new Parse1_noun_string();
 			if (!test.parseDocSet(corpusDocIDArray, experimentTableID)){
-				System.out.println("Inverted index ÀúÀå ½ÇÆÐ.");
+				System.out.println("Inverted index ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.");
 			}
 			finall = System.currentTimeMillis();
-			System.out.println("Input ÅØ½ºÆ® ÆÄÀÏÀ» hashing ÇÏ°í DB¿¡ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+			System.out.println("Input ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ hashing ï¿½Ï°ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		}
 		
 		initial = System.currentTimeMillis();
@@ -274,13 +290,13 @@ public class Workflow {
 			System.out.println("Processing failed. Need to check memoryProbSolved method.");
 		}
 		finall = System.currentTimeMillis();
-		System.out.println("DB¿¡¼­ parseµÈ µ¥ÀÌÅÍ °¡Á®¿Í¼­ simscore °è»ê ÈÄ ÀúÀåÇÏ´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+		System.out.println("DBï¿½ï¿½ï¿½ï¿½ parseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ simscore ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 		
-		initial = System.currentTimeMillis(); //doc ID list°¡ ³Ê¹« Å¬ °æ¿ì¿¡´Â query°¡ ³Ê¹« ±æ¾îÁü. Ãß°¡ logic ÇÊ¿ä.
+		initial = System.currentTimeMillis(); //doc ID listï¿½ï¿½ ï¿½Ê¹ï¿½ Å¬ ï¿½ï¿½ì¿¡ï¿½ï¿½ queryï¿½ï¿½ ï¿½Ê¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ß°ï¿½ logic ï¿½Ê¿ï¿½.
 		CosineSim cosineSimilarity = new CosineSim();
 		ArrayList<DocPair> highestPairList = cosineSimilarity.getHighestScorePairs(corpusDocIDArray, experimentTableID);
 		finall = System.currentTimeMillis();
-		System.out.println("highest score¸¦ °¡Áø doc pair list¸¦ DB¿¡¼­ °¡Á®¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ\n\n\n");
+		System.out.println("highest scoreï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ doc pair listï¿½ï¿½ DBï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½\n\n\n");
 		
 		return highestPairList;
 	}
@@ -291,7 +307,7 @@ public class Workflow {
 //		double initial = System.currentTimeMillis();
 //		double finall = System.currentTimeMillis();
 		
-		//intra ¹®Á¦ ÇØ°á ÇÊ¿ä.
+		//intra ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½ ï¿½Ê¿ï¿½.
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			
@@ -309,7 +325,7 @@ public class Workflow {
 				}
 				
 //				finall = System.currentTimeMillis();
-//				System.out.println("DB¿¡¼­ docInfo list ¸¸µé¾î¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//				System.out.println("DBï¿½ï¿½ï¿½ï¿½ docInfo list ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 				
 				SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
 				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
@@ -331,7 +347,7 @@ public class Workflow {
 				docInfoList = test.getParsedDocs_Sentence(segmentedDocIDList, experimentTableID);
 			}
 //			finall = System.currentTimeMillis();
-//			System.out.println("DB¿¡¼­ docInfo list ¸¸µé¾î¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//			System.out.println("DBï¿½ï¿½ï¿½ï¿½ docInfo list ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 			
 			SimCalc_Sentence cosineSimilarity = new SimCalc_Sentence();
 			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
@@ -353,7 +369,7 @@ public class Workflow {
 //		double initial = System.currentTimeMillis();
 //		double finall = System.currentTimeMillis();
 		
-		//intra ¹®Á¦ ÇØ°á ÇÊ¿ä.
+		//intra ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½ ï¿½Ê¿ï¿½.
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			
@@ -375,7 +391,7 @@ public class Workflow {
 					docInfoList = test.getParsedDocs(docIDList, experimentTableID);
 				}
 //				finall = System.currentTimeMillis();
-//				System.out.println("DB¿¡¼­ docInfo list ¸¸µé¾î¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//				System.out.println("DBï¿½ï¿½ï¿½ï¿½ docInfo list ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 				
 				CosineSim cosineSimilarity = new CosineSim();
 				if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
@@ -403,7 +419,7 @@ public class Workflow {
 				docInfoList = test.getParsedDocs(segmentedDocIDList, experimentTableID);
 			}
 //			finall = System.currentTimeMillis();
-//			System.out.println("DB¿¡¼­ docInfo list ¸¸µé¾î¿À´Âµ¥ °É¸° ½Ã°£  :  " + (finall - initial)/1000 + "ÃÊ");
+//			System.out.println("DBï¿½ï¿½ï¿½ï¿½ docInfo list ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½É¸ï¿½ ï¿½Ã°ï¿½  :  " + (finall - initial)/1000 + "ï¿½ï¿½");
 			
 			CosineSim cosineSimilarity = new CosineSim();
 			if (!cosineSimilarity.simCalcProcessorBatch(docInfoList, docIDListList, experimentTableID, experimentTableID)){
@@ -459,7 +475,7 @@ public class Workflow {
 		int docIDMemoryLimit = Configurations.getInstance().getDocIDListLimit();
 		docIDList = new ArrayList<Integer>(docIDList);
 		
-		//intra ¹®Á¦ ÇØ°á ÇÊ¿ä.
+		//intra ï¿½ï¿½ï¿½ï¿½ ï¿½Ø°ï¿½ ï¿½Ê¿ï¿½.
 		ArrayList<ArrayList<Integer>> docIDListList = new ArrayList<ArrayList<Integer>>();
 		while (!docIDList.isEmpty()){
 			

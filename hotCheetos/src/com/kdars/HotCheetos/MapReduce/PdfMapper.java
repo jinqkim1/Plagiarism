@@ -1,5 +1,6 @@
 package com.kdars.HotCheetos.MapReduce;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,31 +8,37 @@ import java.util.regex.Pattern;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.Parsing.NGram_hashcode_mapReduce;
 
-public class PdfMapper extends Mapper<Text, Object, LongWritable, MapWritable>{
+public class PdfMapper extends Mapper<Text, BytesWritable, LongWritable, Text>{
+	
 	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
 
 	@Override
-	public void map(Text title, Object pathFile, Context context) throws IOException, InterruptedException {
+	public void map(Text title, BytesWritable file, Context context) throws IOException, InterruptedException {
 		
-		Path file = (Path) pathFile;
-		FileSystem fs = file.getFileSystem(context.getConfiguration());
-		FSDataInputStream fileIn = fs.open(file);
-		PDDocument pdf = PDDocument.load(fileIn);
+		PDDocument pdf = PDDocument.load(new ByteArrayInputStream(file.getBytes()));
 		PDFTextStripper stripper = new PDFTextStripper();
 		String content = stripper.getText(pdf);
 		String fileName = title.toString();
 		
-		//raw text¿¡¼­ Korean, English, Period, Whitespace¸¸ °É·¯³¿.
+//		Path file = new Path(filePath.toString());
+//		FileSystem fs = file.getFileSystem(context.getConfiguration());
+//		FSDataInputStream fileIn = fs.open(file);
+//		PDDocument pdf = PDDocument.load(fileIn);
+//		PDFTextStripper stripper = new PDFTextStripper();
+//		String content = stripper.getText(pdf);
+//		String fileName = title.toString();
+		
+		//raw textï¿½ï¿½ï¿½ï¿½ Korean, English, Period, Whitespaceï¿½ï¿½ ï¿½É·ï¿½ï¿½ï¿½.
 		StringBuilder processingContent = new StringBuilder();
 		String[] processingLines = content.trim().split("\\r?\\n");
 		
@@ -40,19 +47,14 @@ public class PdfMapper extends Mapper<Text, Object, LongWritable, MapWritable>{
 		}
 		
 		
-		//title°ú text¸¦ DB¿¡ ÀúÀå ÈÄ DB¿¡¼­ auto-increment·Î ÇÒ´ç¹ÞÀº docID¸¦ °¡Áö°í ¿È.
+		//titleï¿½ï¿½ textï¿½ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ DBï¿½ï¿½ï¿½ï¿½ auto-incrementï¿½ï¿½ ï¿½Ò´ï¿½ï¿½ï¿½ï¿½ docIDï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
 		LongWritable docID = new LongWritable();
 		docID.set((long) DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(fileName, processingContent.toString()));
 		
 		
-		//Parsing ÁøÇà ÈÄ .parsdoc¿¡¼­ invertedindextable¿¡ ÀúÀå.
-		NGram_hashcode_mapReduce test = new NGram_hashcode_mapReduce();
-		
-		//¿©±â¼­ inverted index table¿¡ ÀúÀåÇÔ.
-		//ÀÏ´Ü test¸¦ À§ÇØ default·Î 3-gram hashcode fingerprint ÁøÇàÇÏ°Ô µÊ.
-		MapWritable termFreqMap = test.parseDoc(processingContent.toString(), (int) docID.get(), 77);  // ¿©±â¼­ 0Àº table id·Î ÀÏ´Ü default tableÀÎ  'invertedindextable'¿¡ ÀúÀåÇÏ°Ô µÊ.
-		
-		context.write(docID, termFreqMap);
+		Text processedContent = new Text();
+		processedContent.set(processingContent.toString());
+		context.write(docID, processedContent);
 	}
 	
 	private String textExtractor(String str){

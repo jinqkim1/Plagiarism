@@ -13,26 +13,28 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
-public class PdfRecordReader_onePair extends RecordReader<Text, Object> {
-
-	private Path file = null;
-	private Text key = null; //PDF ÆÄÀÏ Á¦¸ñ 
-	private Object value = null; //PDF ÆÄÀÏ ÅØ½ºÆ®
+public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
+	
+	private String fileName = null;
+	private String file = null;
+	private Text key = null; //PDF ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	private Text value = null; //PDF ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
 
 	@Override
 	public void initialize(InputSplit genericSplit, TaskAttemptContext context)
 			throws IOException, InterruptedException {
 		
 		FileSplit split = (FileSplit) genericSplit;
-		this.file = split.getPath();
+		this.fileName = split.getPath().getName();
+		this.file = split.getPath().toString();
 //		FileSplit split = (FileSplit) genericSplit;
 //		Configuration job = context.getConfiguration();
 //		final Path file = split.getPath();
 //
 //		/*
 //		 * The below code contains the logic for opening the file and seek to
-//		 * the start of the split. Here we are applying the Pdf Parsing logic ¸ÕÀú
-//		 * file system¿¡ PDF fileÀÌ ÀúÀåµÇ¾î ÀÖ¾î¾ß ÇÔ
+//		 * the start of the split. Here we are applying the Pdf Parsing logic ï¿½ï¿½ï¿½ï¿½
+//		 * file systemï¿½ï¿½ PDF fileï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½ï¿½
 //		 */
 //
 //		try {
@@ -54,8 +56,9 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Object> {
 
 		if (key == null) {
 			key = new Text();
-			key.set(file.getName());
-			value = this.file;
+			key.set(this.fileName);
+			value = new Text();
+			value.set(this.file);
 			
 //			Path file = this.fileSplit.getPath();
 //			key = file;
@@ -63,7 +66,7 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Object> {
 		} else {
 			return false;
 		}
-		//key³ª value °ªÀÌ ÀÌ ½ÃÁ¡¿¡¼­ ºñ¾îÀÖ´Ù¸é ´õ ÀÌ»ó pair°¡ ¾ø´Â °É·Î return. µÑ ´Ù °ªÀÌ ÀÖ¾ú´Ù¸é true. ÇÏÁö¸¸ ÀÌ °æ¿ì Ã¹¹øÂ°¸¸ true, ±× ´ÙÀ½Àº ¹Ù·Î false·Î ºüÁü.
+		//keyï¿½ï¿½ value ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö´Ù¸ï¿½ ï¿½ï¿½ ï¿½Ì»ï¿½ pairï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½É·ï¿½ return. ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½Ù¸ï¿½ true. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã¹ï¿½ï¿½Â°ï¿½ï¿½ true, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù·ï¿½ falseï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		if (key == null || value == null) {
 			return false;
 		} else {
@@ -78,22 +81,22 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Object> {
 	}
 
 	@Override
-	public Object getCurrentValue() throws IOException, InterruptedException {
+	public Text getCurrentValue() throws IOException, InterruptedException {
 
 		return value;
 	}
 
 	@Override
 	public float getProgress() throws IOException, InterruptedException {
-		// ¾ÆÁ÷ implement ÇÏÁö ¾ÊÀ½
-		// ´Ù¸¥ °÷¿¡¼­ È°¿ëÇÏÁö ¾Ê°í ÀÖÀ½
+		// ï¿½ï¿½ï¿½ï¿½ implement ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½
 		return 0;
 	}
 
 	@Override
 	public void close() throws IOException {
-		// ¾ÆÁ÷ implement ÇÏÁö ¾ÊÀ½
-		// ´Ù¸¥ °÷¿¡¼­ È°¿ëÇÏÁö ¾Ê°í ÀÖÀ½
+		// ï¿½ï¿½ï¿½ï¿½ implement ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½ï¿½
 	}
 
 }
