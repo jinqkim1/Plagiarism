@@ -13,14 +13,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
-import com.kdars.HotCheetos.PDFParser.PDFFileParser;
+import com.kdars.HotCheetos.TextExtractor.MS_PDF_TextExtractors;
 
 
 public class FileDataImport implements ImportContent {
@@ -97,7 +91,7 @@ public class FileDataImport implements ImportContent {
 				fos.close();
 				ze = zis.getNextEntry();
 				
-				content = PDFFileParser.getInstance().PdfFileParser(outputFolder + File.separator + fileName);
+				content = MS_PDF_TextExtractors.getInstance().chooseFileTypeAndExtract(outputFolder + File.separator + fileName);
 				titleAndContent.add(fileName);
 				titleAndContent.add(content);
 				
