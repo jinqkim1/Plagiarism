@@ -13,7 +13,7 @@ import java.util.zip.ZipInputStream;
 
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.PDFParser.PDFFileParser;
+import com.kdars.HotCheetos.TextExtractor.MS_PDF_TextExtractors;
 
 public class ImportContent1 {
 	private String extractTextPattern = Configurations.getInstance().getTextPattern();
@@ -66,7 +66,7 @@ public class ImportContent1 {
 				fos.close();
 				ze = zis.getNextEntry();
 				
-				content = PDFFileParser.getInstance().PdfFileParser(outputFolder + File.separator + fileName);
+				content = MS_PDF_TextExtractors.getInstance().chooseFileTypeAndExtract(outputFolder + File.separator + fileName);
 				titleAndContent.add(fileName);
 				titleAndContent.add(content);
 				
