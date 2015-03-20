@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -39,20 +41,22 @@ public class MS_PDF_TextExtractors {
 		String content = null;
 		String fileType = filePath.substring(filePath.lastIndexOf('.')+1, filePath.length());
 		
-		if (fileType.equals("doc")){
+		if (fileType.equals("doc") || fileType.equals("dot")){
 			content = OLE2wordFileParser(filePath);
-		}else if (fileType.equals("docx")){
+		}else if (fileType.equals("docx") || fileType.equals("docm") || fileType.equals("dotm")){
 			content = OOXMLwordFileParser(filePath);
 		}else if (fileType.equals("ppt")){
 			content = OLE2pptFileParser(filePath);
-		}else if (fileType.equals("pptx")){
+		}else if (fileType.equals("pptx") || fileType.equals("pptm") || fileType.equals("ppsm")){
 			content = OOXMLpptFileParser(filePath);
 		}else if (fileType.equals("xls")){
 			content = OLE2excelFileParser(filePath);
-		}else if (fileType.equals("xlsx")){
+		}else if (fileType.equals("xlsx") || fileType.equals("xlsm") || fileType.equals("xlsb")){
 			content = OOXMLexcelFileParser(filePath);
 		}else if (fileType.equals("pdf")){
 			content = PdfFileParser(filePath);
+		}else if (fileType.equals("txt")){
+			content = txtFileParser(filePath);
 		}else{
 			System.out.println(fileType);
 		}
@@ -227,4 +231,19 @@ public class MS_PDF_TextExtractors {
 		return content.toString();
 	}
 	
+	private String txtFileParser(String filePath){
+		StringBuilder content = new StringBuilder();
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(Paths.get(filePath), "UTF-8");
+			while (scanner.hasNextLine()){
+				content.append(scanner.nextLine() + "\n");
+			}
+			scanner.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return content.toString();
+	}
 }
