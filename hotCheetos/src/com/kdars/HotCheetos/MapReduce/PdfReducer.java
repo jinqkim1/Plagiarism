@@ -14,34 +14,34 @@ public class PdfReducer extends Reducer<Text, Text, Text, IntWritable>{
 	
 	@Override
 	public void reduce(Text title, Iterable<Text> contents, Context context) throws IOException, InterruptedException {
-		
+		/*
 		int docID = 0;
 		String content = null;
 		
-		int contentCount = 0; //¾îÂ÷ÇÇ mapper¿¡¼­´Â ÇÑ key ´ç ÇÏ³ªÀÇ value(pdf ³»¿ë)À» ³Ñ°ÜÁÖ±â ¶§¹®¿¡ iterateÀº ÇÑ¹ø ¹Û¿¡ ¾ÈÇÏ°Ô µÇ´Â°Ô Á¤»ó.
+		int contentCount = 0; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ mapperï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ key ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ value(pdf ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ ï¿½Ñ°ï¿½ï¿½Ö±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ iterateï¿½ï¿½ ï¿½Ñ¹ï¿½ ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ç´Â°ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		for (Text text : contents){
 			
 			contentCount++;
 			
 			content = text.toString();
 			
-			//¿©±â¼­ text table¿¡ ÀúÀå ÈÄ docID °¡Á®¿È.
-//			docID = DBManager.getInstance().insertRowAndGetDocIDArray(title.toString(), text.toString());  //°á±¹ ÇÏ³ª ¹Û¿¡ ¾È ´ãÀ½.
+			//ï¿½ï¿½ï¿½â¼­ text tableï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ docID ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+//			docID = DBManager.getInstance().insertRowAndGetDocIDArray(title.toString(), text.toString());  //ï¿½á±¹ ï¿½Ï³ï¿½ ï¿½Û¿ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			
-			//prism test ÈÄ ´Ù½Ã º¹±¸ ÇÊ¿ä.
+			//prism test ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½.
 			docID = DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(title.toString(), text.toString());
 		}
 		
 		if (contentCount != 1){
-			//content°¡ ¿©·¯°³ µé¾î¿Ô´Ù?? ÇÑ Á¦¸ñ´ç??  ÀÌ°Ç ºñÁ¤»ó.
-			System.out.println("Reducer¿¡¼­ °íÀå³µÀ½");
+			//contentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ô´ï¿½?? ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½??  ï¿½Ì°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+			System.out.println("Reducerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å³µï¿½ï¿½");
 		}
 		
 		NGram_hashcode_mapReduce test = new NGram_hashcode_mapReduce();
-		
-		//¿©±â¼­ inverted index table¿¡ ÀúÀåÇÔ.
-		//ÀÏ´Ü test¸¦ À§ÇØ default·Î 3-gram hashcode fingerprint ÁøÇàÇÏ°Ô µÊ.
-//		DocumentInfo docInfo = test.parseDoc(content, docID, 77);  // ¿©±â¼­ 0Àº table id·Î ÀÏ´Ü default tableÀÎ  'invertedindextable'¿¡ ÀúÀåÇÏ°Ô µÊ.
+		*/
+		//ï¿½ï¿½ï¿½â¼­ inverted index tableï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
+		//ï¿½Ï´ï¿½ testï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ defaultï¿½ï¿½ 3-gram hashcode fingerprint ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½.
+//		DocumentInfo docInfo = test.parseDoc(content, docID, 77);  // ï¿½ï¿½ï¿½â¼­ 0ï¿½ï¿½ table idï¿½ï¿½ ï¿½Ï´ï¿½ default tableï¿½ï¿½  'invertedindextable'ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½.
 		
 //		for(String key : docInfo.termFreq.keySet()){
 //			Text keyText = new Text();

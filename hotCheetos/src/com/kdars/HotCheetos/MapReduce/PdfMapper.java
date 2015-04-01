@@ -1,13 +1,23 @@
 package com.kdars.HotCheetos.MapReduce;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -15,7 +25,13 @@ import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
@@ -27,30 +43,41 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 
 	@Override
 	public void map(Text title, Text file, Context context) throws IOException, InterruptedException {
+		Path path = new Path(file.toString());
+		Configuration conf = context.getConfiguration();
 		
+	
+		
+		
+		
+		
+
 		long time = System.currentTimeMillis(); 
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 		String str = dayTime.format(new Date(time));
-		String filepath = file.toString();
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+file.toString()+"')");
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
 		
-		String tempPath1 = filepath;
-		String tempPath2 = "hdfs://slave1.kdars.com:8020/user/hadoop/num_5/44.pdf";
-		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('tempPath1 : "+tempPath1+"')");
-		File temp = new File(tempPath1);
-		if(temp.exists()){
-			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('tempPath1 : "+tempPath1+" temp.exists()')");
-		}else{
-			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('tempPath1 : "+tempPath1+" temp.exists() nononono')");
-		}
 		
-		temp = new File(tempPath2);
-		if(temp.exists()){
-			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('tempPath2 : "+tempPath2+" temp.exists()')");
-		}else{
-			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('tempPath2 : "+tempPath2+" temp.exists() nononono')");
-		}
+		FileSystem fs = path.getFileSystem(conf);
+		FSDataInputStream filein = fs.open(path);
+		PDDocument doc = PDDocument.loadNonSeq(filein, null);
+		PDFTextStripper stripper = new PDFTextStripper();
+		String content = stripper.getText(doc);
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+content+"' where `type`='"+file.toString()+"'");
 		
-		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+file.toString()+"')");
+		doc.close();
+		filein.close();
+		fs.close();
+		
+		
+		time = System.currentTimeMillis(); 
+		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		str = dayTime.format(new Date(time));
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='"+file.toString()+"'");
+	
+		
+		
 		//DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
 		//PDDocument pdf = PDDocument.load(tempPath);
 		//PDFTextStripper stripper = new PDFTextStripper();
@@ -83,10 +110,7 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 		//processedContent.set(processingContent.toString());
 		//context.write(docID, processedContent);
 		
-		time = System.currentTimeMillis(); 
-		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-		str = dayTime.format(new Date(time));
-		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='"+file.toString()+"'");
+		
 	}
 	
 	private String textExtractor(String str){

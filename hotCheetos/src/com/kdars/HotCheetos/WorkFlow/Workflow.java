@@ -130,7 +130,7 @@ public class Workflow {
 		finall = System.currentTimeMillis();
 		System.out.println("PDF Driver ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
 		System.out.println();
-		
+		/*
 		initial = System.currentTimeMillis();
 		//input�� PDF file���� �� �ִٰ� ���� ��, pdf ������ �о Text extract �� preprocessing�� �� ���� testdb�� �����ϰ� parsing ����. parsing�� data�� <docID, hashMap> ���·� hdfs�� �����. (parse�� data�� ���� db�� �������� ����)
 		ParsingDriver drive1 = new ParsingDriver(); 
@@ -184,7 +184,7 @@ public class Workflow {
 		if (jobComplete == 0 && jobComplete1 == 0 && jobComplete2 == 0){  //�� ���� job�� ��� �Ϻ��ϰ� �����Ͽ��� ���� 0���� ����. �ƴϸ� 1�� ����.
 			return 0;
 		}
-		
+		*/
 		return 1;
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
