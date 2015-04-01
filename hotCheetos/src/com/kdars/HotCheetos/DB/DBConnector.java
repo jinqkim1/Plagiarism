@@ -1108,5 +1108,22 @@ public class DBConnector {
 		
 		return true;
 	}
+
+	public void insertSQL(String sql) {
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			stmt.execute("LOCK TABLES `plagiarismdb`.`workflow` WRITE;");
+			
+			stmt.executeUpdate(sql);
+			
+			stmt.execute("UNLOCK TABLES;");
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 }

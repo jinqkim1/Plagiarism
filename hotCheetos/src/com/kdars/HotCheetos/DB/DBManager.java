@@ -541,15 +541,15 @@ public class DBManager {
 		return null;
 	}
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	public Integer insertRowAndGetDocIDArrayPRISM(String title, String processedContent){
-		if(DB.queryTextAsDocIDPRISM(title) == 0){  //0À¸·Î ¿Ã¶ó¿Â´Ù´Â °ÍÀº ¾î¶² mapperµµ ¾ÆÁ÷ text db¿¡ ¹®¼­¸¦ ÀúÀåÇÏÁö ¾Ê¾Ò´Ù´Â ¶æ. °í·Î Á¤»ó µ¿ÀÛ ½Ç½Ã.
+		if(DB.queryTextAsDocIDPRISM(title) == 0){  //0ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¶ï¿½Â´Ù´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½î¶² mapperï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ text dbï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò´Ù´ï¿½ ï¿½ï¿½. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç½ï¿½.
 			if (DB.insertTextPRISM(title, processedContent)){
 				return DB.queryTextAsDocIDPRISM(title);
 			}
 		}
 		
-		if(DB.deleteText_PRISM(title)){  //ÀÌ¹Ì µé¾î°¡ ÀÖ´Â °Å¶ó¸é ÇØ´ç µ¥ÀÌÅÍ Áö¿î ÈÄ insert ½Ç½Ã.
+		if(DB.deleteText_PRISM(title)){  //ï¿½Ì¹ï¿½ ï¿½ï¿½î°¡ ï¿½Ö´ï¿½ ï¿½Å¶ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ insert ï¿½Ç½ï¿½.
 			if (DB.insertTextPRISM(title, processedContent)){
 				return DB.queryTextAsDocIDPRISM(title);
 			}
@@ -557,7 +557,7 @@ public class DBManager {
 		
 		return null;
 	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	
 	public String getText(int documentID){
 		return DB.queryText(documentID);
@@ -575,11 +575,11 @@ public class DBManager {
 		return DB.queryAllTextAsDocIDList();
 	}
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	public ArrayList<Integer> getAllTextAsDocIDArrayPRISM(){
 		return DB.queryAllTextAsDocIDListPRISM();
 	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	
 	public boolean insertBulkToScoreTable(String csvContent, int scoreTableID){
 		String scoreTableName = convertIDtoName_Score(scoreTableID);
@@ -673,7 +673,7 @@ public class DBManager {
 	public boolean insertBulkToHashTable_MapReduce(int docID, MapWritable termFreqMap, int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
 		
-		if(DB.checkHash(docID, invertedIndexTableName) != 0){  //ÀÌ¹Ì ÇØ´ç docidÀÇ hashµéÀÌ µé¾î°¡ÀÖÀ» °æ¿ì¿¡´Â, map reduce µµÁß¿¡ Á×Àº °ÍÀ¸·Î ÆÇ´Ü. Áö¿ì°í Ã³À½ºÎÅÍ ´Ù½Ã insertÇÔ.
+		if(DB.checkHash(docID, invertedIndexTableName) != 0){  //ï¿½Ì¹ï¿½ ï¿½Ø´ï¿½ docidï¿½ï¿½ hashï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½, map reduce ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ insertï¿½ï¿½.
 			boolean deleteChecker = false;
 			while(!deleteChecker){
 				deleteChecker = DB.deleteHash(docID, invertedIndexTableName);
@@ -884,7 +884,7 @@ public class DBManager {
 	}
 	
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	public ArrayList<Integer> getCurrentDocIDsFromInvertedIndexTable(int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
 		
@@ -902,7 +902,7 @@ public class DBManager {
 		
 		return DB.switchFlagFromTwoToZero_invertedIndex(invertedIndexTableName);
 	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////// prism À§ÇØ Àá!±ñ! ¸¸µé¾î³ùÀ½!
+	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!ï¿½ï¿½! ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
 	
 	
 	public ArrayList<DocumentInfo> getMultipleDocInfoArray_Sentence(ArrayList<Integer> docIDs, int invertedIndexTableID) {
@@ -926,6 +926,10 @@ public class DBManager {
 	
 	public ArrayList<DocumentInfo> getDocInfoArrayWithStringTableName(ArrayList<Integer> docIDs, String tableName) {
 		return DB.queryDocInfoArrayWithStringTableName(docIDs, tableName);
+	}
+
+	public void insertSQL(String sql) {
+		DB.insertSQL(sql);
 	}
 	
 }

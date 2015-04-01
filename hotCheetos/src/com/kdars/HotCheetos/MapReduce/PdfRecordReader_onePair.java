@@ -1,6 +1,7 @@
 package com.kdars.HotCheetos.MapReduce;
 
 import java.io.IOException;
+import org.apache.pdfbox.PDFBox.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -13,10 +14,13 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
+import com.kdars.HotCheetos.DB.DBManager;
+
 public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 	
 	private String fileName = null;
 	private String file = null;
+	private String path = null;
 	private Text key = null; //PDF ���� ���� 
 	private Text value = null; //PDF ���� �ؽ�Ʈ
 
@@ -27,6 +31,8 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 		FileSplit split = (FileSplit) genericSplit;
 		this.fileName = split.getPath().getName();
 		this.file = split.getPath().toString();
+		this.path = split.getPath().toString();
+		 
 //		FileSplit split = (FileSplit) genericSplit;
 //		Configuration job = context.getConfiguration();
 //		final Path file = split.getPath();
@@ -58,7 +64,7 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 			key = new Text();
 			key.set(this.fileName);
 			value = new Text();
-			value.set(this.file);
+			value.set(this.path);
 			
 //			Path file = this.fileSplit.getPath();
 //			key = file;
@@ -76,13 +82,12 @@ public class PdfRecordReader_onePair extends RecordReader<Text, Text> {
 
 	@Override
 	public Text getCurrentKey() throws IOException, InterruptedException {
-
 		return key;
 	}
 
 	@Override
 	public Text getCurrentValue() throws IOException, InterruptedException {
-
+		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('getCurrentValue(): "+value.toString()+"')");
 		return value;
 	}
 

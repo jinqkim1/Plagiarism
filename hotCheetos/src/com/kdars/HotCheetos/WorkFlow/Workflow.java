@@ -125,6 +125,7 @@ public class Workflow {
 		initial = System.currentTimeMillis();
 		//input�� PDF file���� �� �ִٰ� ���� ��, pdf ������ �о Text extract �� preprocessing�� �� ���� testdb�� �����ϰ� parsing ����. parsing�� data�� <docID, hashMap> ���·� hdfs�� �����. (parse�� data�� ���� db�� �������� ����)
 		PdfDriver drive = new PdfDriver(); 
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('start program')");
 		int jobComplete = drive.driver(finalINPUT_PATH, intermediateOUTPUT_PATH);
 		finall = System.currentTimeMillis();
 		System.out.println("PDF Driver ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
