@@ -1114,6 +1114,43 @@ public class DBConnector {
 			java.sql.Statement stmt = sqlConnection.createStatement();
 			
 			stmt.execute("LOCK TABLES `plagiarismdb`.`workflow` WRITE;");
+						
+			stmt.executeUpdate(sql);
+			
+			stmt.execute("UNLOCK TABLES;");
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public boolean checkFile(String sql) {
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			ResultSet resultSet = stmt.executeQuery("select `type` from workflow where type='"+sql+"'");
+
+			while (resultSet.next()) {
+				return true;
+			}
+
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+
+	public void insertSQLMapper(String sql) {
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			
+			stmt.execute("LOCK TABLES `plagiarismdb`.`mapperin` WRITE;");
+			
 			
 			stmt.executeUpdate(sql);
 			

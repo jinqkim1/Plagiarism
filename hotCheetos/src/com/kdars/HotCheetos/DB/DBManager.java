@@ -931,5 +931,14 @@ public class DBManager {
 	public void insertSQL(String sql) {
 		DB.insertSQL(sql);
 	}
+
+	public boolean checkFile(String sql) {
+		// TODO Auto-generated method stub
+		return DB.checkFile(sql);
+	}
+
+	public void insertSQLMapperin(String sql) {
+		DB.insertSQLMapper(sql);
+	}
 	
 }

@@ -46,9 +46,14 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 		Path path = new Path(file.toString());
 		Configuration conf = context.getConfiguration();
 		
-	
+		
+		DBManager.getInstance().insertSQLMapperin("insert into `plagiarismdb`.`mapperin` (`type`) value ('"+file.toString()+"')");
 		
 		
+		if(DBManager.getInstance().checkFile(file.toString())){
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `duple`=`duple`+1 where `type`='"+file.toString()+"'");
+			return;
+		}
 		
 		
 
@@ -59,57 +64,37 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
 		
 		
-		FileSystem fs = path.getFileSystem(conf);
-		FSDataInputStream filein = fs.open(path);
-		PDDocument doc = PDDocument.loadNonSeq(filein, null);
-		PDFTextStripper stripper = new PDFTextStripper();
-		String content = stripper.getText(doc);
-		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+content+"' where `type`='"+file.toString()+"'");
+		try{
+			FileSystem fs = path.getFileSystem(conf);
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `size`='"+fs.getLength(path)+"' where `type`='"+file.toString()+"'");
+			
+			FSDataInputStream filein = fs.open(path);
+			PDDocument doc = PDDocument.loadNonSeq(filein, null);
+			PDFTextStripper stripper = new PDFTextStripper();
+			String content = stripper.getText(doc);
+	
+			doc.close();
+			filein.close();
+			fs.close();
+			
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+content+"' where `type`='"+file.toString()+"'");
+		}catch(Exception e){
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='exception : "+e.toString()+"' where `type`='"+file.toString()+"'");
+		}
 		
-		doc.close();
-		filein.close();
-		fs.close();
+		
+		
 		
 		
 		time = System.currentTimeMillis(); 
 		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 		str = dayTime.format(new Date(time));
 		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='"+file.toString()+"'");
-	
-		
-		
-		//DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
-		//PDDocument pdf = PDDocument.load(tempPath);
-		//PDFTextStripper stripper = new PDFTextStripper();
-		//String content = stripper.getText(pdf);
-		//String fileName = file.toString().replace("map : hdfs://slave1.kdars.com:8020/user/hadoop/num_all/", "");
-		
-//		Path file = new Path(filePath.toString());
-//		FileSystem fs = file.getFileSystem(context.getConfiguration());
-//		FSDataInputStream fileIn = fs.open(file);
-//		PDDocument pdf = PDDocument.load(fileIn);
-//		PDFTextStripper stripper = new PDFTextStripper();
-//		String content = stripper.getText(pdf);
-//		String fileName = title.toString();
-		
-		//raw text���� Korean, English, Period, Whitespace�� �ɷ���.
-		//StringBuilder processingContent = new StringBuilder();
-		//String[] processingLines = content.trim().split("\\r?\\n");
-		
-		//for(String oneLine : processingLines){
-		//	processingContent.append(textExtractor(oneLine) + "/n");
-		//}
-		
-		
-		//title�� text�� DB�� ���� �� DB���� auto-increment�� �Ҵ���� docID�� ������ ��.
-		//LongWritable docID = new LongWritable();
-		//docID.set((long) DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(fileName, processingContent.toString()));
 		
 		
 		//Text processedContent = new Text();
 		//processedContent.set(processingContent.toString());
 		//context.write(docID, processedContent);
-		
 		
 	}
 	
