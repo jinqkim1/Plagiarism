@@ -8,12 +8,12 @@ public class Configurations {
 	}
 	
 	/* special character pattern setting */
-	private String postFix1 = "��|��|��|��|��|��|��|��|��|��|��|��|��";
+	private String postFix1 = "占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙|占쏙옙";
 	public String getPostFix1(){
 		return this.postFix1;
 	}
 	
-	private String postFix2 = "����|����|����|�μ�|�ν�|����|����|����|����|����";
+	private String postFix2 = "占쏙옙占쏙옙|占쏙옙占쏙옙|占쏙옙占쏙옙|占싸쇽옙|占싸쏙옙|占쏙옙占쏙옙|占쏙옙占쏙옙|占쏙옙占쏙옙|占쏙옙占쏙옙|占쏙옙占쏙옙";
 	public String getPostFix2(){
 		return this.postFix2;
 	}
@@ -21,7 +21,7 @@ public class Configurations {
 	
 	/* N-gram setting */
 	private int windowSize = 3;
-	public int getNgramSetting(){  //N-gram�� size�� windowSize�� setting.
+	public int getNgramSetting(){  //N-gram占쏙옙 size占쏙옙 windowSize占쏙옙 setting.
 		return this.windowSize;
 	}
 	public void setNgramSetting(int windowSize){
@@ -31,7 +31,7 @@ public class Configurations {
 	
 	/* Finger-printing setting */
 	private int mod = 1;
-	public int getFingerprintSetting(){  //mod�� ����� hashcode �����ϴ� ������ ���� setting.
+	public int getFingerprintSetting(){  //mod占쏙옙 占쏙옙占쏙옙占� hashcode 占쏙옙占쏙옙占싹댐옙 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙 setting.
 		return this.mod;
 	}
 	public void setFingerprintSetting(int mod){
@@ -39,7 +39,7 @@ public class Configurations {
 	}
 	
 	private int substringSize = 15;
-	public int getSubstringSetting(){  //substringSize�� ������ŭ�� ĳ���ͷ� substring ���ϴ� ������ ���� setting.
+	public int getSubstringSetting(){  //substringSize占쏙옙 占쏙옙占쏙옙占쏙옙큼占쏙옙 캐占쏙옙占싶뤄옙 substring 占쏙옙占싹댐옙 占쏙옙占쏙옙占쏙옙 占쏙옙占쏙옙 setting.
 		return this.substringSize;
 	}
 	/* Finger-printing setting */
@@ -52,7 +52,7 @@ public class Configurations {
 	/* Similarity score threshold setting for clustering */
 	
 	/* limit settings to prevent excessive memory usage */
-	private int fileListLimit = 25; //input���� �޴� file list�� limit�� ������ �߶� ó���� �� �ֵ��� �Ͽ� �޸� ���� �ذ�.
+	private int fileListLimit = 25; //input占쏙옙占쏙옙 占쌨댐옙 file list占쏙옙 limit占쏙옙 占쏙옙占쏙옙占쏙옙 占쌩띰옙 처占쏙옙占쏙옙 占쏙옙 占쌍듸옙占쏙옙 占싹울옙 占쌨몌옙 占쏙옙占쏙옙 占쌔곤옙.
 	public int getFileListLimit(){
 		return this.fileListLimit;
 	}
@@ -62,19 +62,19 @@ public class Configurations {
 		return this.docIDListLimit;
 	}
 	
-	private int docInfoListLimit = 25; //Document Info�� ������ limit�� ������ �߶� ó���� �� �ֵ��� �Ͽ� �޸� ���� �ذ�.
+	private int docInfoListLimit = 25; //Document Info占쏙옙 占쏙옙占쏙옙占쏙옙 limit占쏙옙 占쏙옙占쏙옙占쏙옙 占쌩띰옙 처占쏙옙占쏙옙 占쏙옙 占쌍듸옙占쏙옙 占싹울옙 占쌨몌옙 占쏙옙占쏙옙 占쌔곤옙.
 	public int getDocInfoListLimit(){
 		return this.docInfoListLimit;
 	}
 	
-	private int bulkScoreLimit = 500000; //DB�� ������ score�� ������ limit�� ������ �߶� ó���� �� �ֵ��� �Ͽ� �޸� ���� �ذ�.
+	private int bulkScoreLimit = 50000; //DB占쏙옙 占쏙옙占쏙옙占쏙옙 score占쏙옙 占쏙옙占쏙옙占쏙옙 limit占쏙옙 占쏙옙占쏙옙占쏙옙 占쌩띰옙 처占쏙옙占쏙옙 占쏙옙 占쌍듸옙占쏙옙 占싹울옙 占쌨몌옙 占쏙옙占쏙옙 占쌔곤옙.
 	public int getbulkScoreLimit(){
 		return this.bulkScoreLimit;
 	}
 	/* limit settings to prevent excessive memory usage */
 	
 	/* Characters to be extracted */
-	//����, �ѱ�, whitespace, ��ħǥ�� ����� �������� �� ����.
+	//占쏙옙占쏙옙, 占싼깍옙, whitespace, 占쏙옙침표占쏙옙 占쏙옙占쏙옙占� 占쏙옙占쏙옙占쏙옙占쏙옙 占쏙옙 占쏙옙占쏙옙.
 	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
 	public String getTextPattern(){
 		return this.extractTextPattern;
@@ -87,17 +87,17 @@ public class Configurations {
 		return this.tableID;
 	}
 	
-	private String IntermediateOUTPUT_PATH = "/user/hadoop/intermediate_output";  //doc id�� term & termfreq ���� �����.
+	private String IntermediateOUTPUT_PATH = "/user/hadoop/intermediate_output";  //doc id占쏙옙 term & termfreq 占쏙옙占쏙옙 占쏙옙占쏙옙占�.
 	public String getIntermediateOUTPUT_PATH(){
 		return this.IntermediateOUTPUT_PATH;
 	}
 	
-	private String IntermediateOUTPUT_PATH1 = "/user/hadoop/intermediate_output1";  //�ƹ��͵� ���� �ȵ�.
+	private String IntermediateOUTPUT_PATH1 = "/user/hadoop/intermediate_output1";  //占싣뱄옙占싶듸옙 占쏙옙占쏙옙 占싫듸옙.
 	public String getIntermediateOUTPUT_PATH1(){
 		return this.IntermediateOUTPUT_PATH1;
 	}
 	
-	private String IntermediateOUTPUT_PATH2 = "/user/hadoop/intermediate_output2";  //�ƹ��͵� ���� �ȵ�.
+	private String IntermediateOUTPUT_PATH2 = "/user/hadoop/intermediate_output2";  //占싣뱄옙占싶듸옙 占쏙옙占쏙옙 占싫듸옙.
 	public String getIntermediateOUTPUT_PATH2(){
 		return this.IntermediateOUTPUT_PATH2;
 	}

@@ -40,7 +40,7 @@ public class ParsingDriver {
 		FileOutputFormat.setOutputPath(firstJob, new Path(outputPath));
 		
 		// specify a mapper
-		firstJob.setMapperClass(PdfMapper.class);
+		firstJob.setMapperClass(ParsingMapper.class);
 		
 //		// specify a reducer
 //		firstJob.setReducerClass(PdfReducer.class);
