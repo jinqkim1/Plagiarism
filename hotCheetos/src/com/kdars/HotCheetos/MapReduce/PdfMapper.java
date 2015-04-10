@@ -47,7 +47,7 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 		Configuration conf = context.getConfiguration();
 		
 		
-		DBManager.getInstance().insertSQLMapperin("insert into `plagiarismdb`.`mapperin` (`type`) value ('"+file.toString()+"')");
+		//DBManager.getInstance().insertSQLMapperin("insert into `plagiarismdb`.`mapperin` (`type`) value ('"+file.toString()+"')");
 		
 		
 		if(DBManager.getInstance().checkFile(file.toString())){
@@ -55,15 +55,11 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 			return;
 		}
 		
-		
-
 		long time = System.currentTimeMillis(); 
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 		String str = dayTime.format(new Date(time));
 		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+file.toString()+"')");
 		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
-		
-		
 		try{
 			FileSystem fs = path.getFileSystem(conf);
 			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `size`='"+fs.getLength(path)+"' where `type`='"+file.toString()+"'");
@@ -73,13 +69,15 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 			PDFTextStripper stripper = new PDFTextStripper();
 			String content = stripper.getText(doc);
 	
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+content+"' where `type`='"+file.toString()+"'");
+			
 			doc.close();
 			filein.close();
 			fs.close();
 			
-			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+content+"' where `type`='"+file.toString()+"'");
 		}catch(Exception e){
-			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='exception : "+e.toString()+"' where `type`='"+file.toString()+"'");
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='pdf exception' where `type`='"+file.toString()+"'");
+				
 		}
 		
 		

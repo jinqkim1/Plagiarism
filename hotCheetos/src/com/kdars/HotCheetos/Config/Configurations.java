@@ -110,10 +110,10 @@ public class Configurations {
 //	public final String DB_USER_PASS = "jinqkim69";
 //	public final String DB_TABLE_NAME_TEXT = "texttable";
 //	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
-	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.12:3306/plagiarismdb";
+	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.27:3306/plagiarismdb";
 	public final String DB_NAME = "plagiarismdb"; 
 	public final String DB_USER_ID = "root";
-	public final String DB_USER_PASS = "1q2w3e4r";
+	public final String DB_USER_PASS = "kdarscom";
 	public final String DB_TABLE_NAME_TEXT = "texttable";
 	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
 	

@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -79,28 +81,43 @@ public class Main {
 		Workflow workflowForExperiment = new Workflow();
 		
 		String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(77);
-		System.out.println(77 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+		System.out.println(77 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+		
+		long time = System.currentTimeMillis(); 
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String str = dayTime.format(new Date(time));
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('start experiment')");
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='start experiment'");
+		
 		int jobComplete = workflowForExperiment.TEMPORARYprismWorkFlow(args);
-		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-		System.out.println("½ÇÇè ³¡³ª¸é Mapper¿¡¼­ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
-		System.exit(jobComplete);  //´Ù Àß ³¡³ª¸é 0ÀÌ µé¾î°¡¼­ system exitµÉ °ÍÀÓ.
+		
+		time = System.currentTimeMillis(); 
+		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		str = dayTime.format(new Date(time));
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='start experiment'");
+		
+		
+		
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Mapperï¿½ï¿½ï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
+		System.exit(jobComplete);  //ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ system exitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(78);
-//		System.out.println(78 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(78 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 78, 78);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-//		System.out.println("½ÇÇè ³¡³ª¸é ReducerÀÇ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Reducerï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
 //		
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(79);
-//		System.out.println(79 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(79 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 79, 79);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-//		System.out.println("½ÇÇè ³¡³ª¸é ReducerÀÇ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Reducerï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
 //		
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(80);
-//		System.out.println(80 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(80 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 80, 80);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
 		
 		
 		
@@ -115,7 +132,7 @@ public class Main {
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, j, fp);
 //			}
 //		}
@@ -124,7 +141,7 @@ public class Main {
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, k, fp);
 //			}
 //		}
@@ -133,7 +150,7 @@ public class Main {
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, j, fp);
 //			}
 //		}
@@ -142,7 +159,7 @@ public class Main {
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, k, fp);
 //			}
 //		}
