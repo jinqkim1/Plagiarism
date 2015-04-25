@@ -77,29 +77,18 @@ public class Main {
 //		}
 		
 		
-		
+		double start = System.currentTimeMillis();
 		Workflow workflowForExperiment = new Workflow();
 		
 		String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(77);
-		System.out.println(77 + "��° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
-		
-		long time = System.currentTimeMillis(); 
-		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-		String str = dayTime.format(new Date(time));
-		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('start experiment')");
-		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='start experiment'");
+		System.out.println(77 + " experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 		
 		int jobComplete = workflowForExperiment.TEMPORARYprismWorkFlow(args);
 		
-		time = System.currentTimeMillis(); 
-		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-		str = dayTime.format(new Date(time));
-		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='start experiment'");
-		
-		
-		
 		System.out.println("���� ������ text table drop �� �ٽ� create �ؾ���!!!!!!!!!!!!");
 		System.out.println("���� ������ Mapper���� DB table id �̸� �ٲ������!!!!!!!!!!!!!");
+		double end = System.currentTimeMillis();
+		System.out.println("Total calculation time!!!!!!!!! : " + (end-start)/1000 + " seconds");
 		System.exit(jobComplete);  //�� �� ������ 0�� ���� system exit�� ����.
 		
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(78);

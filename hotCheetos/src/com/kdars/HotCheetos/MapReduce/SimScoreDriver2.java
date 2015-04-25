@@ -3,6 +3,7 @@ package com.kdars.HotCheetos.MapReduce;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.MapWritable;
@@ -16,26 +17,55 @@ public class SimScoreDriver2 {
 	
 	public int driver(String inputPath, String outputPath) throws IOException, InterruptedException, ClassNotFoundException {
 		Configuration conf = new Configuration();
-		Job thirdJob = Job.getInstance(conf);
-		thirdJob.setJobName("Similarity Score Calculation Within Input Documents");
-		thirdJob.setJarByClass(com.kdars.HotCheetos.MapReduce.SimScoreDriver2.class);
+		Job secondJob = Job.getInstance(conf);
+		secondJob.setJobName("Similarity Score Calculation");
+		secondJob.setJarByClass(com.kdars.HotCheetos.MapReduce.SimScoreDriver2.class);
 		
 		//Turning off reducer for this job
-		thirdJob.setNumReduceTasks(0);
+		secondJob.setNumReduceTasks(0);
 		
 		// specify output types
-		thirdJob.setOutputKeyClass(IntWritable.class);  //Title of a PDF file
-		thirdJob.setOutputValueClass(MapWritable.class);  //¿µ¾î, ÇÑ±Û, whitespace, period¸¸ Æ÷ÇÔÇÑ content of a PDF file
+		secondJob.setOutputKeyClass(IntWritable.class);  //Title of a PDF file
+		secondJob.setOutputValueClass(MapWritable.class);  //ï¿½ï¿½ï¿½ï¿½, ï¿½Ñ±ï¿½, whitespace, periodï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ content of a PDF file
 		
 		// specify input and output dirs
-		thirdJob.setInputFormatClass(SequenceFileInputFormat.class);
-		thirdJob.setOutputFormatClass(NullOutputFormat.class);
-		FileInputFormat.addInputPath(thirdJob, new Path(inputPath));
-		FileOutputFormat.setOutputPath(thirdJob, new Path(outputPath));
+		secondJob.setInputFormatClass(SequenceFileInputFormat.class);
+		secondJob.setOutputFormatClass(NullOutputFormat.class);
+		FileInputFormat.addInputPath(secondJob, new Path(inputPath));
+		FileOutputFormat.setOutputPath(secondJob, new Path(outputPath));
 		
 		// specify a mapper
-		thirdJob.setMapperClass(SimScoreMapper2.class);
+		secondJob.setMapperClass(SimScoreSentenceMapper2.class);
 		
-		return thirdJob.waitForCompletion(true)?0:1;
+//		//DBConfiguration
+//		String DBurl = Configurations.getInstance().DB_JDBC_URL;
+//		String DBuserID = Configurations.getInstance().DB_USER_ID;
+//		String DBpassword = Configurations.getInstance().DB_USER_PASS;
+//		String tableName = Configurations.getInstance().DB_TABLE_NAME_INDEX; //invertedIndexTable ï¿½Ì¸ï¿½.
+//		String[] fields = {"Index", "DocID", "Term", "TermFrequency"}; //invertedIndexTable columnï¿½ï¿½.
+//		
+//		DBConfiguration.configureDB(conf, "com.mysql.jdbc.Driver", DBurl, DBuserID, DBpassword);
+//		
+//		String inputQuery = "SELECT Term, TermFrequency FROM " + tableName + " WHERE " + " ORDER BY ";  //condition ï¿½ï¿½ï¿½â¼­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½!
+//		String inputCountQuery = "SELECT COUNT(*) FROM " + tableName + " WHERE " + " ORDER BY ";
+//		
+//		DBInputFormat.setInput(secondJob, inputDBRecords.class, inputQuery, inputCountQuery);
+		
+		// specify a reducer
+		//secondJob.setReducerClass(SimScoreReducer.class);
+//		firstJob.setCombinerClass(PdfReducer.class); // Embarrassingly parallelï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ combinerï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½?
+		
+		
+		int jobComplete1 = secondJob.waitForCompletion(true)?0:1;  //jobï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ jobcompleteï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î°¨.
+		
+		if (jobComplete1 == 0){  //jobï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ outputpath ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ file systemï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ directoryï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ jobï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+			FileSystem hdfs = FileSystem.get(conf);
+			Path deletePath = new Path(outputPath);
+			if(hdfs.exists(deletePath)){
+				hdfs.delete(deletePath, true);  //delete existing directory
+			}
+		}
+		
+		return jobComplete1;
 	}
 }

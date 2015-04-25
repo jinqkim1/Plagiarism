@@ -19,7 +19,6 @@ public class PdfDriver {
 	
 	public int driver(String inputPath, String outputPath) throws IOException, InterruptedException, ClassNotFoundException {
 
-		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('start driver')");
 		Configuration conf = new Configuration();
 		FileSystem fs = FileSystem.get(conf);
 		
@@ -31,6 +30,7 @@ public class PdfDriver {
 		firstJob.setOutputKeyClass(LongWritable.class);  //DocID
 		firstJob.setOutputValueClass(Text.class);  		 //HashMap of terms and termFrequencies
 		firstJob.setInputFormatClass(WholeFileInputFormat.class);
+		firstJob.setOutputFormatClass(SequenceFileOutputFormat.class);
 		firstJob.setMapperClass(PdfMapper.class);
 		firstJob.setNumReduceTasks(0);		
 		firstJob.setReducerClass(PdfReducer.class);

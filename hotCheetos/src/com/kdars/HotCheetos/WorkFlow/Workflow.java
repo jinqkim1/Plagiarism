@@ -3,19 +3,33 @@ package com.kdars.HotCheetos.WorkFlow;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.util.ReflectionUtils;
 
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DataImport.ImportContent1;
+import com.kdars.HotCheetos.DocumentStructure.DocInfo;
+import com.kdars.HotCheetos.DocumentStructure.DocPairLocation;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
+import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
+import com.kdars.HotCheetos.MapReduce.ParsedInvertedIndexSaveDriver;
 import com.kdars.HotCheetos.MapReduce.ParsingDriver;
 import com.kdars.HotCheetos.MapReduce.PdfDriver;
-import com.kdars.HotCheetos.MapReduce.SimScoreDriver1;
 import com.kdars.HotCheetos.MapReduce.SimScoreDriver2;
+import com.kdars.HotCheetos.MapReduce.SimScoreDriver1;
 import com.kdars.HotCheetos.PairStructure.DocPair;
 import com.kdars.HotCheetos.Parsing.Parse1_nGram_hashcode;
 import com.kdars.HotCheetos.Parsing.Parse1_nGram_string;
@@ -118,52 +132,97 @@ public class Workflow {
 		String intermediateOUTPUT_PATH = Configurations.getInstance().getIntermediateOUTPUT_PATH();
 		String intermediateOUTPUT_PATH1 = Configurations.getInstance().getIntermediateOUTPUT_PATH1();
 		String intermediateOUTPUT_PATH2 = Configurations.getInstance().getIntermediateOUTPUT_PATH2();
-		
+				
 		double initial = System.currentTimeMillis();
 		double finall = System.currentTimeMillis();
 		
 		initial = System.currentTimeMillis();
 		//input�� PDF file���� �� �ִٰ� ���� ��, pdf ������ �о Text extract �� preprocessing�� �� ���� testdb�� �����ϰ� parsing ����. parsing�� data�� <docID, hashMap> ���·� hdfs�� �����. (parse�� data�� ���� db�� �������� ����)
 		PdfDriver drive = new PdfDriver(); 
-		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('start program')");
 		int jobComplete = drive.driver(finalINPUT_PATH, intermediateOUTPUT_PATH);
 		finall = System.currentTimeMillis();
-		System.out.println("PDF Driver ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
+		System.out.println("PDF Driver done  :  " + (finall - initial)/1000 + " sec");
 		System.out.println();
-		/*
 		initial = System.currentTimeMillis();
+
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('parse start')");
 		//input�� PDF file���� �� �ִٰ� ���� ��, pdf ������ �о Text extract �� preprocessing�� �� ���� testdb�� �����ϰ� parsing ����. parsing�� data�� <docID, hashMap> ���·� hdfs�� �����. (parse�� data�� ���� db�� �������� ����)
 		ParsingDriver drive1 = new ParsingDriver(); 
 		int jobComplete1 = drive1.driver(intermediateOUTPUT_PATH, intermediateOUTPUT_PATH1);
 		finall = System.currentTimeMillis();
-		System.out.println("PDF Driver ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
+		System.out.println("Parse Driver done  :  " + (finall - initial)/1000 + "sec");
 		System.out.println();
 		
 		initial = System.currentTimeMillis();
-		//parse�Ǿ� hdfs�� ����� data�� �� pair�� (��, �� document��) mapper�� ó����. �� mapper������ �� document �� ������ ����Ǿ� �ִ� corpus�� similairty���. (input document ���� similarity����� ���� ����)
+		
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('SimScoreDriver1 start')");
+		
+		//parse�Ǿ� hdfs�� ����� data�� �� pair�� (��, �� document��) mapper�� ó����. �� mapper������ �� document �� "INPUT" corpus�� similairty���. (input document ���� similarity��길 ��.)
 		SimScoreDriver1 drive2 = new SimScoreDriver1();
 		int jobComplete2 = drive2.driver(intermediateOUTPUT_PATH1, intermediateOUTPUT_PATH2);
 		finall = System.currentTimeMillis();
-		System.out.println("SimScore Driver1 ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
+		System.out.println("SimScoreDriver1 done :  " + (finall - initial)/1000 + "sec");
+		System.out.println();
+		//�� ���������� ��� input document���� invertedindextable���� 2�� flag ������ ���� ��. 0���� ����� �ֱ�.
+		
+		initial = System.currentTimeMillis();
+		
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('SimScoreDriver2 start')");
+		
+		int jobComplete3 = 0;
+		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(Configurations.getInstance().getTableID());
+		if(!corpusDocIDList.isEmpty()){
+			SimScoreDriver2 drive3 = new SimScoreDriver2();
+			jobComplete3 = drive3.driver(intermediateOUTPUT_PATH1, intermediateOUTPUT_PATH2);
+		}
+		finall = System.currentTimeMillis();
+		System.out.println("SimScoreDriver2 done  :  " + (finall - initial)/1000 + "sec");
 		System.out.println();
 		
 		initial = System.currentTimeMillis();
-		//parse�Ǿ� hdfs�� ����� data�� �� pair�� (��, �� document��) mapper�� ó����. �� mapper������ �� document �� "INPUT" corpus�� similairty���. (input document ���� similarity��길 ��.)
-		SimScoreDriver2 drive3 = new SimScoreDriver2();
-		int jobComplete3 = drive3.driver(intermediateOUTPUT_PATH1, intermediateOUTPUT_PATH2);
+		
+		ParsedInvertedIndexSaveDriver drive4 = new ParsedInvertedIndexSaveDriver();
+		int jobComplete4 = drive4.driver(intermediateOUTPUT_PATH1, finalOUTPUT_PATH);
 		finall = System.currentTimeMillis();
-		System.out.println("SimScore Driver1 ���µ� �ɸ� �ð�  :  " + (finall - initial)/1000 + "��");
+		System.out.println("finally invertedindex of input documents saved and done  :  " + (finall - initial)/1000 + "sec");
 		System.out.println();
 		
-		//�� ���������� ��� input document���� invertedindextable���� 2�� flag ������ ���� ��. 0���� ����� �ֱ�.
-		DBManager.getInstance().flagCompleteDocuments(Configurations.getInstance().getTableID());
+//		DBManager.getInstance().flagCompleteDocuments(Configurations.getInstance().getTableID());
 		
 		//������� output directory�� ��� ����.
+
+
+		
 		FileSystem hdfs = FileSystem.get(new Configuration());
+		
+		Path workingDir = hdfs.getWorkingDirectory();
+		Path newFolderPath1 = new Path("/" + Configurations.getInstance().getDocInfoPathString());
+		newFolderPath1 = Path.mergePaths(workingDir, newFolderPath1);
+		Path newFolderPath2 = new Path("/" + Configurations.getInstance().getDocPairPathString());
+		newFolderPath2 = Path.mergePaths(workingDir, newFolderPath2);
+		
+		FileStatus[] fss = hdfs.listStatus(newFolderPath2);
+		for(FileStatus fs : fss){
+			System.out.println(fs.getPath().toString());
+			FSDataInputStream fsInStream = hdfs.open(fs.getPath());
+			DocPairLocation docPair = new ObjectFileConverter<DocPairLocation>().file2Object(fsInStream);
+			System.out.println(docPair.leftDoc.docID);
+			System.out.println(docPair.rightDoc.docID);
+			fsInStream.close();
+		}
+		
 		Path deleteIntermediateOutputPath = new Path(intermediateOUTPUT_PATH);
 		Path deleteIntermediateOutputPath1 = new Path(intermediateOUTPUT_PATH1);
 		Path deleteIntermediateOutputPath2 = new Path(intermediateOUTPUT_PATH2);
 		Path deleteOutputPath = new Path(finalOUTPUT_PATH);
+		
+		if(hdfs.exists(newFolderPath1)){
+			hdfs.delete(newFolderPath1, true);  //delete existing directory
+		}
+		
+		if(hdfs.exists(newFolderPath2)){
+			hdfs.delete(newFolderPath2, true);  //delete existing directory
+		}
 		
 		if(hdfs.exists(deleteIntermediateOutputPath)){
 			hdfs.delete(deleteIntermediateOutputPath, true);  //delete existing directory
@@ -181,12 +240,13 @@ public class Workflow {
 			hdfs.delete(deleteOutputPath, true);  //delete existing directory
 		}
 		
-		if (jobComplete == 0 && jobComplete1 == 0 && jobComplete2 == 0){  //�� ���� job�� ��� �Ϻ��ϰ� �����Ͽ��� ���� 0���� ����. �ƴϸ� 1�� ����.
+		if (jobComplete == 0 && jobComplete1 == 0 && jobComplete2 == 0 && jobComplete3 == 0 && jobComplete4 == 0){  //�� ���� job�� ��� �Ϻ��ϰ� �����Ͽ��� ���� 0���� ����. �ƴϸ� 1�� ����.
 			return 0;
 		}
-		*/
+		
 		return 1;
 	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
 	

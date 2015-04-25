@@ -8,12 +8,17 @@ public class Configurations {
 	}
 	
 	/* special character pattern setting */
-	private String postFix1 = "��|��|��|��|��|��|��|��|��|��|��|��|��";
+	private String preFix = "것|뜻|않|있|없|많|꼽|뽑|";
+	public String getPreFix(){
+		return this.preFix;
+	}
+	
+	private String postFix1 = "은|는|이|가|을|를|에|의|도|만|로|와";
 	public String getPostFix1(){
 		return this.postFix1;
 	}
 	
-	private String postFix2 = "����|����|����|�μ�|�ν�|����|����|����|����|����";
+	private String postFix2 = "에서|에게|한테|로서|로써|께서|까지|조차|부터|마저|와의|과의|에도|의로";
 	public String getPostFix2(){
 		return this.postFix2;
 	}
@@ -102,6 +107,18 @@ public class Configurations {
 		return this.IntermediateOUTPUT_PATH2;
 	}
 	/* Map-Reduce-Related Configurations */
+	
+	/* HDFS serialized objects storage location configurations*/
+	private String docInfoPathString = "MyDataFolder";
+	public String getDocInfoPathString(){
+		return this.docInfoPathString;
+	}
+	
+	private String docPairPathString = "MyDataFolder_docPairs";
+	public String getDocPairPathString(){
+		return this.docPairPathString;
+	}
+	/* HDFS serialized objects storage location configurations*/
 	
 	/* DB Connect Info */
 //	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.4:3306/GraphDB";

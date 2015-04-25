@@ -3,6 +3,7 @@ package com.kdars.HotCheetos.MapReduce;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
@@ -19,6 +20,12 @@ public class ParsingDriver {
 		Job firstJob = Job.getInstance(conf);
 		firstJob.setJobName("Parse");
 		firstJob.setJarByClass(com.kdars.HotCheetos.MapReduce.ParsingDriver.class);
+		
+		
+		//FileSystem fs = FileSystem.get(conf);
+		//fs.delete(new Path("hdfs://master.kdars.com:8020/user/hadoop/intermediate_output1"), true); // delete file, true for recursive 
+		
+		
 		
 		//Turning off reducer for this job
 		firstJob.setNumReduceTasks(0);
@@ -40,7 +47,8 @@ public class ParsingDriver {
 		FileOutputFormat.setOutputPath(firstJob, new Path(outputPath));
 		
 		// specify a mapper
-		firstJob.setMapperClass(PdfMapper.class);
+//		firstJob.setMapperClass(ParsingMapper.class);
+		firstJob.setMapperClass(ParsingSentenceMapper.class);
 		
 //		// specify a reducer
 //		firstJob.setReducerClass(PdfReducer.class);

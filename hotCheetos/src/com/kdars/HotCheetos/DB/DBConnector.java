@@ -1,5 +1,8 @@
 package com.kdars.HotCheetos.DB;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -32,7 +35,6 @@ public class DBConnector {
 	
 	private String invertedIndexTable = Configurations.getInstance().DB_TABLE_NAME_INDEX;
 	private String identifierForIndexTable = "Index";
-	private String flagForMapReduce = "MapReduceFlag";  //flag description => 0=기존에 저장되있던 document들, 1=input document들, 2= simscore 계산 진행한 document들. 
 	private String hashingDocID = "DocID";
 	private String sentenceID = "SentenceID";
 	private String hashcode = "Hashcode";
@@ -42,13 +44,12 @@ public class DBConnector {
 	private String locationTable = Configurations.getInstance().DB_TABLE_NAME_LOCATION;
 	private String identifierForLocationTable = "Index";
 	private String locationDocID = "DocID";
-	private String termForLocation = "Term";
-	private String hashcodeForLocation = "Hashcode";
+	private String sentenceLine = "Term";
+	private String locationSentenceID = "Hashcode";
 	private String locationWithinDoc = "LocationWithinDoc";
 	
 	private String scoreTable = Configurations.getInstance().DB_TABLE_NAME_SCORE;
 	private String identifierForScoreTable = "Index";
-	private String scoreFlag = "CalculationDuplicateFlag";
 	private String compare = "DocID";
 	private String beComparedWith = "ComparedDocID";
 	private String simScore = "SimilarityScore";
@@ -84,21 +85,27 @@ public class DBConnector {
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
 	public boolean insertTextPRISM(String title, String text){
+
+		String escapedTitle = escape(title);
+		String escapedText = escape(text);
+		String sql = "insert into texttable_prism (" + docTitle + ", " + docContent + ") values ('" + escapedTitle + "', '" + escapedText + "');";
+		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('insert into texttable_prism "+escapedText+"')");
+		
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
 			
 			stmt.execute("LOCK TABLES texttable_prism WRITE;");
 			
-			String escapedTitle = escape(title);
-			String escapedText = escape(text);
-			
-			stmt.executeUpdate("insert into texttable_prism (" + docTitle + ", " + docContent + ") values (\"" + escapedTitle + "\", \"" + escapedText + "\");");
+			stmt.executeUpdate(sql);
 			
 			stmt.execute("UNLOCK TABLES;");
 			
 			stmt.close();
+			//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('file : '"+sql+")");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('error insert into texttable_prism	"+escapedTitle+"	"+e.toString()+"')");
+			
 			e.printStackTrace();
 			return false;
 		}
@@ -221,15 +228,16 @@ public class DBConnector {
 	public Integer queryTextAsDocIDPRISM(String title) {
 		int docID = 0;
 		ResultSet resultSet = null;
+		String escapedTitle = escape(title);
+		String sql="select " + this.docID + " from texttable_prism where " + docTitle + " = \"" + escapedTitle + "\";";
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			String escapedTitle = escape(title);
-			resultSet = stmt.executeQuery("select " + this.docID + " from texttable_prism where " + docTitle + " = \"" + escapedTitle + "\";");
+			
+			resultSet = stmt.executeQuery(sql);
 
 			while (resultSet.next()) {
-				docID = resultSet.getInt(1);
+				docID = resultSet.getInt(1);				
 			}
-
 			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -324,44 +332,44 @@ public class DBConnector {
 		}
 		return true;
 	}
+//	
+//	public boolean deleteDuplicatesInScoreTable_WithFlag(int docID, String scoreTableName){
+//		try {
+//			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+//			
+//			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
+//			
+//			stmt.execute("delete from `" + scoreTableName + "` where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
+//			
+//			stmt.execute("UNLOCK TABLES;");
+//			
+//			stmt.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 	
-	public boolean deleteDuplicatesInScoreTable_WithFlag(int docID, String scoreTableName){
-		try {
-			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
-			
-			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
-			
-			stmt.execute("delete from `" + scoreTableName + "` where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
-			
-			stmt.execute("UNLOCK TABLES;");
-			
-			stmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean switchFlagFromOneToZero_Score(int docID, String scoreTableName){
-		try {
-			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
-			
-			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
-			
-			stmt.execute("update `" + scoreTableName + "` set " + scoreFlag + " = 0 where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
-			
-			stmt.execute("UNLOCK TABLES;");
-			
-			stmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+//	public boolean switchFlagFromOneToZero_Score(int docID, String scoreTableName){
+//		try {
+//			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+//			
+//			stmt.execute("LOCK TABLES `" + scoreTableName + "` WRITE;");
+//			
+//			stmt.execute("update `" + scoreTableName + "` set " + scoreFlag + " = 0 where " + compare + " = " + String.valueOf(docID) + " AND " + scoreFlag + " = 1;");
+//			
+//			stmt.execute("UNLOCK TABLES;");
+//			
+//			stmt.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
 	
 	public boolean bulkInsertScore(String csvContent, String scoreTableName){
 		try {
@@ -373,7 +381,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + scoreTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + scoreTableName + "` FIELDS TERMINATED BY ',' (" + scoreFlag + ", " + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + scoreTableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -405,7 +413,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + scoreFlag + ", " + compare + ", " + beComparedWith + ", " + simScore + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + compare + ", " + beComparedWith + ", " + simScore + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -528,7 +536,7 @@ public class DBConnector {
 		
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			resultSet = stmt.executeQuery("select " + this.docID + " from `" + invertedIndexTableName + "` where " + this.docID + " = " + String.valueOf(docID) + ";");
+			resultSet = stmt.executeQuery("select " + hashingDocID + " from `" + invertedIndexTableName + "` where " + hashingDocID + " = " + String.valueOf(docID) + ";");
 			
 			while (resultSet.next()){
 				queriedDocID = resultSet.getInt(1);
@@ -551,7 +559,7 @@ public class DBConnector {
 			
 			stmt.execute("LOCK TABLES `" + invertedIndexTableName + "` WRITE;");
 			
-			stmt.execute("delete from `" + invertedIndexTableName + "` where " + this.docID + " = " + String.valueOf(docID) + ";");
+			stmt.execute("delete from `" + invertedIndexTableName + "` where " + hashingDocID + " = " + String.valueOf(docID) + ";");
 			
 			stmt.execute("UNLOCK TABLES");
 			
@@ -574,7 +582,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -605,7 +613,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + "," + term + "," + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + term + "," + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -636,7 +644,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + ", " + sentenceID + "," + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + sentenceID + "," + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -667,7 +675,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + invertedIndexTableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + "," + sentenceID + "," + term + "," + termFreq + ");";
+                    "INTO TABLE `" + invertedIndexTableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + sentenceID + "," + term + "," + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -698,7 +706,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + ", " + hashcode + ", " + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -729,7 +737,7 @@ public class DBConnector {
 			stmt.execute("ALTER TABLE `" + tableName + "` DISABLE KEYS");
 			
 			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + flagForMapReduce + "," + hashingDocID + "," + term + "," + termFreq + ");";
+                    "INTO TABLE `" + tableName + "` FIELDS TERMINATED BY ',' (" + hashingDocID + "," + term + "," + termFreq + ");";
 			
 			InputStream content = IOUtils.toInputStream(csvContent);
 			
@@ -784,13 +792,11 @@ public class DBConnector {
 		
 		try {
 			java.sql.Statement stmt = sqlConnection.createStatement();
-			
-			resultSet = stmt.executeQuery("select " + this.docID + " from `" + invertedIndexTableName + "` where " + flagForMapReduce + " = 0;");
-			
+			String sql ="select distinct " + hashingDocID + " from `" + invertedIndexTableName + ";";
+			resultSet = stmt.executeQuery(sql);
 			while(resultSet.next()){
 				docIDList.add(resultSet.getInt(1));
 			}
-			
 			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -801,55 +807,55 @@ public class DBConnector {
 		return docIDList;
 	}
 	
-	public ArrayList<Integer> flagAndqueryCurrentDocIDsFromInvertedIndexTable(int docID, String invertedIndexTableName){
-		ArrayList<Integer> docIDList = new ArrayList<Integer>();
-		ResultSet resultSet = null;
-		
-		try {
-			java.sql.Statement stmt = sqlConnection.createStatement();
-			
-			stmt.execute("LOCK TABLES `" + invertedIndexTableName + "` WRITE;");
-			
-			stmt.executeUpdate("UPDATE `" + invertedIndexTableName + "` SET " + flagForMapReduce + " = 2 where " + this.docID + " = " + String.valueOf(docID) + ";");
-			
-			resultSet = stmt.executeQuery("select " + this.docID + " from `" + invertedIndexTableName + "` where " + flagForMapReduce + " = 1;");
-			
-			while(resultSet.next()){
-				docIDList.add(resultSet.getInt(1));
-			}
-			
-			stmt.execute("UNLOCK TABLES;");
-			
-			stmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		
-		return docIDList;
-	}
+//	public ArrayList<Integer> flagAndqueryCurrentDocIDsFromInvertedIndexTable(int docID, String invertedIndexTableName){
+//		ArrayList<Integer> docIDList = new ArrayList<Integer>();
+//		ResultSet resultSet = null;
+//		
+//		try {
+//			java.sql.Statement stmt = sqlConnection.createStatement();
+//			
+//			stmt.execute("LOCK TABLES `" + invertedIndexTableName + "` WRITE;");
+//			
+//			stmt.executeUpdate("UPDATE `" + invertedIndexTableName + "` SET " + flagForMapReduce + " = 2 where " + this.docID + " = " + String.valueOf(docID) + ";");
+//			
+//			resultSet = stmt.executeQuery("select distinct " + this.docID + " from `" + invertedIndexTableName + "` where " + flagForMapReduce + " = 1;");
+//			
+//			while(resultSet.next()){
+//				docIDList.add(resultSet.getInt(1));
+//			}
+//			
+//			stmt.execute("UNLOCK TABLES;");
+//			
+//			stmt.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return null;
+//		}
+//		
+//		return docIDList;
+//	}
 	
-	public boolean switchFlagFromTwoToZero_invertedIndex(String invertedIndexTableName){
-		
-		try {
-			java.sql.Statement stmt = sqlConnection.createStatement();
-			
-			stmt.execute("LOCK TABLES `" + invertedIndexTableName + "` WRITE;");
-			
-			stmt.executeUpdate("UPDATE `" + invertedIndexTableName + "` SET " + flagForMapReduce + " = 0 where " + flagForMapReduce + " != 0;");
-			
-			stmt.execute("UNLOCK TABLES;");
-			
-			stmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		
-		return true;
-	}
+//	public boolean switchFlagFromTwoToZero_invertedIndex(String invertedIndexTableName){
+//		
+//		try {
+//			java.sql.Statement stmt = sqlConnection.createStatement();
+//			
+//			stmt.execute("LOCK TABLES `" + invertedIndexTableName + "` WRITE;");
+//			
+//			stmt.executeUpdate("UPDATE `" + invertedIndexTableName + "` SET " + flagForMapReduce + " = 0 where " + flagForMapReduce + " != 0;");
+//			
+//			stmt.execute("UNLOCK TABLES;");
+//			
+//			stmt.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
+//		
+//		return true;
+//	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism 위해 잠!깐! 만들어놨음!
 	
 	
@@ -893,14 +899,14 @@ public class DBConnector {
 				
 				while(resultSet.next()){
 					int senID = resultSet.getInt(1);
-					if(docInfo.sentenceInfoMap.containsKey(senID)){
-						docInfo.sentenceInfoMap.get(senID).termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					if(docInfo.sentenceMap.containsKey(senID)){
+						docInfo.sentenceMap.get(senID).put(resultSet.getString(2), resultSet.getInt(3));
 						continue;
 					}
-					SentenceInfo senInfo = new SentenceInfo();
-					senInfo.sentenceID = senID;
-					senInfo.termFreq.put(resultSet.getString(2), resultSet.getInt(3));
-					docInfo.sentenceInfoMap.put(senID, senInfo);
+					
+					HashMap<String, Integer> termFreqMap = new HashMap<String, Integer>();
+					termFreqMap.put(resultSet.getString(2), resultSet.getInt(3));
+					docInfo.sentenceMap.put(senID, termFreqMap);
 				}
 				docInfoArray.add(docInfo);
 				resultSet = null;
@@ -928,13 +934,14 @@ public class DBConnector {
 				
 				while(resultSet.next()){
 					int senID = resultSet.getInt(1);
-					if(docInfo.sentenceInfoMap.containsKey(senID)){
-						docInfo.sentenceInfoMap.get(senID).termFreq.put(resultSet.getString(2), resultSet.getInt(3));
+					if(docInfo.sentenceMap.containsKey(senID)){
+						docInfo.sentenceMap.get(senID).put(resultSet.getString(2), resultSet.getInt(3));
+						continue;
 					}
-					SentenceInfo senInfo = new SentenceInfo();
-					senInfo.sentenceID = senID;
-					senInfo.termFreq.put(resultSet.getString(2), resultSet.getInt(3));
-					docInfo.sentenceInfoMap.put(senID, senInfo);
+					
+					HashMap<String, Integer> termFreqMap = new HashMap<String, Integer>();
+					termFreqMap.put(resultSet.getString(2), resultSet.getInt(3));
+					docInfo.sentenceMap.put(senID, termFreqMap);
 				}
 				docInfoArray.add(docInfo);
 				resultSet = null;
@@ -1024,34 +1031,35 @@ public class DBConnector {
 	}
 	
 	public boolean bulkInsertLocation(String csvContent) {
-		try {
-			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
-			stmt.execute("SET UNIQUE_CHECKS=0; ");
-			stmt.execute("ALTER TABLE " + locationTable + " DISABLE KEYS");
-			
-			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
-                    "INTO TABLE " + locationTable + " FIELDS TERMINATED BY ',' (" + locationDocID + ", " + hashcodeForLocation + ", " + locationWithinDoc + ");";
-			
-			InputStream content = IOUtils.toInputStream(csvContent);
-			
-			stmt.setLocalInfileInputStream(content);
-			
-			stmt.execute(query);
-			
-			stmt.execute("ALTER TABLE " + locationTable + " ENABLE KEYS");
-			stmt.execute("SET UNIQUE_CHECKS=1; ");
-			
-			stmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+//		try {
+//			Statement stmt = (com.mysql.jdbc.Statement)sqlConnection.createStatement();
+//			stmt.execute("SET UNIQUE_CHECKS=0; ");
+//			stmt.execute("ALTER TABLE " + locationTable + " DISABLE KEYS");
+//			
+//			String query = "LOAD DATA LOCAL INFILE 'file.txt' " +
+//                    "INTO TABLE " + locationTable + " FIELDS TERMINATED BY ',' (" + locationDocID + ", " + hashcodeForLocation + ", " + locationWithinDoc + ");";
+//			
+//			InputStream content = IOUtils.toInputStream(csvContent);
+//			
+//			stmt.setLocalInfileInputStream(content);
+//			
+//			stmt.execute(query);
+//			
+//			stmt.execute("ALTER TABLE " + locationTable + " ENABLE KEYS");
+//			stmt.execute("SET UNIQUE_CHECKS=1; ");
+//			
+//			stmt.close();
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
 		return true;
 	}
 	
 	private String escape(String text) {
 		String result = StringEscapeUtils.escapeHtml4(text);
+		result = result.replaceAll("'", "`");
 		return result;
 	}
 	
@@ -1121,6 +1129,37 @@ public class DBConnector {
 			stmt.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
+			if(sql.contains("test")){
+				DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('test insert sql exception	"+e.toString().replace("'", "")+"')");
+				
+				try {
+					FileWriter fw = new FileWriter("/usr/data/test1.txt", true);
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write(sql);
+					bw.close();
+					fw.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+			}else{
+				try {
+					FileWriter fw = new FileWriter("/usr/data/test2.txt", true);
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write(sql);
+					bw.close();
+					fw.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('file write error')");
+					
+					e1.printStackTrace();
+				}
+				DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('insert text table sql exception	"+e.toString()+"')");
+			}
+			
 			e.printStackTrace();
 		}
 		

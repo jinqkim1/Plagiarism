@@ -78,7 +78,7 @@ public class MS_PDF_TextExtractors {
 			parser.parse();
 			cd = parser.getDocument();
 			pddoc = new PDDocument(cd);
-			if (pddoc.isEncrypted()) {  //encryption ÀÖÀ¸¸é, Ç®°í ÁøÇà.
+			if (pddoc.isEncrypted()) {  //encryption ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, Ç®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 				try {
 					pddoc.decrypt("");
 					pddoc.setAllSecurityToBeRemoved(true);
@@ -96,7 +96,6 @@ public class MS_PDF_TextExtractors {
 			e.printStackTrace();
 			System.out.println("pdf parse error : " + pdffilePath);
 		}
-		System.gc();
 		return content;
 	}
 	

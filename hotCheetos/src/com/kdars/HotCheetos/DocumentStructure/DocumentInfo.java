@@ -11,6 +11,5 @@ public class DocumentInfo {
 	
 	public HashMap<Integer, SentenceInfo> sentenceInfoMap = new HashMap<Integer, SentenceInfo>();
 	
-	public String termFreqContent;
-	public String locationContent;
+	public HashMap<Integer, HashMap<String, Integer>> sentenceMap = new HashMap<Integer, HashMap<String, Integer>>();
 }

@@ -1,111 +1,122 @@
 package com.kdars.HotCheetos.MapReduce;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
+import org.apache.hadoop.io.SequenceFile;
+import org.apache.hadoop.io.SequenceFile.Reader;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.util.ReflectionUtils;
 
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class SimScoreMapper1 extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
+public class SimScoreMapper1  extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
 	
 	@Override
 	public void map(LongWritable docID, MapWritable termFreqMap, Context context) throws IOException, InterruptedException {
-		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
+		
+		long time  = System.currentTimeMillis(); 
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String str = dayTime.format(new Date(time));
+	
+		
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+docID.toString()+"')");
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+docID.toString()+"'");
+		
+		String intermediateOUTPUT_PATH1 = Configurations.getInstance().getIntermediateOUTPUT_PATH1();
+
 		int tableID = Configurations.getInstance().getTableID();
 		
-		DBManager.getInstance().checkForScore_MapReduce((int)docID.get(), tableID);  //만약 mapReduce 하던 도중에 죽었다면 그 때까지 저장되었던 계산들은 DB에서 지우고 다시 시작.
+		StringBuilder csvContent = new StringBuilder();
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
+		int bulkInsertLimitChecker = 0;
 		
-		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(tableID);
-		
-		while(corpusDocIDList.isEmpty()){  //만약에 input documents와 비교할 corpus document가 DB에 없다면 while문을 타지 않음.
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		Path directory = new Path(intermediateOUTPUT_PATH1);
+		FileStatus[] fss = fs.listStatus(directory);
+		SequenceFile.Reader reader = null;
+		try {
+			for (FileStatus status : fss) {
+				Path path = status.getPath();
+				if(!path.toString().contains("SUCCESS")){
+					reader = new SequenceFile.Reader(conf, SequenceFile.Reader.file(path));
+					LongWritable key = ReflectionUtils.newInstance(LongWritable.class,
+							conf);
+					MapWritable value = ReflectionUtils.newInstance(MapWritable.class,
+							conf);
+					
+					while (reader.next(key, value)) {
+						if (key.compareTo(docID) < 0) {
+							csvContent.append(simScore_Calculation_OneVSInputCorpus(key, value, docID, termFreqMap));
 
-			if(corpusDocIDList.size() <= docInfoMemoryLimit){
-				ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray(corpusDocIDList, tableID);
-				if (!simScore_Calculation_OneVSCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
-					System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
+							bulkInsertLimitChecker++;
+							if (bulkInsertLimitChecker == bulkInsertLimit) {
+								DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), tableID);
+								bulkInsertLimitChecker = 0;
+								csvContent = new StringBuilder();
+							}
+						}
+					}
 				}
-				corpusDocIDList.clear();
-				continue;
 			}
-			
-			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(0, docInfoMemoryLimit - 1));
-			ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray(segmentedDocIDList, tableID);
-			if (!simScore_Calculation_OneVSCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
-				System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
-			}
-			corpusDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(docInfoMemoryLimit, corpusDocIDList.size() - 1));
-		
+		} finally {
+		IOUtils.closeStream(reader);
 		}
 		
-		DBManager.getInstance().insertBulkToHashTable_MapReduce((int) docID.get(), termFreqMap, tableID);
+		DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), tableID);
+		
+		time  = System.currentTimeMillis(); 
+		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		str = dayTime.format(new Date(time));
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='"+docID.toString()+"'");
+		
+		
 		
 		return;
 	}
 	
-	private boolean simScore_Calculation_OneVSCorpus(LongWritable docID, MapWritable termFreqMap, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
-		StringBuilder csvContent = new StringBuilder();
-		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
-		int bulkInsertLimitChecker = 0;
-
-		int docid1 = (int) docID.get();
-		for (DocumentInfo docInfo2 : corpusDocInfoList){
-			int docid2 = docInfo2.docID;
-			double simscore = calcSim(termFreqMap, docInfo2.termFreq);
-			csvContent.append("0,"+String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
-			
-			bulkInsertLimitChecker++;
-			if (bulkInsertLimitChecker == bulkInsertLimit){
-				if(!DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID)){
-					return false;
-				}
-				bulkInsertLimitChecker = 0;
-				csvContent = new StringBuilder();
-			}
-		}
-		
-		
-		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
+	private String simScore_Calculation_OneVSInputCorpus(LongWritable docID1, MapWritable termFreqMap1, LongWritable docID2, MapWritable termFreqMap2){
+		int docid1 = (int) docID1.get();
+		int docid2 = (int) docID2.get();
+		double simscore = calcSim(termFreqMap1, termFreqMap2);
+		return docid1 + "," + docid2 + "," + simscore + "\n";
 	}
 	
-	private double calcSim(MapWritable termFreqMap, HashMap<String, Integer> doc2){
+	private double calcSim(MapWritable termFreqMap1, MapWritable termFreqMap2){
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		
-		termFreqMap = new MapWritable(termFreqMap);
-		doc2 = new HashMap<String, Integer>(doc2);
-		Iterator iter1 = termFreqMap.entrySet().iterator();
-		while(iter1.hasNext()){
-			Map.Entry pair1 = (Map.Entry)iter1.next();
-			String key = pair1.getKey().toString();
-			double value1 = Double.valueOf(pair1.getValue().toString());
+		for(Map.Entry<Writable, Writable> entry : termFreqMap1.entrySet()){
+			Text term1 = (Text) entry.getKey();
+			double value1 = Double.valueOf(entry.getValue().toString());
 			
-			if(doc2.containsKey(key)){
-				double value2 = (double)doc2.get(key);
-				multiply += (value1 * value2);
-				norm2 += (value2 * value2);
-				doc2.remove(key);
-				
+			if(termFreqMap2.containsKey(term1)){
+				double value2 = Double.valueOf(termFreqMap2.get(term1).toString());
+				multiply += value1 * value2;
+				norm2 += value2 * value2;
+				termFreqMap2.remove(term1);
 			}
-			norm1 += (value1 * value1);
-			iter1.remove();
+			norm1 += value1 * value1;
 		}
 		
-		Iterator iter2 = doc2.entrySet().iterator();
-		while(iter2.hasNext()){
-			Map.Entry pair2 = (Map.Entry)iter2.next();
-			double value2 = Double.valueOf(pair2.getValue().toString());
+		for(Map.Entry<Writable, Writable> entry : termFreqMap2.entrySet()){
+			double value2 = Double.valueOf(entry.getValue().toString());
 			norm2 += (value2 * value2);
-			iter2.remove();
 		}
 		
 		double result =  multiply / Math.sqrt(norm1 * norm2);

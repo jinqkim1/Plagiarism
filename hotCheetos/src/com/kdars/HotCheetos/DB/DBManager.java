@@ -6,8 +6,10 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
 
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
@@ -553,6 +555,7 @@ public class DBManager {
 			if (DB.insertTextPRISM(title, processedContent)){
 				return DB.queryTextAsDocIDPRISM(title);
 			}
+			
 		}
 		
 		return null;
@@ -584,16 +587,6 @@ public class DBManager {
 	public boolean insertBulkToScoreTable(String csvContent, int scoreTableID){
 		String scoreTableName = convertIDtoName_Score(scoreTableID);
 		return DB.bulkInsertScore(csvContent, scoreTableName);
-	}
-	
-	public boolean deleteDuplicateScores(int docID, int scoreTableID){
-		String scoreTableName = convertIDtoName_Score(scoreTableID);
-		return DB.deleteDuplicatesInScoreTable_WithFlag(docID, scoreTableName);
-	}
-	
-	public boolean unflag_Score(int docID, int scoreTableID){
-		String scoreTableName = convertIDtoName_Score(scoreTableID);
-		return DB.switchFlagFromOneToZero_Score(docID, scoreTableName);
 	}
 	
 	public boolean checkForScore_MapReduce(int docID, int scoreTableID){
@@ -690,7 +683,7 @@ public class DBManager {
 			Iterator it = termFreqMap.entrySet().iterator();
 			while(it.hasNext()){
 				Map.Entry pairs = (Map.Entry)it.next();
-				csvContent.append("1," + docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+				csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
 				
 				bulkInsertLimitChecker++;
 				if(bulkInsertLimitChecker == bulkInsertLimit){
@@ -716,7 +709,7 @@ public class DBManager {
 		Iterator it = termFreqMap.entrySet().iterator();
 		while(it.hasNext()){
 			Map.Entry pairs = (Map.Entry)it.next();
-			csvContent.append("1," + docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
+			csvContent.append(docIDString + "," + pairs.getKey().toString() + "," + pairs.getValue().toString() + "\n");
 			
 			bulkInsertLimitChecker++;
 			if(bulkInsertLimitChecker == bulkInsertLimit){
@@ -811,6 +804,69 @@ public class DBManager {
 		return DB.bulkInsertSentence(csvContent.toString(), invertedIndexTableName);
 	}
 	
+	public boolean insertBulkToSentenceTable_MapReduce(int docid, MapWritable sentenceMap, int invertedIndexTableID){
+		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		
+		if(invertedIndexTableName.contains("string")){
+			StringBuilder csvContent = new StringBuilder();
+			String docIDString = String.valueOf(docid);
+			
+			int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
+			int bulkInsertLimitChecker = 0;
+			
+			for (Map.Entry<Writable, Writable> entry : sentenceMap.entrySet()) {
+				String senIDString = entry.getKey().toString();
+
+				MapWritable termFreqMap = (MapWritable) entry.getValue();
+				for (Map.Entry<Writable, Writable> entry1 : termFreqMap.entrySet()){
+					csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey().toString() + "," + entry1.getValue().toString() + "\n");
+					
+					bulkInsertLimitChecker++;
+					if (bulkInsertLimitChecker == bulkInsertLimit) {
+						if (!DB.bulkInsertSentenceWithString(
+								csvContent.toString(), invertedIndexTableName)) {
+							System.out
+									.println("Similarity score bulk insert failed.");
+						}
+						bulkInsertLimitChecker = 0;
+						csvContent = new StringBuilder();
+					}
+				}
+			}
+			
+			return DB.bulkInsertSentenceWithString(csvContent.toString(), invertedIndexTableName);
+		}
+
+
+		StringBuilder csvContent = new StringBuilder();
+		String docIDString = String.valueOf(docid);
+		
+		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
+		int bulkInsertLimitChecker = 0;
+		
+		for (Map.Entry<Writable, Writable> entry : sentenceMap.entrySet()) {
+			String senIDString = entry.getKey().toString();
+
+			MapWritable termFreqMap = (MapWritable) entry.getValue();
+			for (Map.Entry<Writable, Writable> entry1 : termFreqMap.entrySet()){
+				csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey().toString() + "," + entry1.getValue().toString() + "\n");
+				
+				bulkInsertLimitChecker++;
+				if (bulkInsertLimitChecker == bulkInsertLimit) {
+					if (!DB.bulkInsertSentenceWithString(
+							csvContent.toString(), invertedIndexTableName)) {
+						System.out
+								.println("Similarity score bulk insert failed.");
+					}
+					bulkInsertLimitChecker = 0;
+					csvContent = new StringBuilder();
+				}
+			}
+		}
+		
+		return DB.bulkInsertSentenceWithString(csvContent.toString(), invertedIndexTableName);
+	}
+	
 	public boolean insertBulkToHashTableWithTableName(DocumentInfo docInfo, String tableName){
 		StringBuilder csvContent = new StringBuilder();
 		String docIDString = String.valueOf(docInfo.docID);
@@ -887,21 +943,22 @@ public class DBManager {
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
 	public ArrayList<Integer> getCurrentDocIDsFromInvertedIndexTable(int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('invertedIndexTableName	"+invertedIndexTableName+"')");
 		
 		return DB.queryCurrentDocIDsFromInvertedIndexTable(invertedIndexTableName);
 	}
-	
-	public ArrayList<Integer> flagInputAndGetCurrentDocIDsFromInvertedIndexTable(int docID, int invertedIndexTableID){
-		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
-		
-		return DB.flagAndqueryCurrentDocIDsFromInvertedIndexTable(docID, invertedIndexTableName);
-	}
-	
-	public boolean flagCompleteDocuments(int invertedIndexTableID){
-		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
-		
-		return DB.switchFlagFromTwoToZero_invertedIndex(invertedIndexTableName);
-	}
+//	
+//	public ArrayList<Integer> flagInputAndGetCurrentDocIDsFromInvertedIndexTable(int docID, int invertedIndexTableID){
+//		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+//		
+//		return DB.flagAndqueryCurrentDocIDsFromInvertedIndexTable(docID, invertedIndexTableName);
+//	}
+//	
+//	public boolean flagCompleteDocuments(int invertedIndexTableID){
+//		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
+//		
+//		return DB.switchFlagFromTwoToZero_invertedIndex(invertedIndexTableName);
+//	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
 	
 	

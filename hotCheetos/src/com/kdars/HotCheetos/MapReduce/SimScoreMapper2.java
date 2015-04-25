@@ -1,7 +1,9 @@
 package com.kdars.HotCheetos.MapReduce;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,22 +17,40 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
-public class SimScoreMapper2  extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
+public class SimScoreMapper2 extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
 	
 	@Override
 	public void map(LongWritable docID, MapWritable termFreqMap, Context context) throws IOException, InterruptedException {
+		
+
+		long time  = System.currentTimeMillis(); 
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		String str = dayTime.format(new Date(time));
+		
+		
+		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+docID.toString()+"')");
+		//DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+docID.toString()+"'");
+			
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
-		DBManager.getInstance().deleteDuplicateScores((int) docID.get(), tableID);  //µµÁß¿¡ Á×¾ú´Ù¸é flag°¡ 1·Î µÇ¾îÀÖÀ» °ÍÀÌ¹Ç·Î, flag°¡ 1ÀÌ¸é¼­ inputdocument id°¡ °°Àº rowµéÀ» db¿¡¼­ Áö¿ì°í ´Ù½Ã ½ÃÀÛ.
+//		DBManager.getInstance().checkForScore_MapReduce((int)docID.get(), tableID);  //ï¿½ï¿½ï¿½ï¿½ mapReduce ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½×¾ï¿½Ù¸ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ DBï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		
-		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().flagInputAndGetCurrentDocIDsFromInvertedIndexTable((int) docID.get(), tableID);
+		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(tableID);
 		
-		while(corpusDocIDList.isEmpty()){  //¸¸¾à¿¡ input documents¿Í ºñ±³ÇÒ corpus document°¡ DB¿¡ ¾ø´Ù¸é while¹®À» Å¸Áö ¾ÊÀ½.
+		
+		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+tableID+"	"+corpusDocIDList.size()+"')");
+		
+		
+		while(!corpusDocIDList.isEmpty()){  //ï¿½ï¿½ï¿½à¿¡ input documentsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ corpus documentï¿½ï¿½ DBï¿½ï¿½ ï¿½ï¿½Ù¸ï¿½ whileï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 
+			DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('1')");
+			
 			if(corpusDocIDList.size() <= docInfoMemoryLimit){
+				//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('2')");
 				ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray(corpusDocIDList, tableID);
-				if (!simScore_Calculation_OneVSInputCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
+				if (!simScore_Calculation_OneVSCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
+					//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('3')");
 					System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 				}
 				corpusDocIDList.clear();
@@ -39,19 +59,27 @@ public class SimScoreMapper2  extends Mapper<LongWritable, MapWritable, IntWrita
 			
 			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(0, docInfoMemoryLimit - 1));
 			ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray(segmentedDocIDList, tableID);
-			if (!simScore_Calculation_OneVSInputCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
+			if (!simScore_Calculation_OneVSCorpus(docID, termFreqMap, corpusDocInfoList, tableID, tableID)){
 				System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 			}
 			corpusDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(docInfoMemoryLimit, corpusDocIDList.size() - 1));
 		
 		}
 		
-		DBManager.getInstance().unflag_Score((int) docID.get(), tableID);  //score °è»ê ¹× ÀúÀåÀÌ Á¤»óÀûÀ¸·Î ¿Ï·áµÇ¾ú´Ù¸é flag¸¦ 0À¸·Î ´Ù½Ã setÇØÁÖ±â.
+		
+//		DBManager.getInstance().insertBulkToHashTable_MapReduce((int) docID.get(), termFreqMap, tableID);
+		
+		
+		
+		time  = System.currentTimeMillis(); 
+		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+		str = dayTime.format(new Date(time));
+		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `end`='"+str+"' where `type`='"+docID.toString()+"'");
 		
 		return;
 	}
 	
-	private boolean simScore_Calculation_OneVSInputCorpus(LongWritable docID, MapWritable termFreqMap, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
+	private boolean simScore_Calculation_OneVSCorpus(LongWritable docID, MapWritable termFreqMap, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
 		StringBuilder csvContent = new StringBuilder();
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
@@ -60,7 +88,7 @@ public class SimScoreMapper2  extends Mapper<LongWritable, MapWritable, IntWrita
 		for (DocumentInfo docInfo2 : corpusDocInfoList){
 			int docid2 = docInfo2.docID;
 			double simscore = calcSim(termFreqMap, docInfo2.termFreq);
-			csvContent.append("1," + String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
+			csvContent.append(String.valueOf(docid1)+","+String.valueOf(docid2)+","+String.valueOf(simscore)+"\n");
 			
 			bulkInsertLimitChecker++;
 			if (bulkInsertLimitChecker == bulkInsertLimit){

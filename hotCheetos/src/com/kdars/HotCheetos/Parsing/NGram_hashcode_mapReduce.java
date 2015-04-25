@@ -34,15 +34,15 @@ public class NGram_hashcode_mapReduce{
 		ArrayList<Integer> nGramMaker = new ArrayList<Integer>();
 		int ngramMaker = 0;
 		
-		//¸¶Ä§Ç¥°¡ ºÙ¾îÀÖ´Â ´Ü¾îÀÏ °æ¿ì, 2±ÛÀÚ±îÁö´Â ¹«½Ã. ¸¶Ä§Ç¥°¡ ºÙ¾îÀÖÁö ¾Ê´Ù¸é 1±ÛÀÚ±îÁö´Â ¹«½Ã.
-		int validTermChecker = 0; //´Ü¾î ±æÀÌ ÃøÁ¤.
+		//ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½Ö´ï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, 2ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Ù¸ï¿½ 1ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+		int validTermChecker = 0; //ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 		boolean periodChecker = false;
 		
 //		int lastIndexOfnonBlankCharacter = 0;
 		int hashCharSum = 0;
 		for (int i = 0; i < wholeChar.length; i++){
 			
-			//whitespace°¡ ¾Æ´Ñ Ä³¸¯ÅÍ´Â ÇØ½¬ÄÚµå ´õÇÔ.
+			//whitespaceï¿½ï¿½ ï¿½Æ´ï¿½ Ä³ï¿½ï¿½ï¿½Í´ï¿½ ï¿½Ø½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½.
 			if (wholeChar[i] != ' '){
 				
 				validTermChecker++;
@@ -54,18 +54,18 @@ public class NGram_hashcode_mapReduce{
 					periodChecker = true;
 				}
 				
-				//¹®ÀåÀÇ ¸¶Áö¸· ´Ü¾î Ã³¸®.
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½ Ã³ï¿½ï¿½.
 				if (i != wholeChar.length - 1){
 					continue;
 				}
 			}
 			
-			//¿¬¼ÓÀ¸·Î whitespaceÀÏ °æ¿ì¿¡´Â ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ whitespaceï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (hashCharSum == 0){
 				continue;
 			}
 			
-			//¸¶Ä§Ç¥°¡ ºÙ¾îÀÖ´Â ´Ü¾îÀÏ °æ¿ì, 2±ÛÀÚ±îÁö´Â ¹«½Ã. ¸¶Ä§Ç¥°¡ ºÙ¾îÀÖÁö ¾Ê´Ù¸é 1±ÛÀÚ±îÁö´Â ¹«½Ã.
+			//ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½Ö´ï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, 2ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½Ù¾ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´Ù¸ï¿½ 1ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			if (periodChecker && validTermChecker <= 2){
 				periodChecker = false;
 				validTermChecker = 0;
@@ -75,7 +75,7 @@ public class NGram_hashcode_mapReduce{
 				continue;
 			}
 			
-//			//ÇÑ ±ÛÀÚÂ¥¸®´Â n-gramÀ¸·Î ¾ÈÄ¡°í ±× ´ÙÀ½ Æ÷¹® Å½.
+//			//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â¥ï¿½ï¿½ï¿½ï¿½ n-gramï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 //			if ((i >= 2 && wholeChar[i-2] == ' ') || i < 2){
 //				nGramMaker.clear();
 //				ngramMaker = 0;
@@ -83,17 +83,17 @@ public class NGram_hashcode_mapReduce{
 //				continue;
 //			}
 			
-			//¾Æ¹« ÀüÃ³¸® ¾ø´Â »óÅÂ¿¡¼­ ÁÖ¾îÁø ´Ü¾î°¡ stopword list¿¡ Æ÷ÇÔµÈ ´Ü¾î¶ó¸é ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½Æ¹ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½Ü¾î°¡ stopword listï¿½ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (stopwordHashList.contains(hashCharSum)){
 				hashCharSum = 0;
 				continue;
 			}
 			
-			//nGramMaker arrayList¿¡ parameter·Î ¹ÞÀº n-gram °¹¼ö¸¸Å­ÀÇ hashcode°¡ Â÷¸é hashcode¸¦ ´õÇØ¼­ hashmap ¸¸µé°í, 0¹øÂ° hashcode¸¦ ¹ö¸²À¸·Î½á ´ÙÀ½ ngram ¸¸µé ÁØºñ. 
+			//nGramMaker arrayListï¿½ï¿½ parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ n-gram ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ hashmap ï¿½ï¿½ï¿½ï¿½ï¿½, 0ï¿½ï¿½Â° hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½. 
 			nGramMaker.add(hashCharSum);
 			ngramMaker += hashCharSum;
 			
-//			//¸¶Áö¸·À¸·Î ´õÇÑ ngramComponentÀÇ ¸¶Áö¸· Ä³¸¯ÅÍ°¡ ¸¶Ä§Ç¥ÀÏ °æ¿ì¿¡´Â nGramMaker¸¦ ºñ¿ì°í Ã³À½ºÎÅÍ ´Ù½Ã ngram ¸¸µë.
+//			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ nGramMakerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½.
 //			char period = '.';
 //			if (wholeChar[lastIndexOfnonBlankCharacter] == '.'){
 //				ngramMaker -= period;
@@ -106,16 +106,16 @@ public class NGram_hashcode_mapReduce{
 //				continue;
 //			}
 			
-			//nGramMaker arrayList¿¡ parameter·Î ¹ÞÀº n-gram °¹¼ö¸¸Å­ÀÇ hashcode°¡ Â÷¸é hashcode¸¦ ´õÇØ¼­ hashmap ¸¸µé°í, 0¹øÂ° hashcode¸¦ ¹ö¸²À¸·Î½á ´ÙÀ½ ngram ¸¸µé ÁØºñ.
+			//nGramMaker arrayListï¿½ï¿½ parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ n-gram ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ hashmap ï¿½ï¿½ï¿½ï¿½ï¿½, 0ï¿½ï¿½Â° hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½.
 			if (nGramMaker.size() == this.nGramSetting){
 				addHash(termFreqMap, ngramMaker);
 				ngramMaker -= nGramMaker.get(0);
 				nGramMaker.remove(0);
 			}
 			
-			//whitespace°¡ detectµÇ°í ÇÑ±ÛÀÚ Â¥¸® ´Ü¾î°¡ ¾Æ´Ï¶ó¸é, »õ·Î¿î ngramComponent¸¦ ¸¸µé±â À§ÇØ hashCharSum ¸®¼ÂÇÔ. 
+			//whitespaceï¿½ï¿½ detectï¿½Ç°ï¿½ ï¿½Ñ±ï¿½ï¿½ï¿½ Â¥ï¿½ï¿½ ï¿½Ü¾î°¡ ï¿½Æ´Ï¶ï¿½ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashCharSum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
 			hashCharSum = 0;
-			// ´Ü¾î ±æÀÌ Ã¼Ä¿ 0À¸·Î ¸®¼Â. ¸¶Ä§Ç¥ ¿©ºÎ È®ÀÎ boolean ¸®¼Â.
+			// ï¿½Ü¾ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¼Ä¿ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½Ä§Ç¥ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ boolean ï¿½ï¿½ï¿½ï¿½.
 			validTermChecker = 0;
 			periodChecker = false;
 		}
