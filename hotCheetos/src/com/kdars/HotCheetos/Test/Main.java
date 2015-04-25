@@ -28,55 +28,8 @@ public class Main {
 	private static String postFix2 = Configurations.getInstance().getPostFix2();
 	
 	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
-		
-//		System.out.println("\nexperiment1");
-//		Experiment.getInstance().experiment1();
-//		System.out.println("\nexperiment2");
-//		Experiment.getInstance().experiment2();
-//		System.out.println("\nexperiment3");
-//		Experiment.getInstance().experiment3();
-//		System.out.println("\nexperiment4");
-//		Experiment.getInstance().experiment4();
-//		System.out.println("\nexperiment5");
-//		Experiment.getInstance().experiment5();
-//		System.out.println("\nexperiment6");
-//		Experiment.getInstance().experiment6();
-//		System.out.println("\nexperiment7");
-//		Experiment.getInstance().experiment7();
-//		System.out.println("\nexperiment8");
-//		Experiment.getInstance().experiment8();
-		
-		
-//		System.out.println("\nexperiment11");
-//		Experiment.getInstance().experiment11();
-//		System.out.println("\nexperiment22");
-//		Experiment.getInstance().experiment22();
-//		System.out.println("\nexperiment33");
-//		Experiment.getInstance().experiment33();
-//		System.out.println("\nexperiment44");
-//		Experiment.getInstance().experiment44();
-//		System.out.println("\nexperiment55");
-//		Experiment.getInstance().experiment55();
-//		System.out.println("\nexperiment66");
-//		Experiment.getInstance().experiment66();
-//		System.out.println("\nexperiment77");
-//		Experiment.getInstance().experiment77();
-//		System.out.println("\nexperiment88");
-//		Experiment.getInstance().experiment88();
-		
-		
-		
-		
-		
-//		String scoreRange = String.valueOf(0.8);
-//		for (int i = 1 ; i < 73 ; i++){
-//			String tableName = DBManager.getInstance().convertIDtoName_Score(i);
-////			String query = "select plagiarismdb.texttable.DocID , plagiarismdb.texttable.Title, plagiarismdb.`" + tableName + "`.DocID , plagiarismdb.`" + tableName + "`.ComparedDocID , plagiarismdb.`" + tableName + "`.SimilarityScore into outfile '" + tableName + "_" + scoreRange + ".txt' fields terminated by ',' enclosed by '\"' lines terminated by '\\n' from  plagiarismdb.texttable, plagiarismdb.`" + tableName + "` where (plagiarismdb.`" + tableName + "`.DocID = plagiarismdb.texttable.DocID or plagiarismdb.`" + tableName + "`.ComparedDocID = plagiarismdb.texttable.DocID) and plagiarismdb.`" + tableName + "`.SimilarityScore > " + scoreRange + " order by similarityscore desc;";
-//			String query = "select DocID, ComparedDocID, SimilarityScore into outfile '" + tableName + "_" + scoreRange + ".txt'  fields terminated by ',' enclosed by '\"' lines terminated by '\\n' from plagiarismdb.`" + tableName + "` where SimilarityScore >= " + scoreRange + " order by similarityscore desc;";
-//			System.out.println(query);
-//		}
-		
-		
+	
+		int a;
 		double start = System.currentTimeMillis();
 		Workflow workflowForExperiment = new Workflow();
 		
