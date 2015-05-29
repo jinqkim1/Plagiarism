@@ -9,15 +9,22 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsAction;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
+import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
+import com.kdars.HotCheetos.DocumentStructure.DocInfo;
+import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
+import com.kdars.HotCheetos.TextExtractor.MS_PDF_TextExtractors;
 
 public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 	
@@ -25,67 +32,42 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 
 	@Override
 	public void map(Text title, Text file, Context context) throws IOException, InterruptedException {
-		Path path = new Path(file.toString());
 		Configuration conf = context.getConfiguration();
-			
+		conf.addResource(new Path(Configurations.getInstance().getCoreSiteXmlLocation()));
+		conf.addResource(new Path(Configurations.getInstance().getHdfsSiteXmlLocation()));
+		
 		if(DBManager.getInstance().checkFile(file.toString())){
 			return;
 		}
 		
-		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('"+file.toString()+"')");
+		LongWritable docID = new LongWritable();
+		
+		String processingContent = MS_PDF_TextExtractors.getInstance().chooseFileTypeAndExtract(file.toString(), conf);
+		
+		try {
+			Path path = new Path(file.toString());
+			long value = DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(path.getName(), processingContent);
+			
+			/* Creating docInfo to use in ParsingSentenceMapper later*/
+			saveDocInfo(value, title.toString(), conf);
+			/* Creating docInfo to use in ParsingSentenceMapper later*/
+			
+			docID.set(value);
+			
+		} catch (Exception ex) {
+			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `ex`='exception1' where `type`='"+file.toString()+"'");
+		}
+		
 		long time  = System.currentTimeMillis(); 
 		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 		String str = dayTime.format(new Date(time));
-		DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `start`='"+str+"' where `type`='"+file.toString()+"'");
-		
-		
-		
-		LongWritable docID = new LongWritable();
-		StringBuilder processingContent = new StringBuilder();
-		
-		FileSystem fs = null;
-		FSDataInputStream filein= null;
-		PDDocument doc= null;
-		PDFTextStripper stripper= null;
-		try {
-			fs = path.getFileSystem(conf);
-
-			filein = fs.open(path);
-			doc = PDDocument.loadNonSeq(filein, null);
-			stripper = new PDFTextStripper();
-			String content = stripper.getText(doc);
-
-			String[] processingLines = content.trim().split("\\r?\\n");
-
-			for (String oneLine : processingLines) {
-				processingContent.append(textExtractor(oneLine) + "\n");
-			}
-					
-			try {
-				long value = DBManager.getInstance().insertRowAndGetDocIDArrayPRISM(path.getName().toString(), processingContent.toString());
-				docID.set(value) ;
-				DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `status`='"+value+"' where `type`='"+file.toString()+"'");
-				//DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set test='"+escapedText+"' where `type`='"+file.toString()+"'");
-				
-			} catch (Exception ex) {
-				DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `ex`='exception1' where `type`='"+file.toString()+"'");
-			}
-	
-		}catch(Exception e){
-			DBManager.getInstance().insertSQL("update `plagiarismdb`.`workflow` set `ex`='exception2' where `type`='"+file.toString()+"'");
-		}
 		
 		Text processedContent = new Text();
 		
 		processedContent.set(processingContent.toString());
 		
 		context.write(docID, processedContent);
-		
-		doc.close();
-		filein.close();
-		fs.close();
-		
-		
+
 		
 		time  = System.currentTimeMillis(); 
 		dayTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
@@ -115,4 +97,47 @@ public class PdfMapper extends Mapper<Text, Text, LongWritable, Text>{
 		return result.toString();
 	}
 	
+	// Creating and saving docInfo to use in ParsingSentenceMapper later
+	// file name : docID.dat
+	// DocInfo only has docID and the title at this point
+	private void saveDocInfo(long docID, String title, Configuration conf){
+		
+		DocInfo docInfo = new DocInfo(String.valueOf(docID), title.toString());  //Ommitting title for now.
+		
+		FSDataOutputStream fsOutStream = null;
+		
+		try {
+			FileSystem hdfs = FileSystem.get(conf);
+			
+			Path newFolderPath = new Path(Configurations.getInstance().getDocInfoPathString());
+			
+			// if the directory does not exist, then create it
+			if (!hdfs.exists(newFolderPath)) {
+				hdfs.mkdirs(newFolderPath); // Create new Directory
+				hdfs.setPermission(newFolderPath, new FsPermission(FsAction.ALL,FsAction.ALL,FsAction.ALL)); //Enable all access to the directory
+			}
+			
+			Path newFilePath=new Path(newFolderPath+"/" + String.valueOf(docID) + ".dat");
+			
+			// if the file exists, delete then create it
+			if(hdfs.exists(newFilePath)){
+				hdfs.delete(newFilePath, true);
+			}
+			hdfs.createNewFile(newFilePath);
+			hdfs.setPermission(newFilePath, new FsPermission(FsAction.ALL,FsAction.ALL,FsAction.ALL)); //Enable all access to the created file
+
+			fsOutStream = hdfs.create(newFilePath);
+			
+			if(!new ObjectFileConverter<DocInfo>().object2File(docInfo, fsOutStream)){
+				System.out.println("Failed to convert object to file!");
+			}
+			
+			fsOutStream.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return;
+	}
 }

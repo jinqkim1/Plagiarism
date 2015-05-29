@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
-import com.kdars.HotCheetos.DataImport.FileDataImport;
+//import com.kdars.HotCheetos.DataImport.FileDataImport;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 
 public class Parse_nGram_hashcode implements Parse{
@@ -40,32 +40,32 @@ public class Parse_nGram_hashcode implements Parse{
 		int hashCharSum = 0;
 		for (int i = 0; i < wholeChar.length; i++){
 			
-			//whitespace°¡ ¾Æ´Ñ Ä³¸¯ÅÍ´Â ÇØ½¬ÄÚµå ´õÇÔ.
+			//whitespaceï¿½ï¿½ ï¿½Æ´ï¿½ Ä³ï¿½ï¿½ï¿½Í´ï¿½ ï¿½Ø½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½.
 			if (wholeChar[i] != ' '){
 				hashCharSum += wholeChar[i];
 				lastIndexOfnonBlankCharacter = i;
 				continue;
 			}
 			
-			//¿¬¼ÓÀ¸·Î whitespaceÀÏ °æ¿ì¿¡´Â ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ whitespaceï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (hashCharSum == 0){
 				continue;
 			}
 			
-			//ÇÑ ±ÛÀÚÂ¥¸®´Â n-gramÀ¸·Î ¾ÈÄ¡°í ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â¥ï¿½ï¿½ï¿½ï¿½ n-gramï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (i >= 2 && wholeChar[i-2] == ' '){
 				nGramMaker.clear();
 				hashCharSum = 0;
 				continue;
 			}
 			
-			//¾Æ¹« ÀüÃ³¸® ¾ø´Â »óÅÂ¿¡¼­ ÁÖ¾îÁø ´Ü¾î°¡ stopword list¿¡ Æ÷ÇÔµÈ ´Ü¾î¶ó¸é ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½Æ¹ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½Ü¾î°¡ stopword listï¿½ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (stopwordHashList.contains(hashCharSum)){
 				hashCharSum = 0;
 				continue;
 			}
 			
-			//nGramMaker arrayList¿¡ parameter·Î ¹ÞÀº n-gram °¹¼ö¸¸Å­ÀÇ hashcode°¡ Â÷¸é hashcode¸¦ ´õÇØ¼­ hashmap ¸¸µé°í, 0¹øÂ° hashcode¸¦ ¹ö¸²À¸·Î½á ´ÙÀ½ ngram ¸¸µé ÁØºñ. 
+			//nGramMaker arrayListï¿½ï¿½ parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ n-gram ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ hashmap ï¿½ï¿½ï¿½ï¿½ï¿½, 0ï¿½ï¿½Â° hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½. 
 			nGramMaker.add(hashCharSum);
 			if (nGramMaker.size() == nGramSetting){
 				int nGramHash = 0;
@@ -76,12 +76,12 @@ public class Parse_nGram_hashcode implements Parse{
 				nGramMaker.remove(0);
 			}
 			
-			//¸¶Áö¸·À¸·Î ´õÇÑ ngramComponentÀÇ ¸¶Áö¸· Ä³¸¯ÅÍ°¡ ¸¶Ä§Ç¥ÀÏ °æ¿ì¿¡´Â nGramMaker¸¦ ºñ¿ì°í Ã³À½ºÎÅÍ ´Ù½Ã ngram ¸¸µë.
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ nGramMakerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½.
 			if (wholeChar[lastIndexOfnonBlankCharacter] == '.'){
 				nGramMaker.clear();
 			}
 			
-			//whitespace°¡ detectµÇ°í ÇÑ±ÛÀÚ Â¥¸® ´Ü¾î°¡ ¾Æ´Ï¶ó¸é, »õ·Î¿î ngramComponent¸¦ ¸¸µé±â À§ÇØ hashCharSum ¸®¼ÂÇÔ. 
+			//whitespaceï¿½ï¿½ detectï¿½Ç°ï¿½ ï¿½Ñ±ï¿½ï¿½ï¿½ Â¥ï¿½ï¿½ ï¿½Ü¾î°¡ ï¿½Æ´Ï¶ï¿½ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashCharSum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
 			hashCharSum = 0;
 			
 		}
@@ -155,32 +155,32 @@ public class Parse_nGram_hashcode implements Parse{
 		int hashCharSum = 0;
 		for (int i = 0; i < wholeChar.length; i++){
 			
-			//whitespace°¡ ¾Æ´Ñ Ä³¸¯ÅÍ´Â ÇØ½¬ÄÚµå ´õÇÔ.
+			//whitespaceï¿½ï¿½ ï¿½Æ´ï¿½ Ä³ï¿½ï¿½ï¿½Í´ï¿½ ï¿½Ø½ï¿½ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½.
 			if (wholeChar[i] != ' '){
 				hashCharSum += wholeChar[i];
 				lastIndexOfnonBlankCharacter = i;
 				continue;
 			}
 			
-			//¿¬¼ÓÀ¸·Î whitespaceÀÏ °æ¿ì¿¡´Â ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ whitespaceï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (hashCharSum == 0){
 				continue;
 			}
 			
-			//ÇÑ ±ÛÀÚÂ¥¸®´Â n-gramÀ¸·Î ¾ÈÄ¡°í ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â¥ï¿½ï¿½ï¿½ï¿½ n-gramï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (i >= 2 && wholeChar[i-2] == ' '){
 				nGramMaker.clear();
 				hashCharSum = 0;
 				continue;
 			}
 			
-			//¾Æ¹« ÀüÃ³¸® ¾ø´Â »óÅÂ¿¡¼­ ÁÖ¾îÁø ´Ü¾î°¡ stopword list¿¡ Æ÷ÇÔµÈ ´Ü¾î¶ó¸é ±× ´ÙÀ½ Æ÷¹® Å½.
+			//ï¿½Æ¹ï¿½ ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â¿ï¿½ï¿½ï¿½ ï¿½Ö¾ï¿½ï¿½ï¿½ ï¿½Ü¾î°¡ stopword listï¿½ï¿½ ï¿½ï¿½ï¿½Ôµï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å½.
 			if (stopwordHashList.contains(hashCharSum)){
 				hashCharSum = 0;
 				continue;
 			}
 			
-			//nGramMaker arrayList¿¡ parameter·Î ¹ÞÀº n-gram °¹¼ö¸¸Å­ÀÇ hashcode°¡ Â÷¸é hashcode¸¦ ´õÇØ¼­ hashmap ¸¸µé°í, 0¹øÂ° hashcode¸¦ ¹ö¸²À¸·Î½á ´ÙÀ½ ngram ¸¸µé ÁØºñ. 
+			//nGramMaker arrayListï¿½ï¿½ parameterï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ n-gram ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å­ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½Ø¼ï¿½ hashmap ï¿½ï¿½ï¿½ï¿½ï¿½, 0ï¿½ï¿½Â° hashcodeï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½. 
 			nGramMaker.add(hashCharSum);
 			if (nGramMaker.size() == nGramSetting){
 				int nGramHash = 0;
@@ -191,12 +191,12 @@ public class Parse_nGram_hashcode implements Parse{
 				nGramMaker.remove(0);
 			}
 			
-			//¸¶Áö¸·À¸·Î ´õÇÑ ngramComponentÀÇ ¸¶Áö¸· Ä³¸¯ÅÍ°¡ ¸¶Ä§Ç¥ÀÏ °æ¿ì¿¡´Â nGramMaker¸¦ ºñ¿ì°í Ã³À½ºÎÅÍ ´Ù½Ã ngram ¸¸µë.
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½Ä§Ç¥ï¿½ï¿½ ï¿½ï¿½ì¿¡ï¿½ï¿½ nGramMakerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ngram ï¿½ï¿½ï¿½ï¿½.
 			if (wholeChar[lastIndexOfnonBlankCharacter] == '.'){
 				nGramMaker.clear();
 			}
 			
-			//whitespace°¡ detectµÇ°í ÇÑ±ÛÀÚ Â¥¸® ´Ü¾î°¡ ¾Æ´Ï¶ó¸é, »õ·Î¿î ngramComponent¸¦ ¸¸µé±â À§ÇØ hashCharSum ¸®¼ÂÇÔ. 
+			//whitespaceï¿½ï¿½ detectï¿½Ç°ï¿½ ï¿½Ñ±ï¿½ï¿½ï¿½ Â¥ï¿½ï¿½ ï¿½Ü¾î°¡ ï¿½Æ´Ï¶ï¿½ï¿½, ï¿½ï¿½ï¿½Î¿ï¿½ ngramComponentï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ hashCharSum ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. 
 			hashCharSum = 0;
 			
 		}

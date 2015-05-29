@@ -2,8 +2,6 @@ package com.kdars.HotCheetos.Parsing;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -22,7 +20,7 @@ import com.kdars.HotCheetos.DocumentStructure.DocInfo;
 import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
 import com.kdars.HotCheetos.DocumentStructure.SenInfo;
 
-public class Sentence_string_mapReduce {
+public class Sentence_string_mapReduce_forSEUNGCHUL {
 
 	private String preFix = Configurations.getInstance().getPreFix();
 	private String postFix1 = Configurations.getInstance().getPostFix1();
@@ -41,9 +39,11 @@ public class Sentence_string_mapReduce {
 		// Also, this method saves a Serializable object containing sentence location information. object file number and docids are matched and saved, so docids can be used to identify which object to read.
 		// This object will later be used in SimScoreSentenceMappers to identify the locations of the similar sentences between two documents
 		
+//		BytesWritable serializedSentenceMap = null;
+		
 		MapWritable sentenceMap = new MapWritable(); // key : sentenceID , value : Map of (term, termFreq) <--termFreqMap
 
-		String sentenceList[] = content.trim().split("\\.");
+		String sentenceList[] = content.trim().split("\\n");
 
 		int newLineChecker = 0;
 
@@ -79,34 +79,21 @@ public class Sentence_string_mapReduce {
 			
 			sentenceID.set(0);
 			for (String sentence : sentenceList) {
-				
-				int lines = 0;
-				if (sentence.contains("\n")) {
-					Matcher m = Pattern.compile("\\n").matcher(sentence);
-					while (m.find()) {
-						if (sentence.substring(0, m.start()).trim().equals("")) {
-							newLineChecker++;
-							continue;
-						}
-						lines++;
-					}
-				}
 
-				sentenceID.set(sentenceID.get() + 1);
+//				sentenceID.set(sentenceID.get() + 1);
+				newLineChecker++;
 				MapWritable termFreqMap = parseSentence(sentence); // key : term , value : termFreq within sentence
 				if (termFreqMap != null) {
-					int senID = Integer.valueOf(sentenceID.toString());
+					sentenceID.set(sentenceID.get() + 1);
 					SenInfo senInfo = new SenInfo();
 					senInfo.sentenceText = sentence.trim();
 					
 					ArrayList<Integer> sentenceLines = new ArrayList<Integer>();
-					for (int i = 0; i <= lines; i++) {
-						sentenceLines.add(newLineChecker);
-						newLineChecker++;
-					}
+					sentenceLines.add(newLineChecker);
 					
 					senInfo.sentenceLines = sentenceLines;
-					docInfo.sentenceMap.put(senID, senInfo);
+//					docInfo.sentenceList.add(senInfo);
+					docInfo.sentenceMap.put((int) sentenceID.get(), senInfo);
 					sentenceMap.put(sentenceID, termFreqMap);
 				}
 
@@ -115,6 +102,8 @@ public class Sentence_string_mapReduce {
 			if(!new ObjectFileConverter<DocInfo>().object2File(docInfo, fsOutStream)){
 				System.out.println("Failed to convert object to file!");
 			}
+			
+//			serializedSentenceMap = new BytesWritable(WritableUtils.toByteArray(sentenceMap));
 			
 			fsOutStream.close();
 		} catch (IOException e) {
@@ -129,17 +118,12 @@ public class Sentence_string_mapReduce {
 
 		String wordList[] = sentence.trim().split("\\s+");
 
-		if (wordList.length < 3) {
-			return null;
-		}
+//		if (wordList.length < 5) {
+//			return null;
+//		}
 
 		for (int i = 0; i < wordList.length; i++) {
-			int postFixChecker = wordList[i].trim().length();
-			
-			String word = deletePostFix(wordList[i].trim());
-			if (word.length() != postFixChecker) {
-				addTerm(termFreqMap, word);
-			}
+			addTerm(termFreqMap, wordList[i].trim());
 		}
 
 		return termFreqMap;

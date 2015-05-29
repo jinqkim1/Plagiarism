@@ -8,6 +8,7 @@ public class DocInfo implements Serializable{
 	public String docID;
 	public String title;
 	public HashMap<Integer, SenInfo> sentenceMap = new HashMap<Integer, SenInfo>();
+//	public ArrayList<SenInfo> sentenceList = new ArrayList<SenInfo>();
 					//SentenceID, sentence information
 	
 	public DocInfo(String docID, String title){

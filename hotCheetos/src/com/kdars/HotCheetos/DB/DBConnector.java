@@ -1201,5 +1201,19 @@ public class DBConnector {
 		}
 		
 	}
+
+	public void completeStatus() {
+		try {
+			java.sql.Statement stmt = sqlConnection.createStatement();
+			
+			stmt.execute("LOCK TABLES `plagiarismdb`.`progress` WRITE;");
+			stmt.execute("update `progress` set progress=0 where id=1;");
+			stmt.execute("UNLOCK TABLES;");
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.mapreduce.Job;
@@ -32,7 +33,7 @@ public class ParsingDriver {
 		
 		// specify output types
 		firstJob.setOutputKeyClass(LongWritable.class);  //DocID
-		firstJob.setOutputValueClass(MapWritable.class);  //HashMap of terms and termFrequencies
+		firstJob.setOutputValueClass(BytesWritable.class);  //HashMap of terms and termFrequencies
 		
 		
 //		firstJob.setMapOutputKeyClass(Text.class);  //Title of a PDF file
@@ -48,7 +49,7 @@ public class ParsingDriver {
 		
 		// specify a mapper
 //		firstJob.setMapperClass(ParsingMapper.class);
-		firstJob.setMapperClass(ParsingSentenceMapper.class);
+		firstJob.setMapperClass(ParsingSentenceMapper1.class);
 		
 //		// specify a reducer
 //		firstJob.setReducerClass(PdfReducer.class);

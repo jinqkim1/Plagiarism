@@ -109,12 +109,23 @@ public class Configurations {
 	/* Map-Reduce-Related Configurations */
 	
 	/* HDFS serialized objects storage location configurations*/
-	private String docInfoPathString = "MyDataFolder";
+	private String coreSiteXmlLocation = "/etc/hadoop/conf/core-site.xml";
+	public String getCoreSiteXmlLocation(){
+		return this.coreSiteXmlLocation;
+	}
+	
+	private String hdfsSiteXmlLocation = "/etc/hadoop/conf/hdfs-site.xml";
+	public String getHdfsSiteXmlLocation(){
+		return this.hdfsSiteXmlLocation;
+	}
+//	private String docInfoPathString = "hdfs:///master.kdars.com:8020/user/hadoop/MyDataFolder";
+	private String docInfoPathString = "/user/hadoop/MyDataFolder";
 	public String getDocInfoPathString(){
 		return this.docInfoPathString;
 	}
 	
-	private String docPairPathString = "MyDataFolder_docPairs";
+//	private String docPairPathString = "hdfs:///master.kdars.com:8020/user/hadoop/MyDataFolder_docPairs";
+	private String docPairPathString = "/user/hadoop/MyDataFolder_docPairs";
 	public String getDocPairPathString(){
 		return this.docPairPathString;
 	}
@@ -127,7 +138,7 @@ public class Configurations {
 //	public final String DB_USER_PASS = "jinqkim69";
 //	public final String DB_TABLE_NAME_TEXT = "texttable";
 //	public final String DB_TABLE_NAME_STOPWORD = "stopwordtable";
-	public final String DB_JDBC_URL = "jdbc:mysql://192.168.1.27:3306/plagiarismdb";
+	public final String DB_JDBC_URL = "jdbc:mysql://10.0.0.3:3306/plagiarismdb";
 	public final String DB_NAME = "plagiarismdb"; 
 	public final String DB_USER_ID = "root";
 	public final String DB_USER_PASS = "kdarscom";

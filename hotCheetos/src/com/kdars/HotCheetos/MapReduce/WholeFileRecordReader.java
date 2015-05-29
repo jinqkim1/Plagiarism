@@ -113,7 +113,7 @@ public class WholeFileRecordReader extends RecordReader<NullWritable, Text> {
        */
       @Override
       public Text getCurrentValue() throws IOException, InterruptedException {
-    	  DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('mFileToRead : "+mFileToRead.toString()+"')");
+    	  //DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('mFileToRead : "+mFileToRead.toString()+"')");
         return mFileText;
       }
 

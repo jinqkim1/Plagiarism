@@ -66,7 +66,7 @@ public class ImportContent1 {
 				fos.close();
 				ze = zis.getNextEntry();
 				
-				content = MS_PDF_TextExtractors.getInstance().chooseFileTypeAndExtract(outputFolder + File.separator + fileName);
+//				content = MS_PDF_TextExtractors.getInstance().chooseFileTypeAndExtract(outputFolder + File.separator + fileName);
 				titleAndContent.add(fileName);
 				titleAndContent.add(content);
 				

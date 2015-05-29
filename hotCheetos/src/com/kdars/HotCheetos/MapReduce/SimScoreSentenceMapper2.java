@@ -1,6 +1,8 @@
 package com.kdars.HotCheetos.MapReduce;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +12,9 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.fs.permission.FsAction;
+import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
@@ -25,37 +29,34 @@ import com.kdars.HotCheetos.DocumentStructure.DocPairLocation;
 import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
 
-public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, IntWritable, MapWritable>{
+public class SimScoreSentenceMapper2 extends Mapper<LongWritable, BytesWritable, IntWritable, MapWritable>{
 	
 	private double sentenceSimScoreLimit = 0.9;
 	
 	@Override
-	public void map(LongWritable docID, MapWritable termFreqMap, Context context) throws IOException, InterruptedException {
-			
+	public void map(LongWritable docID, BytesWritable termFreqMap, Context context) throws IOException, InterruptedException {
+		
+		HashMap<Integer, HashMap<String, Integer>> sentenceMap = bytesWritableToHashMap(termFreqMap);
+		
 		int docInfoMemoryLimit = Configurations.getInstance().getDocInfoListLimit();
 		int tableID = Configurations.getInstance().getTableID();
 		
 		Configuration conf = new Configuration();
-		conf.addResource(new Path("/HADOOP_HOME/conf/core-site.xml"));
-		conf.addResource(new Path("/HADOOP_HOME/conf/hdfs-site.xml"));
+		conf.addResource(new Path(Configurations.getInstance().getCoreSiteXmlLocation()));
+		conf.addResource(new Path(Configurations.getInstance().getHdfsSiteXmlLocation()));
 		
 		FileSystem fs = FileSystem.get(conf);
 		
-		Path workingDir = fs.getWorkingDirectory();
-
-		Path newFolderPath1 = new Path("/" + Configurations.getInstance().getDocInfoPathString());
-
-		newFolderPath1 = Path.mergePaths(workingDir, newFolderPath1);
+		Path newFolderPath1 = new Path(Configurations.getInstance().getDocInfoPathString());
 		
 		Path newFilePath1 = new Path(newFolderPath1+"/" + String.valueOf((int)docID.get()) + ".dat");
 		
-		Path newFolderPath2 = new Path("/" + Configurations.getInstance().getDocPairPathString());
-		
-		newFolderPath2 = Path.mergePaths(workingDir, newFolderPath2);
+		Path newFolderPath2 = new Path(Configurations.getInstance().getDocPairPathString());
 		
 		// if the directory does not exist, then create it
 		if (!fs.exists(newFolderPath2)) {
 			fs.mkdirs(newFolderPath2); // Create new Directory
+			fs.setPermission(newFolderPath2, new FsPermission(FsAction.ALL,FsAction.ALL,FsAction.ALL));
 		}
 		
 		ArrayList<Integer> corpusDocIDList = DBManager.getInstance().getCurrentDocIDsFromInvertedIndexTable(tableID);
@@ -64,7 +65,7 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 			
 			if(corpusDocIDList.size() <= docInfoMemoryLimit){
 				ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray_Sentence(corpusDocIDList, tableID);
-				if (!simScore_Calculation_OneVSCorpus(fs, newFolderPath1, newFolderPath2, docID, termFreqMap, newFilePath1, corpusDocInfoList, tableID, tableID)){
+				if (!simScore_Calculation_OneVSCorpus(fs, newFolderPath1, newFolderPath2, docID, sentenceMap, newFilePath1, corpusDocInfoList, tableID, tableID)){
 					System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 				}
 				corpusDocIDList.clear();
@@ -73,7 +74,7 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 			
 			ArrayList<Integer> segmentedDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(0, docInfoMemoryLimit - 1));
 			ArrayList<DocumentInfo> corpusDocInfoList = DBManager.getInstance().getMultipleDocInfoArray_Sentence(segmentedDocIDList, tableID);
-			if (!simScore_Calculation_OneVSCorpus(fs, newFolderPath1, newFolderPath2, docID, termFreqMap, newFilePath1, corpusDocInfoList, tableID, tableID)){
+			if (!simScore_Calculation_OneVSCorpus(fs, newFolderPath1, newFolderPath2, docID, sentenceMap, newFilePath1, corpusDocInfoList, tableID, tableID)){
 				System.out.println("simScore_Calculation_OneVSCorpus FAILLLLLLLLLLLLLLLLLLLLLLLLLLLLL");
 			}
 			corpusDocIDList = new ArrayList<Integer>(corpusDocIDList.subList(docInfoMemoryLimit, corpusDocIDList.size() - 1));
@@ -83,7 +84,26 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 		return;
 	}
 	
-	private boolean simScore_Calculation_OneVSCorpus(FileSystem fs, Path newFolderPath1, Path newFolderPath2, LongWritable docID, MapWritable sentenceMap, Path newFilePath1, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
+	private HashMap<Integer, HashMap<String, Integer>> bytesWritableToHashMap(BytesWritable sentenceMap) {
+		try {
+			ByteArrayInputStream byteIn = new ByteArrayInputStream(sentenceMap.getBytes());
+			ObjectInputStream in = new ObjectInputStream(byteIn);
+			@SuppressWarnings("unchecked")
+			HashMap<Integer, HashMap<String, Integer>> sentenceMap2 = (HashMap<Integer, HashMap<String, Integer>>) in.readObject();
+			byteIn.close();
+			in.close();
+			return sentenceMap2;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private boolean simScore_Calculation_OneVSCorpus(FileSystem fs, Path newFolderPath1, Path newFolderPath2, LongWritable docID, HashMap<Integer, HashMap<String, Integer>> sentenceMap, Path newFilePath1, ArrayList<DocumentInfo> corpusDocInfoList, int scoreTableID, int invertedIndexTableID){
 		StringBuilder csvContent = new StringBuilder();
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
@@ -120,7 +140,8 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 					fs.delete(newFilePath3, true);
 				}
 				fs.createNewFile(newFilePath3);
-
+				fs.setPermission(newFilePath3, new FsPermission(FsAction.ALL,FsAction.ALL,FsAction.ALL));
+				
 				FSDataOutputStream fsOutStream3 = fs.create(newFilePath3);
 				
 				if(!new ObjectFileConverter<DocPairLocation>().object2File(docPair, fsOutStream3)){
@@ -147,16 +168,16 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 		return DBManager.getInstance().insertBulkToScoreTable(csvContent.toString(), scoreTableID);
 	}
 	
-	private double[] calcSim_Sentence(MapWritable sentenceMap1, DocInfo docInfo1, HashMap<Integer, HashMap<String, Integer>> sentenceMap2, DocInfo docInfo2) {  //Calculating similarity between two documents.  Outputs two scores. doc1 to doc2 score & doc2 to doc1 score.
+	private double[] calcSim_Sentence(HashMap<Integer, HashMap<String, Integer>> sentenceMap1, DocInfo docInfo1, HashMap<Integer, HashMap<String, Integer>> sentenceMap2, DocInfo docInfo2) {  //Calculating similarity between two documents.  Outputs two scores. doc1 to doc2 score & doc2 to doc1 score.
 		
 		double[] doc1doc2SimScores = new double[2];
 		
 		ArrayList<Integer> intersectingSentencesFromDoc1 = new ArrayList<Integer>();
 		ArrayList<Integer> intersectingSentencesFromDoc2 = new ArrayList<Integer>();
 		
-		for (Map.Entry<Writable, Writable> entry1 : sentenceMap1.entrySet()){
-			int sentenceID1 = (int) ((LongWritable) entry1.getKey()).get();
-			MapWritable termFreqMap1 = (MapWritable) entry1.getValue();
+		for (Map.Entry<Integer, HashMap<String, Integer>> entry1 : sentenceMap1.entrySet()){
+			int sentenceID1 = entry1.getKey();
+			HashMap<String, Integer> termFreqMap1 = entry1.getValue();
 			
 			for(Map.Entry<Integer, HashMap<String, Integer>> entry2 : sentenceMap2.entrySet()){
 				int sentenceID2 = entry2.getKey();
@@ -194,14 +215,14 @@ public class SimScoreSentenceMapper2 extends Mapper<LongWritable, MapWritable, I
 		return doc1doc2SimScores;
 	}
 	
-	private double calcSim(MapWritable termFreqMap1, HashMap<String, Integer> termFreqMap2){  //Calculating similarity between two sentences. (a sentence from doc1 vs. a sentence from doc2)
+	private double calcSim(HashMap<String, Integer> termFreqMap1, HashMap<String, Integer> termFreqMap2){  //Calculating similarity between two sentences. (a sentence from doc1 vs. a sentence from doc2)
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		
-		for(Map.Entry<Writable, Writable> entry : termFreqMap1.entrySet()){
-			Text term1 = (Text) entry.getKey();
-			double value1 = Double.valueOf(entry.getValue().toString());
+		for(Map.Entry<String, Integer> entry : termFreqMap1.entrySet()){
+			Text term1 = new Text(entry.getKey());
+			double value1 = entry.getValue();
 			
 			if(termFreqMap2.containsKey(term1)){
 				double value2 = Double.valueOf(termFreqMap2.get(term1));

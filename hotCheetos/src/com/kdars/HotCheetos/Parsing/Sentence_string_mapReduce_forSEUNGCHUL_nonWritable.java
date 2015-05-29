@@ -1,9 +1,10 @@
 package com.kdars.HotCheetos.Parsing;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -12,6 +13,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.MapWritable;
@@ -22,7 +24,7 @@ import com.kdars.HotCheetos.DocumentStructure.DocInfo;
 import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
 import com.kdars.HotCheetos.DocumentStructure.SenInfo;
 
-public class Sentence_string_mapReduce {
+public class Sentence_string_mapReduce_forSEUNGCHUL_nonWritable {
 
 	private String preFix = Configurations.getInstance().getPreFix();
 	private String postFix1 = Configurations.getInstance().getPostFix1();
@@ -34,20 +36,24 @@ public class Sentence_string_mapReduce {
 
 	/* Temporary measure for experiment. Need to delete!!!! */
 
-	public MapWritable parseDoc(int docID, String content) {
+	public BytesWritable parseDoc(int docID, String content) {
 		// output of this method : MapWritable<sentenceID, MapWritable<term,termFreq>>
 		// output format : MapWritable<LongWritable, MapWritable<Text,IntWritable>>
 		// output contains all the terms and term frequencies in all the sentences in a document
 		// Also, this method saves a Serializable object containing sentence location information. object file number and docids are matched and saved, so docids can be used to identify which object to read.
 		// This object will later be used in SimScoreSentenceMappers to identify the locations of the similar sentences between two documents
 		
-		MapWritable sentenceMap = new MapWritable(); // key : sentenceID , value : Map of (term, termFreq) <--termFreqMap
-
-		String sentenceList[] = content.trim().split("\\.");
+//		BytesWritable serializedSentenceMap = null;
+		
+		BytesWritable output = null;
+		
+		HashMap<Integer, HashMap<String, Integer>> sentenceMap = new HashMap<Integer, HashMap<String, Integer>>();  // key : sentenceID , value : Map of (term, termFreq) <--termFreqMap
+		
+		String sentenceList[] = content.trim().split("\\n");
 
 		int newLineChecker = 0;
-
-		LongWritable sentenceID = new LongWritable();
+		
+		int sentenceID = 0;
 
 		try {
 			
@@ -77,69 +83,54 @@ public class Sentence_string_mapReduce {
 			
 			FSDataOutputStream fsOutStream = hdfs.create(newFilePath);
 			
-			sentenceID.set(0);
 			for (String sentence : sentenceList) {
-				
-				int lines = 0;
-				if (sentence.contains("\n")) {
-					Matcher m = Pattern.compile("\\n").matcher(sentence);
-					while (m.find()) {
-						if (sentence.substring(0, m.start()).trim().equals("")) {
-							newLineChecker++;
-							continue;
-						}
-						lines++;
-					}
-				}
-
-				sentenceID.set(sentenceID.get() + 1);
-				MapWritable termFreqMap = parseSentence(sentence); // key : term , value : termFreq within sentence
+				HashMap<String, Integer> termFreqMap = parseSentence(sentence); // key : term , value : termFreq within sentence
 				if (termFreqMap != null) {
-					int senID = Integer.valueOf(sentenceID.toString());
 					SenInfo senInfo = new SenInfo();
 					senInfo.sentenceText = sentence.trim();
 					
 					ArrayList<Integer> sentenceLines = new ArrayList<Integer>();
-					for (int i = 0; i <= lines; i++) {
-						sentenceLines.add(newLineChecker);
-						newLineChecker++;
-					}
+					sentenceLines.add(newLineChecker);
 					
 					senInfo.sentenceLines = sentenceLines;
-					docInfo.sentenceMap.put(senID, senInfo);
+//					docInfo.sentenceList.add(senInfo);
+					docInfo.sentenceMap.put(sentenceID, senInfo);
 					sentenceMap.put(sentenceID, termFreqMap);
 				}
-
+				
+				sentenceID++;
+				newLineChecker++; 
 			}
 			
 			if(!new ObjectFileConverter<DocInfo>().object2File(docInfo, fsOutStream)){
 				System.out.println("Failed to convert object to file!");
 			}
 			
+			ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(byteOut);
+			out.writeObject(sentenceMap);
+			
+			output = new BytesWritable(byteOut.toByteArray());
+			
 			fsOutStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return sentenceMap;
+		return output;
 	}
 
-	private MapWritable parseSentence(String sentence) {
-		MapWritable termFreqMap = new MapWritable();
+	private HashMap<String, Integer> parseSentence(String sentence) {
+		HashMap<String, Integer> termFreqMap = new HashMap<String, Integer>();
 
 		String wordList[] = sentence.trim().split("\\s+");
 
-		if (wordList.length < 3) {
-			return null;
-		}
+//		if (wordList.length < 5) {
+//			return null;
+//		}
 
 		for (int i = 0; i < wordList.length; i++) {
-			int postFixChecker = wordList[i].trim().length();
-			
-			String word = deletePostFix(wordList[i].trim());
-			if (word.length() != postFixChecker) {
-				addTerm(termFreqMap, word);
-			}
+			addTerm(termFreqMap, wordList[i].trim());
 		}
 
 		return termFreqMap;
@@ -162,23 +153,18 @@ public class Sentence_string_mapReduce {
 		return processedString;
 	}
 
-	private void addTerm(MapWritable termFreqMap, String word) {
+	private void addTerm(HashMap<String, Integer> termFreqMap, String word) {
 		if (word.hashCode() % this.fingerprintSetting != 0) {
 			return;
 		}
 
-		Text word_textFormat = new Text();
-		word_textFormat.set(word);
-
-		IntWritable value = new IntWritable();
-		if (termFreqMap.containsKey(word_textFormat)) {
-			value = (IntWritable) termFreqMap.get(word_textFormat);
-			value.set(value.get() + 1);
-			termFreqMap.put(word_textFormat, value);
+		int value = 1;
+		if (termFreqMap.containsKey(word)) {
+			value += termFreqMap.get(word);
+			termFreqMap.put(word, value);
 			return;
 		}
-		value.set(1);
-		termFreqMap.put(word_textFormat, value);
+		termFreqMap.put(word, value);
 	}
 
 }

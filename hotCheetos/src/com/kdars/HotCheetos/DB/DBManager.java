@@ -804,7 +804,7 @@ public class DBManager {
 		return DB.bulkInsertSentence(csvContent.toString(), invertedIndexTableName);
 	}
 	
-	public boolean insertBulkToSentenceTable_MapReduce(int docid, MapWritable sentenceMap, int invertedIndexTableID){
+	public boolean insertBulkToSentenceTable_MapReduce(int docid, HashMap<Integer, HashMap<String, Integer>> sentenceMap, int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
 		
 		if(invertedIndexTableName.contains("string")){
@@ -814,12 +814,12 @@ public class DBManager {
 			int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 			int bulkInsertLimitChecker = 0;
 			
-			for (Map.Entry<Writable, Writable> entry : sentenceMap.entrySet()) {
+			for (Map.Entry<Integer, HashMap<String, Integer>> entry : sentenceMap.entrySet()) {
 				String senIDString = entry.getKey().toString();
 
-				MapWritable termFreqMap = (MapWritable) entry.getValue();
-				for (Map.Entry<Writable, Writable> entry1 : termFreqMap.entrySet()){
-					csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey().toString() + "," + entry1.getValue().toString() + "\n");
+				HashMap<String, Integer> termFreqMap = entry.getValue();
+				for (Map.Entry<String, Integer> entry1 : termFreqMap.entrySet()){
+					csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey() + "," + entry1.getValue().toString() + "\n");
 					
 					bulkInsertLimitChecker++;
 					if (bulkInsertLimitChecker == bulkInsertLimit) {
@@ -844,12 +844,12 @@ public class DBManager {
 		int bulkInsertLimit = Configurations.getInstance().getbulkScoreLimit();
 		int bulkInsertLimitChecker = 0;
 		
-		for (Map.Entry<Writable, Writable> entry : sentenceMap.entrySet()) {
+		for (Map.Entry<Integer, HashMap<String, Integer>> entry : sentenceMap.entrySet()) {
 			String senIDString = entry.getKey().toString();
 
-			MapWritable termFreqMap = (MapWritable) entry.getValue();
-			for (Map.Entry<Writable, Writable> entry1 : termFreqMap.entrySet()){
-				csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey().toString() + "," + entry1.getValue().toString() + "\n");
+			HashMap<String, Integer> termFreqMap = entry.getValue();
+			for (Map.Entry<String, Integer> entry1 : termFreqMap.entrySet()){
+				csvContent.append(docIDString + "," + senIDString + "," + entry1.getKey() + "," + entry1.getValue().toString() + "\n");
 				
 				bulkInsertLimitChecker++;
 				if (bulkInsertLimitChecker == bulkInsertLimit) {
@@ -943,7 +943,7 @@ public class DBManager {
 	//////////////////////////////////////////////////////////////////////////////////////////////////// prism ���� ��!��! ��������!
 	public ArrayList<Integer> getCurrentDocIDsFromInvertedIndexTable(int invertedIndexTableID){
 		String invertedIndexTableName = convertIDtoName_InvertedIndex(invertedIndexTableID);
-		DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('invertedIndexTableName	"+invertedIndexTableName+"')");
+		//DBManager.getInstance().insertSQL("insert into `plagiarismdb`.`workflow` (`type`) value ('invertedIndexTableName	"+invertedIndexTableName+"')");
 		
 		return DB.queryCurrentDocIDsFromInvertedIndexTable(invertedIndexTableName);
 	}
@@ -996,6 +996,10 @@ public class DBManager {
 
 	public void insertSQLMapperin(String sql) {
 		DB.insertSQLMapper(sql);
+	}
+
+	public void completeStatus() {
+		DB.completeStatus();
 	}
 	
 }
