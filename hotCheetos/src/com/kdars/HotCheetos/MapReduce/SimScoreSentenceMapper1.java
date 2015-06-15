@@ -34,7 +34,7 @@ import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
 
 public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable, IntWritable, MapWritable>{
 	
-	private double sentenceSimScoreLimit = 0.9;
+	private double sentenceSimScoreLimit = 0.75;
 	
 	@Override
 	public void map(LongWritable docID, BytesWritable sentenceMap, Context context) throws IOException, InterruptedException {
@@ -60,12 +60,6 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 		Path newFilePath1 = new Path(newFolderPath1+"/" + String.valueOf((int)docID.get()) + ".dat");
 		
 		Path newFolderPath2 = new Path(Configurations.getInstance().getDocPairPathString());
-		
-		FSDataInputStream fsInStream1 = fs.open(newFilePath1);
-		
-		DocInfo docInfo2 = new ObjectFileConverter<DocInfo>().file2Object(fsInStream1);
-		
-		fsInStream1.close();
 		
 		// if the directory does not exist, then create it
 		if (!fs.exists(newFolderPath2)) {
@@ -99,11 +93,20 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 							
 							fsInStream2.close();
 							
-							csvContent.append(simScore_Calculation_OneVSInputCorpus(key, sentenceMap1, docInfo1, docID, sentenceMap2, docInfo2));
+							FSDataInputStream fsInStream1 = fs.open(newFilePath1);
+							
+							DocInfo docInfo2 = new ObjectFileConverter<DocInfo>().file2Object(fsInStream1);
+							
+							fsInStream1.close();
+							
+							String content = simScore_Calculation_OneVSInputCorpus(key, sentenceMap1, docInfo1, docID, sentenceMap2, docInfo2);
+							
+							csvContent.append(content);
 							
 							DocPairLocation docPair = new DocPairLocation();
 							docPair.leftDoc = docInfo1;
 							docPair.rightDoc = docInfo2;
+							docPair.simScore = Double.valueOf(content.substring(content.lastIndexOf(",") + 1, content.length()));
 							
 							Path newFilePath3 =new Path(newFolderPath2+"/" + String.valueOf((int)docID.get()) + "_" + String.valueOf((int)key.get()) + ".dat");
 							
@@ -192,7 +195,8 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 			for(Map.Entry<Integer, HashMap<String, Integer>> entry2 : sentenceMap2.entrySet()){
 				int sentenceID2 = entry2.getKey();
 				
-				if(calcSim(termFreqMap1, entry2.getValue()) >= sentenceSimScoreLimit){
+				double score = calcSim(termFreqMap1, entry2.getValue());
+				if(score >= sentenceSimScoreLimit){
 					
 					if(!intersectingSentencesFromDoc1.contains(sentenceID1)){
 						intersectingSentencesFromDoc1.add(sentenceID1);
@@ -202,9 +206,15 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 						intersectingSentencesFromDoc2.add(sentenceID2);
 					}
 					
+					if(score == 1){
+						docInfo1.sentenceMap.get(sentenceID1).perfectMatchLine.add(sentenceID2);
+						docInfo2.sentenceMap.get(sentenceID2).perfectMatchLine.add(sentenceID1);
+						continue;
+					}
+					
 					docInfo1.sentenceMap.get(sentenceID1).matchLine.add(sentenceID2);
 					docInfo2.sentenceMap.get(sentenceID2).matchLine.add(sentenceID1);
-
+					
 				}
 			}
 		}
@@ -229,6 +239,13 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
+		double norm11 = 0.0d;
+		double norm22 = 0.0d;
+		
+		double unfairCalcBlock = termFreqMap1.size() / termFreqMap2.size();
+		if(unfairCalcBlock < 0.3 || unfairCalcBlock > (10/3)){
+			return 0.0d;
+		}
 		
 		HashMap<String, Integer> termFreqMap22 = new HashMap<String, Integer>(termFreqMap2);
 		
@@ -241,20 +258,30 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 				multiply += value1 * value2;
 				norm2 += value2 * value2;
 				termFreqMap22.remove(term1);
+				norm1 += value1 * value1;
+				continue;
 			}
-			norm1 += value1 * value1;
+			norm11 += value1 * value1;
 		}
 		
 		for(Map.Entry<String, Integer> entry : termFreqMap22.entrySet()){
 			double value2 = Double.valueOf(entry.getValue().toString());
-			norm2 += (value2 * value2);
+			norm22 += (value2 * value2);
 		}
 		
-		double result =  multiply / Math.sqrt(norm1 * norm2);
-		if(Double.isNaN(result)){
-			result=0;
+		double result1 = multiply / Math.sqrt((norm1+norm11) * norm2);
+		if(Double.isNaN(result1)){
+			result1=0;
 		}
 		
-		return result;
+		double result2 = multiply / Math.sqrt(norm1 * (norm2+norm22));
+		if(Double.isNaN(result2)){
+			result2=0;
+		}
+		
+		if(result1 >= result2){
+			return result1;
+		}
+		return result2;
 	}
 }

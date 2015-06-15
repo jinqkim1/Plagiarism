@@ -45,7 +45,7 @@ public class MS_PDF_TextExtractors {
 		return	pDFFileParser;
 	}
 	
-	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
+	private String extractTextPattern = "[\\x{AC00}-\\x{D7A3}_\\x{0020}_\\x{002E}_\\x{0030}-\\x{0039}_\\x{0041}-\\x{005A}_\\x{0061}-\\x{007A}]";
 	
 	public String chooseFileTypeAndExtract(String filePath, Configuration conf){
 		String content = null;

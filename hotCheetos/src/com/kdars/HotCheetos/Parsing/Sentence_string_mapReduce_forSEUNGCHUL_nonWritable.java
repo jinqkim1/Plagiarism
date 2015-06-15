@@ -49,9 +49,10 @@ public class Sentence_string_mapReduce_forSEUNGCHUL_nonWritable {
 		
 		HashMap<Integer, HashMap<String, Integer>> sentenceMap = new HashMap<Integer, HashMap<String, Integer>>();  // key : sentenceID , value : Map of (term, termFreq) <--termFreqMap
 		
-		String sentenceList[] = content.trim().split("\\n");
-
-		int newLineChecker = 0;
+//		String sentenceList[] = content.trim().split("\\n");
+		String sentenceList[] = content.trim().split("\\.");
+		
+//		int newLineChecker = 0;
 		
 		int sentenceID = 0;
 
@@ -85,21 +86,25 @@ public class Sentence_string_mapReduce_forSEUNGCHUL_nonWritable {
 			
 			for (String sentence : sentenceList) {
 				HashMap<String, Integer> termFreqMap = parseSentence(sentence); // key : term , value : termFreq within sentence
-				if (termFreqMap != null) {
+//				if (termFreqMap != null) {
 					SenInfo senInfo = new SenInfo();
-					senInfo.sentenceText = sentence.trim();
+					senInfo.sentenceText = sentence.trim() + ".";
 					
-					ArrayList<Integer> sentenceLines = new ArrayList<Integer>();
-					sentenceLines.add(newLineChecker);
+//					ArrayList<Integer> sentenceLines = new ArrayList<Integer>();
+//					sentenceLines.add(newLineChecker);
 					
-					senInfo.sentenceLines = sentenceLines;
+//					senInfo.sentenceLines = sentenceLines;
 //					docInfo.sentenceList.add(senInfo);
 					docInfo.sentenceMap.put(sentenceID, senInfo);
-					sentenceMap.put(sentenceID, termFreqMap);
-				}
+					
+					if(termFreqMap != null){
+						sentenceMap.put(sentenceID, termFreqMap);
+					}
+					
+//				}
 				
 				sentenceID++;
-				newLineChecker++; 
+//				newLineChecker++; 
 			}
 			
 			if(!new ObjectFileConverter<DocInfo>().object2File(docInfo, fsOutStream)){
@@ -122,39 +127,49 @@ public class Sentence_string_mapReduce_forSEUNGCHUL_nonWritable {
 
 	private HashMap<String, Integer> parseSentence(String sentence) {
 		HashMap<String, Integer> termFreqMap = new HashMap<String, Integer>();
-
-		String wordList[] = sentence.trim().split("\\s+");
-
-//		if (wordList.length < 5) {
-//			return null;
-//		}
-
-		for (int i = 0; i < wordList.length; i++) {
-			addTerm(termFreqMap, wordList[i].trim());
+		
+		String newLineList[] = sentence.trim().split("\\n");
+		
+		for(String line : newLineList){
+			String wordList[] = line.trim().split("\\s+");
+			if (wordList.length <= 3){
+				continue;
+			}
+			for (int i = 0; i < wordList.length; i++) {
+				String word = wordList[i].trim();
+				if(word.length() < 2){
+					continue;
+				}
+				addTerm(termFreqMap, deletePostFix(word));
+			}
 		}
-
+		
+		if(termFreqMap.size() < 4){
+			return null;
+		}
+		
 		return termFreqMap;
 	}
 
 	private String deletePostFix(String processedString) {
 
-		if (processedString.length() > 3 && !processedString.substring(0, 1).matches(preFix)) {
+//		if (processedString.length() > 3 && !processedString.substring(0, 1).matches(preFix)) {
 			int wordLen = processedString.length();
 
-			if (processedString.substring(wordLen - 2).matches(postFix2)) {
+			if (wordLen > 2 && processedString.substring(wordLen - 2).matches(postFix2)) {
 				return processedString.substring(0, wordLen - 2);
 			}
 
-			if (processedString.substring(wordLen - 1).matches(postFix1)) {
+			if (wordLen > 1 && processedString.substring(wordLen - 1).matches(postFix1)) {
 				return processedString.substring(0, wordLen - 1);
 			}
-		}
+//		}
 
 		return processedString;
 	}
 
 	private void addTerm(HashMap<String, Integer> termFreqMap, String word) {
-		if (word.hashCode() % this.fingerprintSetting != 0) {
+		if (word.hashCode() % this.fingerprintSetting != 0 || word.isEmpty()) {
 			return;
 		}
 
