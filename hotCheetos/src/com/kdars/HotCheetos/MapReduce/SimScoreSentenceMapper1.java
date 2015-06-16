@@ -30,11 +30,15 @@ import com.kdars.HotCheetos.Config.Configurations;
 import com.kdars.HotCheetos.DB.DBManager;
 import com.kdars.HotCheetos.DocumentStructure.DocInfo;
 import com.kdars.HotCheetos.DocumentStructure.DocPairLocation;
+import com.kdars.HotCheetos.DocumentStructure.DocumentInfo;
 import com.kdars.HotCheetos.DocumentStructure.ObjectFileConverter;
+import com.kdars.HotCheetos.DocumentStructure.SenInfo;
 
 public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable, IntWritable, MapWritable>{
 	
 	private double sentenceSimScoreLimit = 0.75;
+	private int perfectMatchCount = 0;
+	private int matchCount = 0;
 	
 	@Override
 	public void map(LongWritable docID, BytesWritable sentenceMap, Context context) throws IOException, InterruptedException {
@@ -107,6 +111,10 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 							docPair.leftDoc = docInfo1;
 							docPair.rightDoc = docInfo2;
 							docPair.simScore = Double.valueOf(content.substring(content.lastIndexOf(",") + 1, content.length()));
+							docPair.perfectMatchCount = perfectMatchCount;
+							docPair.matchCount = matchCount;
+							perfectMatchCount = 0;
+							matchCount = 0;
 							
 							Path newFilePath3 =new Path(newFolderPath2+"/" + String.valueOf((int)docID.get()) + "_" + String.valueOf((int)key.get()) + ".dat");
 							
@@ -187,15 +195,29 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 		
 		ArrayList<Integer> intersectingSentencesFromDoc1 = new ArrayList<Integer>();
 		ArrayList<Integer> intersectingSentencesFromDoc2 = new ArrayList<Integer>();
-				
+		
 		for (Map.Entry<Integer, HashMap<String, Integer>> entry1 : sentenceMap1.entrySet()){
 			int sentenceID1 = entry1.getKey();
 			HashMap<String, Integer> termFreqMap1 = entry1.getValue();
+			int termMapSize1 = termFreqMap1.size();
 			
 			for(Map.Entry<Integer, HashMap<String, Integer>> entry2 : sentenceMap2.entrySet()){
 				int sentenceID2 = entry2.getKey();
+				HashMap<String, Integer> termFreqMap2 = entry2.getValue();
+				int termMapSize2 = termFreqMap2.size();
 				
-				double score = calcSim(termFreqMap1, entry2.getValue());
+				double score = 0;
+				
+				double unfairCalcBlock = (double) termMapSize1 / (double) termMapSize2;
+				if(unfairCalcBlock < 0.3 || unfairCalcBlock > (10/3)){
+					score = sentenceCalcSim(docInfo1, sentenceID1, docInfo2, sentenceID2);
+				}else{
+					score = calcSim(termFreqMap1, termFreqMap2);
+					if (score == 2){
+						score = sentenceCalcSim(docInfo1, sentenceID1, docInfo2, sentenceID2);
+					}
+				}
+				
 				if(score >= sentenceSimScoreLimit){
 					
 					if(!intersectingSentencesFromDoc1.contains(sentenceID1)){
@@ -209,12 +231,13 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 					if(score == 1){
 						docInfo1.sentenceMap.get(sentenceID1).perfectMatchLine.add(sentenceID2);
 						docInfo2.sentenceMap.get(sentenceID2).perfectMatchLine.add(sentenceID1);
+						perfectMatchCount++;
 						continue;
 					}
 					
 					docInfo1.sentenceMap.get(sentenceID1).matchLine.add(sentenceID2);
 					docInfo2.sentenceMap.get(sentenceID2).matchLine.add(sentenceID1);
-					
+					matchCount++;
 				}
 			}
 		}
@@ -235,17 +258,65 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 		return doc1doc2SimScores;
 	}
 	
+	private double sentenceCalcSim(DocInfo docInfo1,int sentenceID1, DocInfo docInfo2, int sentenceID2){
+		String senString1 = docInfo1.sentenceMap.get(sentenceID1).sentenceText;
+		String senString2 = docInfo2.sentenceMap.get(sentenceID2).sentenceText;
+		
+		String wordList1[] = senString1.trim().split("\\s+");
+		int senSize1 = wordList1.length;
+		ArrayList<Integer> ngramCollector1 = ngramCollect(wordList1);
+		
+		String wordList2[] = senString2.trim().split("\\s+");
+		int senSize2 = wordList2.length;
+		ArrayList<Integer> ngramCollector2 = ngramCollect(wordList2);
+		
+		
+		double score = 0;
+		if(senSize1 > senSize2){
+			score = senScoreCalc(ngramCollector2, ngramCollector1);
+		}else{
+			score = senScoreCalc(ngramCollector1, ngramCollector2);
+		}
+		
+		return score;
+	}
+	
+	private ArrayList<Integer> ngramCollect(String wordList[]){
+		ArrayList<Integer> ngramCollector = new ArrayList<Integer>();
+		int ngramWindow = Configurations.getInstance().getNgramSetting();
+		ArrayList<Integer> wordBagList = new ArrayList<Integer>();
+		int wordBag = 0;
+		for(String word : wordList){
+			wordBagList.add(word.hashCode());
+			wordBag += word.hashCode();
+			if(wordBagList.size() == ngramWindow){
+				ngramCollector.add(wordBag);
+				wordBag -= wordBagList.get(0);
+				wordBagList.remove(0);
+			}
+		}
+		return ngramCollector;
+	}
+	
+	private double senScoreCalc(ArrayList<Integer> ngramCollector_shortSentence, ArrayList<Integer> ngramCollector_longSentence){
+		int simCount = 0;
+		for(int ngram1 : ngramCollector_shortSentence){
+			for(int ngram2 : ngramCollector_longSentence){
+				if(ngram1 == ngram2){
+					simCount++;
+					break;
+				}
+			}
+		}
+		return simCount / ngramCollector_shortSentence.size();
+	}
+	
 	private double calcSim(HashMap<String, Integer> termFreqMap1, HashMap<String, Integer> termFreqMap2){  //Calculating similarity between two sentences. (a sentence from doc1 vs. a sentence from doc2)
 		double multiply = 0.0d;
 		double norm1 = 0.0d;
 		double norm2 = 0.0d;
 		double norm11 = 0.0d;
 		double norm22 = 0.0d;
-		
-		double unfairCalcBlock = termFreqMap1.size() / termFreqMap2.size();
-		if(unfairCalcBlock < 0.3 || unfairCalcBlock > (10/3)){
-			return 0.0d;
-		}
 		
 		HashMap<String, Integer> termFreqMap22 = new HashMap<String, Integer>(termFreqMap2);
 		
@@ -255,6 +326,11 @@ public class SimScoreSentenceMapper1  extends Mapper<LongWritable, BytesWritable
 			
 			if(termFreqMap22.containsKey(term1)){
 				double value2 = Double.valueOf(termFreqMap22.get(term1).toString());
+				
+				if (value1 != value2){
+					return 2; //max score is 1. 2 is out of range.
+				}
+				
 				multiply += value1 * value2;
 				norm2 += value2 * value2;
 				termFreqMap22.remove(term1);

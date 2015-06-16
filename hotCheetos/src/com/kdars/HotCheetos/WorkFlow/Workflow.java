@@ -200,18 +200,18 @@ public class Workflow {
 //						HashMap<Integer, HashMap<String, Integer>> sentenceMap2 = (HashMap<Integer, HashMap<String, Integer>>) in.readObject();
 //						byteIn.close();
 //						in.close();
-//						int limit = 0;
+////						int limit = 0;
 //						for(Map.Entry<Integer, HashMap<String, Integer>> entry : sentenceMap2.entrySet()){
-//							limit++;
+////							limit++;
 //							System.out.println("Sentence ID  =  " + entry.getKey());
 //							HashMap<String, Integer> termFreqMap = entry.getValue();
 //							for(Map.Entry<String, Integer> entry1 : termFreqMap.entrySet()){
 //								System.out.print("(" + entry1.getKey() + " , " + entry1.getValue() + ")");
 //							}
 //							System.out.println();
-//							if (limit >10){
-//								break;
-//							}
+////							if (limit >10){
+////								break;
+////							}
 //						}
 //					} catch (IOException e) {
 //						// TODO Auto-generated catch block
@@ -221,6 +221,7 @@ public class Workflow {
 //						e.printStackTrace();
 //					}
 //				}
+//				reader.close();
 //			}
 //		}
 		
