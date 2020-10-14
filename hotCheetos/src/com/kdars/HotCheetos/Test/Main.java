@@ -21,12 +21,12 @@ import com.kdars.HotCheetos.WorkFlow.Workflow;
 public class Main {
 	private static int nGramSetting = 2;
 	private static int fingerprintSetting = 1;
-	
+
 	private static String postFix1 = Configurations.getInstance().getPostFix1();
 	private static String postFix2 = Configurations.getInstance().getPostFix2();
-	
+
 	public static void main(String[] args) throws ClassNotFoundException, IOException, InterruptedException {
-		
+
 //		System.out.println("\nexperiment1");
 //		Experiment.getInstance().experiment1();
 //		System.out.println("\nexperiment2");
@@ -43,8 +43,8 @@ public class Main {
 //		Experiment.getInstance().experiment7();
 //		System.out.println("\nexperiment8");
 //		Experiment.getInstance().experiment8();
-		
-		
+
+
 //		System.out.println("\nexperiment11");
 //		Experiment.getInstance().experiment11();
 //		System.out.println("\nexperiment22");
@@ -61,11 +61,11 @@ public class Main {
 //		Experiment.getInstance().experiment77();
 //		System.out.println("\nexperiment88");
 //		Experiment.getInstance().experiment88();
-		
-		
-		
-		
-		
+
+
+
+
+
 //		String scoreRange = String.valueOf(0.8);
 //		for (int i = 1 ; i < 73 ; i++){
 //			String tableName = DBManager.getInstance().convertIDtoName_Score(i);
@@ -73,84 +73,84 @@ public class Main {
 //			String query = "select DocID, ComparedDocID, SimilarityScore into outfile '" + tableName + "_" + scoreRange + ".txt'  fields terminated by ',' enclosed by '\"' lines terminated by '\\n' from plagiarismdb.`" + tableName + "` where SimilarityScore >= " + scoreRange + " order by similarityscore desc;";
 //			System.out.println(query);
 //		}
-		
-		
-		
+
+
+
 		Workflow workflowForExperiment = new Workflow();
-		
+
 		String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(77);
-		System.out.println(77 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+		System.out.println(77 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 		int jobComplete = workflowForExperiment.TEMPORARYprismWorkFlow(args);
-		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-		System.out.println("½ÇÇè ³¡³ª¸é Mapper¿¡¼­ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
-		System.exit(jobComplete);  //´Ù Àß ³¡³ª¸é 0ÀÌ µé¾î°¡¼­ system exitµÉ °ÍÀÓ.
-		
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Mapperï¿½ï¿½ï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
+		System.exit(jobComplete);  //ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ ï¿½ï¿½ï¿½î°¡ï¿½ï¿½ system exitï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½.
+
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(78);
-//		System.out.println(78 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(78 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 78, 78);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-//		System.out.println("½ÇÇè ³¡³ª¸é ReducerÀÇ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
-//		
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Reducerï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
+//
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(79);
-//		System.out.println(79 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(79 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 79, 79);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-//		System.out.println("½ÇÇè ³¡³ª¸é ReducerÀÇ DB table id ÀÌ¸§ ¹Ù²ãÁà¾ßÇÔ!!!!!!!!!!!!!");
-//		
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Reducerï¿½ï¿½ DB table id ï¿½Ì¸ï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!!!!!!!!!!!!!");
+//
 //		experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(80);
-//		System.out.println(80 + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//		System.out.println(80 + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //		workflowForExperiment.TEMPORARYprismWorkFlow(args, 80, 80);
-//		System.out.println("½ÇÇè ³¡³ª¸é text table drop ÈÄ ´Ù½Ã create ÇØ¾ßÇÔ!!!!!!!!!!!!");
-		
-		
-		
+//		System.out.println("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ text table drop ï¿½ï¿½ ï¿½Ù½ï¿½ create ï¿½Ø¾ï¿½ï¿½ï¿½!!!!!!!!!!!!");
+
+
+
 //		Workflow workflowForExperiment = new Workflow();
-//		
+//
 //		ArrayList<Integer> fingerprintList = new ArrayList<Integer>();
 //		fingerprintList.add(1);
 //		fingerprintList.add(4);
-//		
+//
 //		int i = 0;
 //		for(int j = 3; j < 11 ; j++){
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, j, fp);
 //			}
 //		}
-//		
+//
 //		for(int k = 1; k < 11 ; k++){
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, k, fp);
 //			}
 //		}
-//		
+//
 //		for(int j = 3; j < 11 ; j++){
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, j, fp);
 //			}
 //		}
-//		
+//
 //		for(int k = 1; k < 11 ; k++){
 //			for(int fp : fingerprintList){
 //				i++;
 //				String experimentTableName = DBManager.getInstance().convertIDtoName_InvertedIndex(i);
-//				System.out.println(i + "¹øÂ° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
+//				System.out.println(i + "ï¿½ï¿½Â° experiment (" + experimentTableName.substring(0,experimentTableName.length()-19) + ")\n");
 //				workflowForExperiment.workFlowExperiment(i, k, fp);
 //			}
 //		}
-		
-		
+
+
 //		File zipFile = new File("C:\\Users\\shin\\Desktop\\1.zip");
 //		FileDataImport.getInstance().unZipAndSaveZipFile(zipFile);
-		
+
 	}
-	
+
 }
